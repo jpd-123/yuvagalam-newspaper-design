@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>యువగళం న్యూస్ పేపర్ డిజైనర్</title>
+    
+    <!-- CSS ఫైల్స్ -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- ప్రధాన హెడర్ & టూల్‌బార్ -->
+    <header class="app-header">
+        <div class="logo-title">
+            <h2>యువగళం న్యూస్ పేపర్ డిజైన్ <span>(సాత్విక పబ్లిషర్ ఇంజిన్)</span></h2>
+        </div>
+        
+        <!-- టూల్‌బార్ స్విచ్చర్ -->
+        <div class="mode-switch">
+            <button id="btn-master-mode" class="active-mode" onclick="switchToolbar('master')">మాస్టర్ లేఅవుట్</button>
+            <button id="btn-daily-mode" onclick="switchToolbar('daily')">డైలీ న్యూస్ డిజైన్</button>
+        </div>
+    </header>
+
+    <!-- మాస్టర్ టూల్‌బార్ (ఫుల్ ఆప్షన్స్) -->
+    <div id="master-toolbar" class="toolbar">
+        <div class="tool-group">
+            <label>1. పేపర్ సైజ్:</label>
+            <select id="paper-size" onchange="changePaperSize(this.value)">
+                <option value="tabloid">టాబ్లాయిడ్ (Standard)</option>
+                <option value="broadsheet">బ్రాడ్‌షీట్ (Main Paper)</option>
+                <option value="a4">A4 సైజు</option>
+            </select>
+        </div>
+
+        <div class="tool-group">
+            <label>2. పేజీల సంఖ్య:</label>
+            <select id="page-count" onchange="generatePages(this.value)">
+                <option value="6">6 పేజీలు</option>
+                <option value="8" selected>8 పేజీలు</option>
+                <option value="10">10 పేజీలు</option>
+                <option value="12">12 పేజీలు</option>
+                <option value="14">14 పేజీలు</option>
+                <option value="16">16 పేజీలు</option>
+            </select>
+        </div>
+
+        <div class="tool-group">
+            <button onclick="openBulletsModal()">3. బాటమ్ బుల్లెట్లు</button>
+        </div>
+
+        <div class="tool-group">
+            <button onclick="triggerPaste('main-logo')">4. మెయిన్ లోగో (Ctrl+V)</button>
+        </div>
+
+        <div class="tool-group">
+            <button onclick="openLogoResizer()">5. లోగో రీసైజర్</button>
+        </div>
+    </div>
+
+    <!-- డైలీ టూల్‌బార్ -->
+    <div id="daily-toolbar" class="toolbar hidden">
+        <div class="tool-group">
+            <label>పేజీ ఎంచుకోండి:</label>
+            <select id="daily-page-select" onchange="scrollToPage(this.value)">
+            </select>
+        </div>
+        <div class="tool-group">
+            <button onclick="triggerPaste('news-photo')">ఫోటో అప్‌లోడ్ (Ctrl+V)</button>
+        </div>
+        <div class="tool-group">
+            <button class="btn-primary" onclick="autoSetupPage()">ఆటో పేజీ సెటప్</button>
+        </div>
+        <div class="tool-group">
+            <button class="btn-success" onclick="generatePDF()">PDF జనరేటర్</button>
+        </div>
+    </div>
+
+    <!-- ప్రధాన న్యూస్‌‌పేపర్ కాన్వాస్ ప్రదేశం -->
+    <main id="newspaper-workspace" class="workspace">
+        <div id="pages-container">
+            <!-- పేజీలు ఇక్కడ వస్తాయి -->
+        </div>
+    </main>
+
+</body>
+</html>
