@@ -1,0 +1,99 @@
+/* యువగళం న్యూస్ పేపర్ డిజైన్ - మెయిన్ స్టైల్స్ */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* హెడర్ */
+.app-header {
+    background-color: #1a237e;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.app-header h2 span {
+    font-size: 14px;
+    color: #ffca28;
+}
+
+.mode-switch button {
+    padding: 8px 15px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #3949ab;
+    color: white;
+}
+
+.mode-switch button.active-mode {
+    background-color: #ff9800;
+    color: black;
+}
+
+/* టూల్‌బార్ */
+.toolbar {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    border-bottom: 2px solid #ddd;
+    overflow-x: auto;
+}
+
+.toolbar.hidden {
+    display: none;
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+
+.tool-group select, .tool-group button {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #2196f3 !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-success {
+    background-color: #4caf50 !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* వర్క్‌స్పేస్ */
+.workspace {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+#pages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
