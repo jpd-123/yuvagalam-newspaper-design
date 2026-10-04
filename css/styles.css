@@ -22,116 +22,102 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     position: sticky;
     top: 0;
-    z-index: 1000;
+/* సాత్విక పబ్లిషర్ - డెస్క్‌టాప్ వెల్కమ్ స్క్రీన్ & లేఅవుట్ స్టైల్స్ */
+body {
+    font-family: 'Gidugu', 'Mandali', sans-serif, Arial;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
 }
 
-.app-header h2 span {
-    font-size: 14px;
-    color: #ffca28;
+/* వెల్కమ్ డాష్‌బోర్డ్ */
+.welcome-screen {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.mode-switch button {
-    padding: 8px 15px;
-    margin-left: 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    background-color: #3949ab;
-    color: white;
-}
-
-.mode-switch button.active-mode {
-    background-color: #ff9800;
-    color: black;
-}
-
-/* టూల్‌బార్ */
-.toolbar {
-    background-color: #ffffff;
-    padding: 10px 20px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    border-bottom: 2px solid #ddd;
-    overflow-x: auto;
-    position: sticky;
-    top: 50px;
-    z-index: 999;
-}
-
-.toolbar.hidden {
-    display: none;
-}
-
-.tool-group {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-}
-
-.tool-group select, .tool-group button {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-    cursor: pointer;
-}
-
-.btn-primary {
-    background-color: #2196f3 !important;
-    color: white !important;
-    border: none !important;
-}
-
-.btn-success {
-    background-color: #4caf50 !important;
-    color: white !important;
-    border: none !important;
-}
-
-/* వర్క్‌స్పేస్ మరియు పేపర్ కాన్వాస్ */
-.workspace {
-    padding: 30px 10px;
-    display: flex;
-    justify-content: center;
-}
-
-#pages-container {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    align-items: center;
-}
-
-/* న్యూస్‌పేపర్ పేజీ డిజైన్ (Standard Tabloid) */
-.newspaper-page {
-    width: 320mm;
-    min-height: 470mm;
-    background-color: #ffffff;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    padding: 15mm;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-.page-header {
-    border-bottom: 2px solid #000;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-    font-weight: bold;
-    font-size: 18px;
+.welcome-header {
     text-align: center;
-    color: #1a237e;
+    background: #1a365d;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
 }
 
-.page-content {
-    flex: 1;
-    border: 1px dashed #ccc;
-    padding: 10px;
-    outline: none;
-    font-size: 16px;
-    line-height: 1.6;
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
+
+.card-box {
+    border: 2px dashed #cbd5e1;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.card-box h3 {
+    margin-top: 0;
+    color: #0f172a;
+    border-bottom: 2px solid #2563eb;
+    padding-bottom: 5px;
+}
+
+.recent-items-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.item-thumb {
+    border: 1px solid #ccc;
+    background: #fff;
+    padding: 5px;
+    text-align: center;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+/* న్యూస్‌పేపర్ పేజీలు & మిర్రర్ గ్రిడ్లు */
+.page {
+    width: 297mm;
+    height: 420mm; /* A3 Standard Size */
+    background: white;
+    margin: 20px auto;
+    padding: 15mm;
+    box-sizing: border-box;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+/* గ్రిడ్ల అమరిక */
+.mirror-even {
+    display: grid;
+    grid-template-columns: 35% 65%; /* ఎడమ చిన్నది, కుడి పెద్దది */
+    gap: 10px;
+}
+
+.mirror-odd {
+    display: grid;
+    grid-template-columns: 65% 35%; /* మిర్రర్ ఎఫెక్ట్: ఎడమ పెద్దది, కుడి చిన్నది */
+    gap: 10px;
+}
+
+.news-grid-box {
+    border: 1px solid #000;
+    padding: 8px;
+    margin-bottom: 10px;
+    background: #fff;
+}
+
+.hidden {
+    display: none !important;
+}
+
