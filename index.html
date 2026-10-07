@@ -6,6 +6,8 @@
     <title>సాత్విక పబ్లిషర్ - ఆటోమేటిక్ న్యూస్‌పేపర్ డిజైనర్</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- HTML2Canvas Library (PNG క్లిప్పింగ్ డౌన్‌లోడ్ కోసం) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -39,15 +41,24 @@
         </div>
     </div>
 
-    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ -->
+    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ (అప్‌డేటెడ్ లైవ్ ప్రివ్యూ & PNG ఆప్షన్‌తో) -->
     <div id="mobileNewsForm" class="mobile-container hidden">
         <div class="form-header">
             <h3>📱 మొబైల్ న్యూస్ క్లిప్ అప్‌లోడర్</h3>
             <button onclick="DeviceRouter.switch()" class="btn-sm">మార్చు</button>
         </div>
+        
         <form id="clipForm">
             <label>టార్గెట్ పేజీ సంఖ్య:</label>
             <select id="mobileTargetPage"></select>
+
+            <label>వార్తా గ్రిడ్ మోడల్ (Layout Shape):</label>
+            <select id="mGridShape">
+                <option value="rect">చతురస్రం (Standard Rect)</option>
+                <option value="ball">బంతి ఆకారం (Circle/Ball)</option>
+                <option value="egg">గుడ్డు ఆకారం (Oval/Egg)</option>
+                <option value="l-shape">L-షేప్ మోడల్ (L-Shape)</option>
+            </select>
 
             <label>ప్రధాన శీర్షిక (Headline):</label>
             <input type="text" id="mHeadline" placeholder="హెడ్‌లైన్ టైప్ చేయండి...">
@@ -59,13 +70,33 @@
             <input type="text" id="mDateline" placeholder="ఉదా: అమరావతి">
 
             <label>వార్త సమాచారం (Body):</label>
-            <textarea id="mBody" rows="5"></textarea>
+            <textarea id="mBody" rows="5" placeholder="వార్త వివరాలు..."></textarea>
 
             <label>ఫోటో అప్‌‌లోడ్:</label>
-            <input type="file" id="mImage" accept="image/*">
+            <input type="file" id="mImage" accept="image/*" onchange="DeviceRouter.handleImageUpload(event)">
 
-            <button type="button" onclick="DeviceRouter.uploadFromMobile()" class="btn-submit">📤 అప్‌లోడ్ పేజీకి పంపు</button>
+            <button type="button" onclick="DeviceRouter.uploadFromMobile()" class="btn-submit">📤 అప్‌లోడ్ చేసి ప్రివ్యూ చూడు</button>
         </form>
+
+        <!-- లైవ్ ప్రివ్యూ & PNG డౌన్‌లోడ్ బాక్స్ -->
+        <div id="mobilePreviewArea" class="preview-card hidden">
+            <h4>ల్యాప్‌టాప్ పేజీలో సెట్ అయిన వార్తా మోడల్ (Live Preview):</h4>
+            
+            <!-- PNG కార్డ్ (మాస్టర్ లోగో ఆటోమేటిక్‌గా ఇక్కడ టాప్ సెంటర్‌లో సెట్ అవుతుంది) -->
+            <div id="pngClippingCard" class="clipping-card">
+                <div class="clipping-header">
+                    <img id="clippingLogo" src="" alt="యువగళం లోగో" style="display:none;">
+                    <span id="clippingPaperName" class="clipping-paper-title">యువగళం</span>
+                </div>
+                <div id="clippingContent" class="clipping-body">
+                    <!-- జావాస్క్రిప్ట్ ద్వారా వార్త ప్రివ్యూ ఇక్కడ రెండర్ అవుతుంది -->
+                </div>
+            </div>
+
+            <div class="preview-actions">
+                <button type="button" onclick="DeviceRouter.downloadPNG()" class="btn-png">🖼️ PNG క్లిప్పింగ్‌గా డౌన్‌లోడ్ చేయి</button>
+            </div>
+        </div>
     </div>
 
     <!-- 3. ల్యాప్‌టాప్ వర్క్‌‌స్పేస్ (టూల్‌బార్ + కాన్వాస్) -->
