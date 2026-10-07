@@ -115,22 +115,24 @@
         <div id="paperCanvas" class="paper-canvas"></div>
     </div>
 
-    <!-- మోడ్యూల్ డిపెండెన్సీ సీక్వెన్స్ -->
+    <!-- మోడ్యూల్స్ వరుస క్రమం సరిగ్గా ఉండాలి -->
     <script src="js/config/colors.js"></script>
     <script src="js/modules/device-router.js"></script>
     <script src="js/modules/welcome-screen.js"></script>
-    <script src="js/modules/toolbar-master.js"></script>
     <script src="js/modules/canvas-engine.js"></script>
     <script src="js/modules/auto-page-setup.js"></script>
     <script src="js/modules/pdf-generator.js"></script>
 
     <script>
-        // ప్రారంభ లోడింగ్ ఇంజిన్
+        // పేజీ లోడ్ కాగానే రన్ అయ్యే కోడ్
         window.onload = function() {
-            WelcomeScreen.init();
-            CanvasEngine.renderPages(4);
+            if (typeof WelcomeScreen !== 'undefined') {
+                WelcomeScreen.init();
+            }
+            if (typeof CanvasEngine !== 'undefined') {
+                CanvasEngine.renderPages(4);
+            }
         };
     </script>
 </body>
 </html>
-
