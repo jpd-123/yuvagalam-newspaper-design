@@ -49,6 +49,57 @@
         
         <form id="clipForm">
             <!-- మాస్టర్ లేఅవుట్ ఎంపిక (5 రకాల మాస్టర్ లేఅవుట్లు) -->
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>సాత్విక పబ్లిషర్ - ఆటోమేటిక్ న్యూస్‌పేపర్ డిజైనర్</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <!-- డివైస్ ఎంపిక మోడల్ -->
+    <div id="deviceModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>సాత్విక పబ్లిషర్‌కు స్వాగతం</h2>
+            <p>మీ పని వాతావరణాన్ని ఎంచుకోండి:</p>
+            <div class="modal-buttons">
+                <button onclick="DeviceRouter.select('laptop')" class="btn-primary">💻 ల్యాప్‌టాప్ / డెస్క్‌‌టాప్ (లేఅవుట్ వర్క్‌స్పేస్)</button>
+                <button onclick="DeviceRouter.select('mobile')" class="btn-secondary">📱 మొబైల్ ఫోన్ (న్యూస్ క్లిప్ మోడ్)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. వెల్కమ్ స్క్రీన్ (FIFO డాష్‌బోర్డ్) -->
+    <div id="welcomeScreen" class="welcome-container hidden">
+        <div class="welcome-header">
+            <h1>సాత్విక పబ్లిషర్‌కు స్వాగతం</h1>
+            <button onclick="WelcomeScreen.openMasterCanvas()" class="btn-main">మాస్టర్ లేఅవుట్ టూల్‌బార్ తెరవండి ➔</button>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card-box">
+                <h3>మాస్టర్ లేఅవుట్‌లు (గరిష్టంగా 5)</h3>
+                <div id="masterLayoutList" class="items-flex"></div>
+            </div>
+            <div class="card-box">
+                <h3>యాడ్ ఇమేజ్‌లు (గరిష్టంగా 10)</h3>
+                <div id="adImageList" class="items-flex"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ (3. మొబైల్ టూల్‌బార్ - రోజువారీ క్లిప్పింగ్స్ కోసం) -->
+    <div id="mobileNewsForm" class="mobile-container hidden">
+        <div class="form-header">
+            <h3>📱 మొబైల్ న్యూస్ క్లిప్ అప్‌లోడర్</h3>
+            <button onclick="DeviceRouter.switch()" class="btn-sm">మార్చు</button>
+        </div>
+        
+        <form id="clipForm">
+            <!-- మాస్టర్ లేఅవుట్ ఎంపిక (5 రకాల మాస్టర్ లేఅవుట్లు) -->
             <label>మాస్టర్ లేఅవుట్ ఎంచుకోండి:</label>
             <select id="mMasterLayoutSelect">
                 <option value="1">మాస్టర్ లేఅవుట్ 1</option>
@@ -159,6 +210,7 @@
     <script src="js/modules/device-router.js"></script>
     <script src="js/modules/welcome-screen.js"></script>
     <script src="js/modules/canvas-engine.js"></script>
+    <script src="js/modules/toolbar-engine.js"></script>
     <script src="js/modules/auto-page-setup.js"></script>
     <script src="js/modules/pdf-generator.js"></script>
 
