@@ -3,96 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>యువగళం న్యూస్ పేపర్ డిజైనర్</title>
-    
-    <!-- CSS ఫైల్స్ -->
+    <title>సాత్విక పబ్లిషర్ - ఆటోమేటిక్ న్యూస్‌పేపర్ డిజైనర్</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
-    <!-- ప్రధాన హెడర్ & టూల్‌బార్ -->
-    <header class="app-header">
-        <div class="logo-title">
-            <h2>యువగళం న్యూస్ పేపర్ డిజైన్ <span>(సాత్విక పబ్లిషర్ ఇంజిన్)</span></h2>
+    <!-- డివైస్ ఎంపిక మోడల్ -->
+    <div id="deviceModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>సాత్విక పబ్లిషర్‌కు స్వాగతం</h2>
+            <p>మీ పని వాతావరణాన్ని ఎంచుకోండి:</p>
+            <div class="modal-buttons">
+                <button onclick="DeviceRouter.select('laptop')" class="btn-primary">💻 ల్యాప్‌టాప్ / డెస్క్‌‌టాప్ (పూర్తి వర్క్‌స్పేస్)</button>
+                <button onclick="DeviceRouter.select('mobile')" class="btn-secondary">📱 మొబైల్ ఫోన్ (న్యూస్ క్లిప్ మోడ్)</button>
+            </div>
         </div>
+    </div>
+
+    <!-- 1. వెల్కమ్ స్క్రీన్ (FIFO డాష్‌బోర్డ్) -->
+    <div id="welcomeScreen" class="welcome-container hidden">
+        <div class="welcome-header">
+            <h1>సాత్విక పబ్లిషర్‌కు స్వాగతం</h1>
+            <button onclick="WelcomeScreen.openMasterCanvas()" class="btn-main">మాస్టర్ లేఅవుట్ టూల్‌బార్ తెరవండి ➔</button>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card-box">
+                <h3>మాస్టర్ లేఅవుట్‌లు (గరిష్టంగా 5)</h3>
+                <div id="masterLayoutList" class="items-flex"></div>
+            </div>
+            <div class="card-box">
+                <h3>యాడ్ ఇమేజ్‌లు (గరిష్టంగా 10)</h3>
+                <div id="adImageList" class="items-flex"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ -->
+    <div id="mobileNewsForm" class="mobile-container hidden">
+        <div class="form-header">
+            <h3>📱 మొబైల్ న్యూస్ క్లిప్ అప్‌లోడర్</h3>
+            <button onclick="DeviceRouter.switch()" class="btn-sm">మార్చు</button>
+        </div>
+        <form id="clipForm">
+            <label>టార్గెట్ పేజీ సంఖ్య:</label>
+            <select id="mobileTargetPage"></select>
+
+            <label>ప్రధాన శీర్షిక (Headline):</label>
+            <input type="text" id="mHeadline" placeholder="హెడ్‌లైన్ టైప్ చేయండి...">
+
+            <label>సబ్-హెడ్‌లైన్:</label>
+            <input type="text" id="mSubHeadline" placeholder="ఉప శీర్షిక...">
+
+            <label>డేట్‌లైన్ / ప్రాంతం:</label>
+            <input type="text" id="mDateline" placeholder="ఉదా: అమరావతి">
+
+            <label>వార్త సమాచారం (Body):</label>
+            <textarea id="mBody" rows="5"></textarea>
+
+            <label>ఫోటో అప్‌‌లోడ్:</label>
+            <input type="file" id="mImage" accept="image/*">
+
+            <button type="button" onclick="DeviceRouter.uploadFromMobile()" class="btn-submit">📤 అప్‌లోడ్ పేజీకి పంపు</button>
+        </form>
+    </div>
+
+    <!-- 3. ల్యాప్‌టాప్ వర్క్‌‌స్పేస్ (టూల్‌బార్ + కాన్వాస్) -->
+    <div id="laptopWorkspace" class="workspace-container hidden">
         
-        <!-- టూల్‌బార్ స్విచ్చర్ -->
-        <div class="mode-switch">
-            <button id="btn-master-mode" class="active-mode" onclick="switchToolbar('master')">మాస్టర్ లేఅవుట్</button>
-            <button id="btn-daily-mode" onclick="switchToolbar('daily')">డైలీ న్యూస్ డిజైన్</button>
-        </div>
-    </header>
-
-    <!-- మాస్టర్ టూల్‌బార్ (ఫుల్ ఆప్షన్స్) -->
-    <div id="master-toolbar" class="toolbar">
-        <div class="tool-group">
-            <label>1. పేపర్ సైజ్:</label>
-            <select id="paper-size" onchange="changePaperSize(this.value)">
-                <option value="tabloid">టాబ్లాయిడ్ (Standard)</option>
-                <option value="broadsheet">బ్రాడ్‌షీట్ (Main Paper)</option>
-                <option value="a4">A4 సైజు</option>
-            </select>
+        <!-- టూల్‌బార్ స్విచర్ -->
+        <div class="toolbar-header">
+            <div id="toolbarModeTitle" class="title">మాస్టర్ లేఅవుట్ టూల్‌బార్</div>
+            <div>
+                <button onclick="ToolbarEngine.switchMode('master')" class="btn-tab">మాస్టర్ టూల్‌బార్</button>
+                <button onclick="ToolbarEngine.switchMode('daily')" class="btn-tab">డైలీ న్యూస్ టూల్‌బార్</button>
+                <button onclick="DeviceRouter.switch()" class="btn-sm">📱 ఫోన్ మోడ్</button>
+            </div>
         </div>
 
-        <div class="tool-group">
-            <label>2. పేజీల సంఖ్య:</label>
-            <select id="page-count" onchange="generatePages(this.value)">
-                <option value="6">6 పేజీలు</option>
-                <option value="8" selected>8 పేజీలు</option>
-                <option value="10">10 పేజీలు</option>
-                <option value="12">12 పేజీలు</option>
-                <option value="14">14 పేజీలు</option>
-                <option value="16">16 పేజీలు</option>
-            </select>
+        <!-- మాస్టర్ టూల్‌బార్ (26 ఆప్షన్లు) -->
+        <div id="masterToolbarContainer" class="toolbar-grid">
+            <div class="tool-item"><label>1. పేపర్ సైజ్</label><select id="t-size"><option>బ్రాడ్‌షీట్</option><option>టాబ్లాయిడ్</option></select></div>
+            <div class="tool-item"><label>2. పేజీల సంఖ్య</label><input type="number" id="t-pages" value="4" min="1" max="16" onchange="CanvasEngine.renderPages(this.value)"></div>
+            <div class="tool-item"><label>3. బాటమ్ బుల్లెట్లు</label><button onclick="ToolbarEngine.cycleBullets()">మార్చు</button></div>
+            <div class="tool-item"><label>4. మెయిన్ లోగో</label><button onclick="ToolbarEngine.pasteLogo()">Ctrl+V పేస్ట్</button></div>
+            <div class="tool-item"><label>5. లోగో రీసైజర్</label><input type="range" id="t-logo-h" title="హైట్"><input type="range" id="t-logo-w" title="విడ్త్"></div>
+            <div class="tool-item"><label>6. రిపోర్టర్స్ యాడ్</label><button onclick="ToolbarEngine.toggleAd()">On/Off (Ctrl+V)</button></div>
+            <div class="tool-item"><label>7. సూక్తి బాక్స్</label><button onclick="ToolbarEngine.editSukthi()">ఎడిట్ సూక్తి</button></div>
+            <div class="tool-item"><label>8. బ్రాండింగ్ హెడర్</label><button onclick="ToolbarEngine.editBranding()">కలర్స్/వివరాలు</button></div>
+            <div class="tool-item"><label>9. ఎడిటర్ వివరాలు</label><button onclick="ToolbarEngine.toggleEditor()">On/Off</button></div>
+            <div class="tool-item"><label>10. న్యూస్ గ్రిడ్ సెలెక్టర్</label><button onclick="ToolbarEngine.selectGridType()">గ్రిడ్ మోడల్</button></div>
+            <div class="tool-item"><label>11. హెడ్ లైన్</label><input type="text" id="t-headline" placeholder="హెడ్‌లైన్..."></div>
+            <div class="tool-item"><label>12. హెడ్ లైన్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleHeadline()">ఫాంట్/కలర్</button></div>
+            <div class="tool-item"><label>13. సబ్ హెడ్ లైన్</label><input type="text" id="t-subheadline" placeholder="సబ్ హెడ్‌లైన్స్..."></div>
+            <div class="tool-item"><label>14. సబ్ హెడ్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleSubheadline()">బుల్లెట్లు/అండర్‌లైన్</button></div>
+            <div class="tool-item"><label>15. డేట్ లైన్</label><input type="text" id="t-dateline" placeholder="డేట్‌లైన్..."></div>
+            <div class="tool-item"><label>16. వార్త రాయండి</label><textarea id="t-body" placeholder="వార్త వివరాలు..."></textarea></div>
+            <div class="tool-item"><label>17. అప్‌లోడ్ ఫోటో</label><button onclick="ToolbarEngine.pasteNewsPhoto()">Ctrl+V (Max 3)</button></div>
+            <div class="tool-item"><label>18. ఫోటో కంట్రోలర్</label><button onclick="ToolbarEngine.stylePhoto()">గుండ్రని/క్రాప్/సైజ్</button></div>
+            <div class="tool-item"><label>19. వార్త కంట్రోలర్</label><button onclick="ToolbarEngine.setNewsShape()">L-షేప్/ఫ్లో</button></div>
+            <div class="tool-item"><label>20. ఆటో పేజీ సెటప్</label><button onclick="AutoPageSetup.run()" class="btn-highlight">ఆటో అడ్జస్ట్</button></div>
+            <div class="tool-item"><label>21. డిలీట్ వార్త గ్రిడ్</label><button onclick="ToolbarEngine.deleteGrid()">డిలీట్</button></div>
+            <div class="tool-item"><label>22. యాడ్ అప్‌లోడ్</label><button onclick="ToolbarEngine.uploadAd()">Ctrl+V యాడ్</button></div>
+            <div class="tool-item"><label>23. PDF జనరేటర్</label><button onclick="PdfEngine.generate()" class="btn-pdf">PDF డౌన్‌లోడ్</button></div>
+            <div class="tool-item"><label>24. కలర్ సిగ్నల్ క్లీనర్</label><button onclick="ToolbarEngine.cleanSignals()">పాత వార్తలు తీసివేయి</button></div>
+            <div class="tool-item"><label>25. పిక్చర్ క్రాపర్</label><button onclick="ToolbarEngine.cropImage()">క్రాప్</button></div>
+            <div class="tool-item"><label>26. లేఅవుట్ సేవర్</label><button onclick="WelcomeScreen.saveMaster()">లేఅవుట్ సేవ్ చేయి</button></div>
         </div>
 
-        <div class="tool-group">
-            <button onclick="openBulletsModal()">3. బాటమ్ బుల్లెట్లు</button>
-        </div>
-
-        <div class="tool-group">
-            <button onclick="triggerPaste('main-logo')">4. మెయిన్ లోగో (Ctrl+V)</button>
-        </div>
-
-        <div class="tool-group">
-            <button onclick="openLogoResizer()">5. లోగో రీసైజర్</button>
-        </div>
+        <!-- న్యూస్‌పేపర్ కాన్వాస్ వీక్షణ -->
+        <div id="paperCanvas" class="paper-canvas"></div>
     </div>
 
-    <!-- డైలీ టూల్‌బార్ -->
-    <div id="daily-toolbar" class="toolbar hidden">
-        <div class="tool-group">
-            <label>పేజీ ఎంచుకోండి:</label>
-            <select id="daily-page-select" onchange="scrollToPage(this.value)">
-            </select>
-        </div>
-        <div class="tool-group">
-            <button onclick="triggerPaste('news-photo')">ఫోటో అప్‌లోడ్ (Ctrl+V)</button>
-        </div>
-        <div class="tool-group">
-            <button class="btn-primary" onclick="autoSetupPage()">ఆటో పేజీ సెటప్</button>
-        </div>
-        <div class="tool-group">
-            <button class="btn-success" onclick="generatePDF()">PDF జనరేటర్</button>
-        </div>
-    </div>
+    <!-- మోడ్యూల్ డిపెండెన్సీ సీక్వెన్స్ -->
+    <script src="js/config/colors.js"></script>
+    <script src="js/modules/device-router.js"></script>
+    <script src="js/modules/welcome-screen.js"></script>
+    <script src="js/modules/toolbar-master.js"></script>
+    <script src="js/modules/canvas-engine.js"></script>
+    <script src="js/modules/auto-page-setup.js"></script>
+    <script src="js/modules/pdf-generator.js"></script>
 
-    <!-- ప్రధాన న్యూస్‌‌పేపర్ కాన్వాస్ ప్రదేశం -->
-    <main id="newspaper-workspace" class="workspace">
-        <div id="pages-container">
-            <!-- పేజీలు ఇక్కడ ఆటోమేటిక్‌గా జనరేట్ అవుతాయి -->
-        </div>
-    </main>
-
-    <!-- JavaScript లాజిక్ లింక్ -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="js/modules/toolbar.js"></script>
-<script src="js/modules/page-setup.js"></script>
-<script src="js/modules/image-handler.js"></script>
-<script src="js/modules/pdf-generator.js"></script>
-
-    
-    
-
+    <script>
+        // ప్రారంభ లోడింగ్ ఇంజిన్
+        window.onload = function() {
+            WelcomeScreen.init();
+            CanvasEngine.renderPages(4);
+        };
+    </script>
 </body>
 </html>
+
