@@ -6,7 +6,6 @@
     <title>సాత్విక పబ్లిషర్ - ఆటోమేటిక్ న్యూస్‌పేపర్ డిజైనర్</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- HTML2Canvas Library (PNG క్లిప్పింగ్ డౌన్‌లోడ్ కోసం) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
@@ -17,7 +16,7 @@
             <h2>సాత్విక పబ్లిషర్‌కు స్వాగతం</h2>
             <p>మీ పని వాతావరణాన్ని ఎంచుకోండి:</p>
             <div class="modal-buttons">
-                <button onclick="DeviceRouter.select('laptop')" class="btn-primary">💻 ల్యాప్‌టాప్ / డెస్క్‌‌టాప్ (పూర్తి వర్క్‌స్పేస్)</button>
+                <button onclick="DeviceRouter.select('laptop')" class="btn-primary">💻 ల్యాప్‌టాప్ / డెస్క్‌‌టాప్ (లేఅవుట్ వర్క్‌స్పేస్)</button>
                 <button onclick="DeviceRouter.select('mobile')" class="btn-secondary">📱 మొబైల్ ఫోన్ (న్యూస్ క్లిప్ మోడ్)</button>
             </div>
         </div>
@@ -41,7 +40,7 @@
         </div>
     </div>
 
-    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ (అప్‌డేటెడ్ లైవ్ ప్రివ్యూ & PNG ఆప్షన్‌తో) -->
+    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ (3. మొబైల్ టూల్‌బార్ - రోజువారీ క్లిప్పింగ్స్ కోసం) -->
     <div id="mobileNewsForm" class="mobile-container hidden">
         <div class="form-header">
             <h3>📱 మొబైల్ న్యూస్ క్లిప్ అప్‌లోడర్</h3>
@@ -49,6 +48,16 @@
         </div>
         
         <form id="clipForm">
+            <!-- మాస్టర్ లేఅవుట్ ఎంపిక (5 రకాల మాస్టర్ లేఅవుట్లు) -->
+            <label>మాస్టర్ లేఅవుట్ ఎంచుకోండి:</label>
+            <select id="mMasterLayoutSelect">
+                <option value="1">మాస్టర్ లేఅవుట్ 1</option>
+                <option value="2">మాస్టర్ లేఅవుట్ 2</option>
+                <option value="3">మాస్టర్ లేఅవుట్ 3</option>
+                <option value="4">మాస్టర్ లేఅవుట్ 4</option>
+                <option value="5">మాస్టర్ లేఅవుట్ 5</option>
+            </select>
+
             <label>టార్గెట్ పేజీ సంఖ్య:</label>
             <select id="mobileTargetPage"></select>
 
@@ -80,73 +89,72 @@
 
         <!-- లైవ్ ప్రివ్యూ & PNG డౌన్‌లోడ్ బాక్స్ -->
         <div id="mobilePreviewArea" class="preview-card hidden">
-            <h4>ల్యాప్‌టాప్ పేజీలో సెట్ అయిన వార్తా మోడల్ (Live Preview):</h4>
-            
-            <!-- PNG కార్డ్ (మాస్టర్ లోగో ఆటోమేటిక్‌గా ఇక్కడ టాప్ సెంటర్‌లో సెట్ అవుతుంది) -->
+            <h4>మోడల్ ప్రివ్యూ (Live Preview):</h4>
             <div id="pngClippingCard" class="clipping-card">
                 <div class="clipping-header">
                     <img id="clippingLogo" src="" alt="యువగళం లోగో" style="display:none;">
                     <span id="clippingPaperName" class="clipping-paper-title">యువగళం</span>
                 </div>
-                <div id="clippingContent" class="clipping-body">
-                    <!-- జావాస్క్రిప్ట్ ద్వారా వార్త ప్రివ్యూ ఇక్కడ రెండర్ అవుతుంది -->
-                </div>
+                <div id="clippingContent" class="clipping-body"></div>
             </div>
-
             <div class="preview-actions">
                 <button type="button" onclick="DeviceRouter.downloadPNG()" class="btn-png">🖼️ PNG క్లిప్పింగ్‌గా డౌన్‌లోడ్ చేయి</button>
             </div>
         </div>
     </div>
 
-    <!-- 3. ల్యాప్‌టాప్ వర్క్‌‌స్పేస్ (టూల్‌బార్ + కాన్వాస్) -->
-    <div id="laptopWorkspace" class="workspace-container hidden">
+    <!-- 3. ల్యాప్‌టాప్ వర్క్‌స్పేస్ (ఎడమవైపు 26 ఆప్షన్ల టూల్‌బార్ + కుడివైపు కాన్వాస్) -->
+    <div id="laptopWorkspace" class="workspace-container laptop-layout hidden">
         
-        <!-- టూల్‌బార్ స్విచర్ -->
-        <div class="toolbar-header">
-            <div id="toolbarModeTitle" class="title">మాస్టర్ లేఅవుట్ టూల్‌బార్</div>
-            <div>
-                <button onclick="ToolbarEngine.switchMode('master')" class="btn-tab">మాస్టర్ టూల్‌బార్</button>
-                <button onclick="ToolbarEngine.switchMode('daily')" class="btn-tab">డైలీ న్యూస్ టూల్‌బార్</button>
-                <button onclick="DeviceRouter.switch()" class="btn-sm">📱 ఫోన్ మోడ్</button>
+        <!-- ఎడమవైపు సైడ్‌బార్ (మాస్టర్ / డైలీ టూల్‌బార్) -->
+        <aside class="left-sidebar">
+            <div class="toolbar-header">
+                <div id="toolbarModeTitle" class="title">మాస్టర్ లేఅవుట్ టూల్‌బార్</div>
+                <div class="mode-buttons">
+                    <button onclick="ToolbarEngine.switchMode('master')" class="btn-tab active">మాస్టర్</button>
+                    <button onclick="ToolbarEngine.switchMode('daily')" class="btn-tab">డైలీ</button>
+                    <button onclick="DeviceRouter.switch()" class="btn-sm">📱 ఫోన్</button>
+                </div>
             </div>
-        </div>
 
-        <!-- మాస్టర్ టూల్‌బార్ (26 ఆప్షన్లు) -->
-        <div id="masterToolbarContainer" class="toolbar-grid">
-            <div class="tool-item"><label>1. పేపర్ సైజ్</label><select id="t-size"><option>బ్రాడ్‌షీట్</option><option>టాబ్లాయిడ్</option></select></div>
-            <div class="tool-item"><label>2. పేజీల సంఖ్య</label><input type="number" id="t-pages" value="4" min="1" max="16" onchange="CanvasEngine.renderPages(this.value)"></div>
-            <div class="tool-item"><label>3. బాటమ్ బుల్లెట్లు</label><button onclick="ToolbarEngine.cycleBullets()">మార్చు</button></div>
-            <div class="tool-item"><label>4. మెయిన్ లోగో</label><button onclick="ToolbarEngine.pasteLogo()">Ctrl+V పేస్ట్</button></div>
-            <div class="tool-item"><label>5. లోగో రీసైజర్</label><input type="range" id="t-logo-h" title="హైట్"><input type="range" id="t-logo-w" title="విడ్త్"></div>
-            <div class="tool-item"><label>6. రిపోర్టర్స్ యాడ్</label><button onclick="ToolbarEngine.toggleAd()">On/Off (Ctrl+V)</button></div>
-            <div class="tool-item"><label>7. సూక్తి బాక్స్</label><button onclick="ToolbarEngine.editSukthi()">ఎడిట్ సూక్తి</button></div>
-            <div class="tool-item"><label>8. బ్రాండింగ్ హెడర్</label><button onclick="ToolbarEngine.editBranding()">కలర్స్/వివరాలు</button></div>
-            <div class="tool-item"><label>9. ఎడిటర్ వివరాలు</label><button onclick="ToolbarEngine.toggleEditor()">On/Off</button></div>
-            <div class="tool-item"><label>10. న్యూస్ గ్రిడ్ సెలెక్టర్</label><button onclick="ToolbarEngine.selectGridType()">గ్రిడ్ మోడల్</button></div>
-            <div class="tool-item"><label>11. హెడ్ లైన్</label><input type="text" id="t-headline" placeholder="హెడ్‌లైన్..."></div>
-            <div class="tool-item"><label>12. హెడ్ లైన్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleHeadline()">ఫాంట్/కలర్</button></div>
-            <div class="tool-item"><label>13. సబ్ హెడ్ లైన్</label><input type="text" id="t-subheadline" placeholder="సబ్ హెడ్‌లైన్స్..."></div>
-            <div class="tool-item"><label>14. సబ్ హెడ్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleSubheadline()">బుల్లెట్లు/అండర్‌లైన్</button></div>
-            <div class="tool-item"><label>15. డేట్ లైన్</label><input type="text" id="t-dateline" placeholder="డేట్‌లైన్..."></div>
-            <div class="tool-item"><label>16. వార్త రాయండి</label><textarea id="t-body" placeholder="వార్త వివరాలు..."></textarea></div>
-            <div class="tool-item"><label>17. అప్‌లోడ్ ఫోటో</label><button onclick="ToolbarEngine.pasteNewsPhoto()">Ctrl+V (Max 3)</button></div>
-            <div class="tool-item"><label>18. ఫోటో కంట్రోలర్</label><button onclick="ToolbarEngine.stylePhoto()">గుండ్రని/క్రాప్/సైజ్</button></div>
-            <div class="tool-item"><label>19. వార్త కంట్రోలర్</label><button onclick="ToolbarEngine.setNewsShape()">L-షేప్/ఫ్లో</button></div>
-            <div class="tool-item"><label>20. ఆటో పేజీ సెటప్</label><button onclick="AutoPageSetup.run()" class="btn-highlight">ఆటో అడ్జస్ట్</button></div>
-            <div class="tool-item"><label>21. డిలీట్ వార్త గ్రిడ్</label><button onclick="ToolbarEngine.deleteGrid()">డిలీట్</button></div>
-            <div class="tool-item"><label>22. యాడ్ అప్‌లోడ్</label><button onclick="ToolbarEngine.uploadAd()">Ctrl+V యాడ్</button></div>
-            <div class="tool-item"><label>23. PDF జనరేటర్</label><button onclick="PdfEngine.generate()" class="btn-pdf">PDF డౌన్‌లోడ్</button></div>
-            <div class="tool-item"><label>24. కలర్ సిగ్నల్ క్లీనర్</label><button onclick="ToolbarEngine.cleanSignals()">పాత వార్తలు తీసివేయి</button></div>
-            <div class="tool-item"><label>25. పిక్చర్ క్రాపర్</label><button onclick="ToolbarEngine.cropImage()">క్రాప్</button></div>
-            <div class="tool-item"><label>26. లేఅవుట్ సేవర్</label><button onclick="WelcomeScreen.saveMaster()">లేఅవుట్ సేవ్ చేయి</button></div>
-        </div>
+            <!-- 26 ఆప్షన్ల సైడ్‌బార్ గ్రిడ్ (ఒకదాని కింద ఒకటి పద్ధతిగా) -->
+            <div id="masterToolbarContainer" class="sidebar-toolbar-grid">
+                <div class="tool-item"><label>1. పేపర్ సైజ్</label><select id="t-size"><option>బ్రాడ్‌షీట్</option><option>టాబ్లాయిడ్</option></select></div>
+                <div class="tool-item"><label>2. పేజీల సంఖ్య</label><input type="number" id="t-pages" value="4" min="1" max="16" onchange="CanvasEngine.renderPages(this.value)"></div>
+                <div class="tool-item"><label>3. బాటమ్ బుల్లెట్లు</label><button onclick="ToolbarEngine.cycleBullets()">మార్చు</button></div>
+                <div class="tool-item"><label>4. మెయిన్ లోగో</label><button onclick="ToolbarEngine.pasteLogo()">Ctrl+V పేస్ట్</button></div>
+                <div class="tool-item"><label>5. లోగో రీసైజర్</label><input type="range" id="t-logo-h" title="హైట్"><input type="range" id="t-logo-w" title="విడ్త్"></div>
+                <div class="tool-item"><label>6. రిపోర్టర్స్ యాడ్</label><button onclick="ToolbarEngine.toggleAd()">On/Off (Ctrl+V)</button></div>
+                <div class="tool-item"><label>7. సూక్తి బాక్స్</label><button onclick="ToolbarEngine.editSukthi()">ఎడిట్ సూక్తి</button></div>
+                <div class="tool-item"><label>8. బ్రాండింగ్ హెడర్</label><button onclick="ToolbarEngine.editBranding()">కలర్స్/వివరాలు</button></div>
+                <div class="tool-item"><label>9. ఎడిటర్ వివరాలు</label><button onclick="ToolbarEngine.toggleEditor()">On/Off</button></div>
+                <div class="tool-item"><label>10. న్యూస్ గ్రిడ్ సెలెక్టర్</label><button onclick="ToolbarEngine.selectGridType()">గ్రిడ్ మోడల్</button></div>
+                <div class="tool-item"><label>11. హెడ్ లైన్</label><input type="text" id="t-headline" placeholder="హెడ్‌లైన్..."></div>
+                <div class="tool-item"><label>12. హెడ్ లైన్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleHeadline()">ఫాంట్/కలర్</button></div>
+                <div class="tool-item"><label>13. సబ్ హెడ్ లైన్</label><input type="text" id="t-subheadline" placeholder="సబ్ హెడ్‌లైన్స్..."></div>
+                <div class="tool-item"><label>14. సబ్ హెడ్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleSubheadline()">బుల్లెట్లు/అండర్‌లైన్</button></div>
+                <div class="tool-item"><label>15. డేట్ లైన్</label><input type="text" id="t-dateline" placeholder="డేట్‌లైన్..."></div>
+                <div class="tool-item"><label>16. వార్త రాయండి</label><textarea id="t-body" placeholder="వార్త వివరాలు..."></textarea></div>
+                <div class="tool-item"><label>17. అప్‌లోడ్ ఫోటో</label><button onclick="ToolbarEngine.pasteNewsPhoto()">Ctrl+V (Max 3)</button></div>
+                <div class="tool-item"><label>18. ఫోటో కంట్రోలర్</label><button onclick="ToolbarEngine.stylePhoto()">గుండ్రని/క్రాప్/సైజ్</button></div>
+                <div class="tool-item"><label>19. వార్త కంట్రోలర్</label><button onclick="ToolbarEngine.setNewsShape()">L-షేప్/ఫ్లో</button></div>
+                <div class="tool-item"><label>20. ఆటో పేజీ సెటప్</label><button onclick="AutoPageSetup.run()" class="btn-highlight">ఆటో అడ్జస్ట్</button></div>
+                <div class="tool-item"><label>21. డిలీట్ వార్త గ్రిడ్</label><button onclick="ToolbarEngine.deleteGrid()">డిలీట్</button></div>
+                <div class="tool-item"><label>22. యాడ్ అప్‌లోడ్</label><button onclick="ToolbarEngine.uploadAd()">Ctrl+V యాడ్</button></div>
+                <div class="tool-item"><label>23. PDF జనరేటర్</label><button onclick="PdfEngine.generate()" class="btn-pdf">PDF డౌన్‌లోడ్</button></div>
+                <div class="tool-item"><label>24. కలర్ సిగ్నల్ క్లీనర్</label><button onclick="ToolbarEngine.cleanSignals()">పాత వార్తలు తీసివేయి</button></div>
+                <div class="tool-item"><label>25. పిక్చర్ క్రాపర్</label><button onclick="ToolbarEngine.cropImage()">క్రాప్</button></div>
+                <div class="tool-item"><label>26. లేఅవుట్ సేవర్</label><button onclick="WelcomeScreen.saveMaster()">లేఅవుట్ సేవ్ చేయి</button></div>
+            </div>
+        </aside>
 
-        <!-- న్యూస్‌పేపర్ కాన్వాస్ వీక్షణ -->
-        <div id="paperCanvas" class="paper-canvas"></div>
+        <!-- కుడివైపు న్యూస్‌పేపర్ కాన్వాస్ -->
+        <main class="right-canvas-area">
+            <div id="paperCanvas" class="paper-canvas"></div>
+        </main>
     </div>
 
-    <!-- మోడ్యూల్స్ వరుస క్రమం సరిగ్గా ఉండాలి -->
+    <!-- మోడ్యూల్స్ వరుస క్రమం -->
     <script src="js/config/colors.js"></script>
     <script src="js/modules/device-router.js"></script>
     <script src="js/modules/welcome-screen.js"></script>
@@ -155,7 +163,6 @@
     <script src="js/modules/pdf-generator.js"></script>
 
     <script>
-        // పేజీ లోడ్ కాగానే రన్ అయ్యే కోడ్
         window.onload = function() {
             if (typeof WelcomeScreen !== 'undefined') {
                 WelcomeScreen.init();
