@@ -3,226 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>సాత్విక పబ్లిషర్ - ఆటోమేటిక్ న్యూస్‌పేపర్ డిజైనర్</title>
+    <title>సాత్విక పబ్లిషర్ - Satvika Publisher</title>
     <link rel="stylesheet" href="css/styles.css">
+    <!-- html2pdf Library for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
-    <!-- డివైస్ ఎంపిక మోడల్ -->
-    <div id="deviceModal" class="modal-overlay">
+    <!-- వెల్కమ్ స్క్రీన్ మోడల్ -->
+    <div id="welcome-modal" class="modal-overlay">
         <div class="modal-card">
-            <h2>సాత్విక పబ్లిషర్‌కు స్వాగతం</h2>
-            <p>మీ పని వాతావరణాన్ని ఎంచుకోండి:</p>
-            <div class="modal-buttons">
-                <button onclick="DeviceRouter.select('laptop')" class="btn-primary">💻 ల్యాప్‌టాప్ / డెస్క్‌‌టాప్ (లేఅవుట్ వర్క్‌స్పేస్)</button>
-                <button onclick="DeviceRouter.select('mobile')" class="btn-secondary">📱 మొబైల్ ఫోన్ (న్యూస్ క్లిప్ మోడ్)</button>
-            </div>
+            <h2>సాత్విక పబ్లిషర్ కు స్వాగతం</h2>
+            <p>మాస్టర్ లేఅవుట్ వర్క్‌స్పేస్‌లోకి వెళ్లడానికి కింద క్లిక్ చేయండి</p>
+            <button onclick="document.getElementById('welcome-modal').classList.add('hidden')">ప్రాజెక్ట్ ఓపెన్ చేయి</button>
         </div>
     </div>
 
-    <!-- 1. వెల్కమ్ స్క్రీన్ (FIFO డాష్‌బోర్డ్) -->
-    <div id="welcomeScreen" class="welcome-container hidden">
-        <div class="welcome-header">
-            <h1>సాత్విక పబ్లిషర్‌కు స్వాగతం</h1>
-            <button onclick="WelcomeScreen.openMasterCanvas()" class="btn-main">మాస్టర్ లేఅవుట్ టూల్‌బార్ తెరవండి ➔</button>
-        </div>
-        <div class="dashboard-grid">
-            <div class="card-box">
-                <h3>మాస్టర్ లేఅవుట్‌లు (గరిష్టంగా 5)</h3>
-                <div id="masterLayoutList" class="items-flex"></div>
+    <!-- లాప్‌టాప్ / డెస్క్‌టాప్ లేఅవుట్ -->
+    <div id="laptop-view" class="laptop-layout">
+        <!-- ఎడమ ప్యానెల్ టూల్ బార్ -->
+        <div class="left-sidebar">
+            <div style="padding: 10px; background: #0f172a; text-align: center; font-weight: bold;">
+                మాస్టర్ లేఅవుట్ టూల్ బార్
             </div>
-            <div class="card-box">
-                <h3>యాడ్ ఇమేజ్‌లు (గరిష్టంగా 10)</h3>
-                <div id="adImageList" class="items-flex"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ (3. మొబైల్ టూల్‌బార్ - రోజువారీ క్లిప్పింగ్స్ కోసం) -->
-    <div id="mobileNewsForm" class="mobile-container hidden">
-        <div class="form-header">
-            <h3>📱 మొబైల్ న్యూస్ క్లిప్ అప్‌లోడర్</h3>
-            <button onclick="DeviceRouter.switch()" class="btn-sm">మార్చు</button>
-        </div>
-        
-        <form id="clipForm">
-            <!-- మాస్టర్ లేఅవుట్ ఎంపిక (5 రకాల మాస్టర్ లేఅవుట్లు) -->
-<!DOCTYPE html>
-<html lang="te">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>సాత్విక పబ్లిషర్ - ఆటోమేటిక్ న్యూస్‌పేపర్ డిజైనర్</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
-<body>
-
-    <!-- డివైస్ ఎంపిక మోడల్ -->
-    <div id="deviceModal" class="modal-overlay">
-        <div class="modal-card">
-            <h2>సాత్విక పబ్లిషర్‌కు స్వాగతం</h2>
-            <p>మీ పని వాతావరణాన్ని ఎంచుకోండి:</p>
-            <div class="modal-buttons">
-                <button onclick="DeviceRouter.select('laptop')" class="btn-primary">💻 ల్యాప్‌టాప్ / డెస్క్‌‌టాప్ (లేఅవుట్ వర్క్‌స్పేస్)</button>
-                <button onclick="DeviceRouter.select('mobile')" class="btn-secondary">📱 మొబైల్ ఫోన్ (న్యూస్ క్లిప్ మోడ్)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 1. వెల్కమ్ స్క్రీన్ (FIFO డాష్‌బోర్డ్) -->
-    <div id="welcomeScreen" class="welcome-container hidden">
-        <div class="welcome-header">
-            <h1>సాత్విక పబ్లిషర్‌కు స్వాగతం</h1>
-            <button onclick="WelcomeScreen.openMasterCanvas()" class="btn-main">మాస్టర్ లేఅవుట్ టూల్‌బార్ తెరవండి ➔</button>
-        </div>
-        <div class="dashboard-grid">
-            <div class="card-box">
-                <h3>మాస్టర్ లేఅవుట్‌లు (గరిష్టంగా 5)</h3>
-                <div id="masterLayoutList" class="items-flex"></div>
-            </div>
-            <div class="card-box">
-                <h3>యాడ్ ఇమేజ్‌లు (గరిష్టంగా 10)</h3>
-                <div id="adImageList" class="items-flex"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. మొబైల్ ఇన్పుట్ మోడ్ (3. మొబైల్ టూల్‌బార్ - రోజువారీ క్లిప్పింగ్స్ కోసం) -->
-    <div id="mobileNewsForm" class="mobile-container hidden">
-        <div class="form-header">
-            <h3>📱 మొబైల్ న్యూస్ క్లిప్ అప్‌లోడర్</h3>
-            <button onclick="DeviceRouter.switch()" class="btn-sm">మార్చు</button>
-        </div>
-        
-        <form id="clipForm">
-            <!-- మాస్టర్ లేఅవుట్ ఎంపిక (5 రకాల మాస్టర్ లేఅవుట్లు) -->
-            <label>మాస్టర్ లేఅవుట్ ఎంచుకోండి:</label>
-            <select id="mMasterLayoutSelect">
-                <option value="1">మాస్టర్ లేఅవుట్ 1</option>
-                <option value="2">మాస్టర్ లేఅవుట్ 2</option>
-                <option value="3">మాస్టర్ లేఅవుట్ 3</option>
-                <option value="4">మాస్టర్ లేఅవుట్ 4</option>
-                <option value="5">మాస్టర్ లేఅవుట్ 5</option>
-            </select>
-
-            <label>టార్గెట్ పేజీ సంఖ్య:</label>
-            <select id="mobileTargetPage"></select>
-
-            <label>వార్తా గ్రిడ్ మోడల్ (Layout Shape):</label>
-            <select id="mGridShape">
-                <option value="rect">చతురస్రం (Standard Rect)</option>
-                <option value="ball">బంతి ఆకారం (Circle/Ball)</option>
-                <option value="egg">గుడ్డు ఆకారం (Oval/Egg)</option>
-                <option value="l-shape">L-షేప్ మోడల్ (L-Shape)</option>
-            </select>
-
-            <label>ప్రధాన శీర్షిక (Headline):</label>
-            <input type="text" id="mHeadline" placeholder="హెడ్‌లైన్ టైప్ చేయండి...">
-
-            <label>సబ్-హెడ్‌లైన్:</label>
-            <input type="text" id="mSubHeadline" placeholder="ఉప శీర్షిక...">
-
-            <label>డేట్‌లైన్ / ప్రాంతం:</label>
-            <input type="text" id="mDateline" placeholder="ఉదా: అమరావతి">
-
-            <label>వార్త సమాచారం (Body):</label>
-            <textarea id="mBody" rows="5" placeholder="వార్త వివరాలు..."></textarea>
-
-            <label>ఫోటో అప్‌‌లోడ్:</label>
-            <input type="file" id="mImage" accept="image/*" onchange="DeviceRouter.handleImageUpload(event)">
-
-            <button type="button" onclick="DeviceRouter.uploadFromMobile()" class="btn-submit">📤 అప్‌లోడ్ చేసి ప్రివ్యూ చూడు</button>
-        </form>
-
-        <!-- లైవ్ ప్రివ్యూ & PNG డౌన్‌లోడ్ బాక్స్ -->
-        <div id="mobilePreviewArea" class="preview-card hidden">
-            <h4>మోడల్ ప్రివ్యూ (Live Preview):</h4>
-            <div id="pngClippingCard" class="clipping-card">
-                <div class="clipping-header">
-                    <img id="clippingLogo" src="" alt="యువగళం లోగో" style="display:none;">
-                    <span id="clippingPaperName" class="clipping-paper-title">యువగళం</span>
+            <div class="sidebar-toolbar-grid">
+                <div class="tool-item master-only-tool">
+                    <label>1. పేపర్ సైజ్</label>
+                    <select onchange="alert('పేపర్ సైజ్ మార్చబడింది')">
+                        <option>A3</option>
+                        <option>Tabloid</option>
+                    </select>
                 </div>
-                <div id="clippingContent" class="clipping-body"></div>
-            </div>
-            <div class="preview-actions">
-                <button type="button" onclick="DeviceRouter.downloadPNG()" class="btn-png">🖼️ PNG క్లిప్పింగ్‌గా డౌన్‌లోడ్ చేయి</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. ల్యాప్‌టాప్ వర్క్‌స్పేస్ (ఎడమవైపు 26 ఆప్షన్ల టూల్‌బార్ + కుడివైపు కాన్వాస్) -->
-    <div id="laptopWorkspace" class="workspace-container laptop-layout hidden">
-        
-        <!-- ఎడమవైపు సైడ్‌బార్ (మాస్టర్ / డైలీ టూల్‌బార్) -->
-        <aside class="left-sidebar">
-            <div class="toolbar-header">
-                <div id="toolbarModeTitle" class="title">మాస్టర్ లేఅవుట్ టూల్‌బార్</div>
-                <div class="mode-buttons">
-                    <button onclick="ToolbarEngine.switchMode('master')" class="btn-tab active">మాస్టర్</button>
-                    <button onclick="ToolbarEngine.switchMode('daily')" class="btn-tab">డైలీ</button>
-                    <button onclick="DeviceRouter.switch()" class="btn-sm">📱 ఫోన్</button>
+                <div class="tool-item master-only-tool">
+                    <label>2. పేజీల సంఖ్య</label>
+                    <select onchange="CanvasEngineModule.renderPages(this.value)">
+                        <option value="4">4 పేజీలు</option>
+                        <option value="8">8 పేజీలు</option>
+                        <option value="16">16 పేజీలు</option>
+                    </select>
+                </div>
+                <div class="tool-item master-only-tool">
+                    <label>4. మెయిన్ లోగో (Ctrl+V)</label>
+                    <button onclick="ToolbarEngineModule.handlePasteLogo()">లోగో పేస్ట్ చేయి</button>
+                </div>
+                <div class="tool-item">
+                    <label>18. ఫోటో ఆకారం</label>
+                    <button onclick="NewsShapesModule.applyShape(document.querySelector('.news-card'), 'shape-ball')">బంతి ఆకారం</button>
+                    <button onclick="NewsShapesModule.applyShape(document.querySelector('.news-card'), 'shape-egg')">కోడిగుడ్డు ఆకారం</button>
+                </div>
+                <div class="tool-item">
+                    <label>20. ఆటో పేజీ సెటప్</label>
+                    <button onclick="AutoPageSetupModule.adjustPageGaps(1)">ఆటో సెటప్ రన్ చేయి</button>
+                </div>
+                <div class="tool-item">
+                    <label>23. PDF డౌన్‌లోడ్</label>
+                    <button onclick="PdfGeneratorModule.generatePdf('print')">ప్రింటింగ్ PDF</button>
+                    <button onclick="PdfGeneratorModule.generatePdf('social', 10)">సోషల్ మీడియా PDF</button>
                 </div>
             </div>
+        </div>
 
-            <!-- 26 ఆప్షన్ల సైడ్‌బార్ గ్రిడ్ (ఒకదాని కింద ఒకటి పద్ధతిగా) -->
-            <div id="masterToolbarContainer" class="sidebar-toolbar-grid">
-                <div class="tool-item"><label>1. పేపర్ సైజ్</label><select id="t-size"><option>బ్రాడ్‌షీట్</option><option>టాబ్లాయిడ్</option></select></div>
-                <div class="tool-item"><label>2. పేజీల సంఖ్య</label><input type="number" id="t-pages" value="4" min="1" max="16" onchange="CanvasEngine.renderPages(this.value)"></div>
-                <div class="tool-item"><label>3. బాటమ్ బుల్లెట్లు</label><button onclick="ToolbarEngine.cycleBullets()">మార్చు</button></div>
-                <div class="tool-item"><label>4. మెయిన్ లోగో</label><button onclick="ToolbarEngine.pasteLogo()">Ctrl+V పేస్ట్</button></div>
-                <div class="tool-item"><label>5. లోగో రీసైజర్</label><input type="range" id="t-logo-h" title="హైట్"><input type="range" id="t-logo-w" title="విడ్త్"></div>
-                <div class="tool-item"><label>6. రిపోర్టర్స్ యాడ్</label><button onclick="ToolbarEngine.toggleAd()">On/Off (Ctrl+V)</button></div>
-                <div class="tool-item"><label>7. సూక్తి బాక్స్</label><button onclick="ToolbarEngine.editSukthi()">ఎడిట్ సూక్తి</button></div>
-                <div class="tool-item"><label>8. బ్రాండింగ్ హెడర్</label><button onclick="ToolbarEngine.editBranding()">కలర్స్/వివరాలు</button></div>
-                <div class="tool-item"><label>9. ఎడిటర్ వివరాలు</label><button onclick="ToolbarEngine.toggleEditor()">On/Off</button></div>
-                <div class="tool-item"><label>10. న్యూస్ గ్రిడ్ సెలెక్టర్</label><button onclick="ToolbarEngine.selectGridType()">గ్రిడ్ మోడల్</button></div>
-                <div class="tool-item"><label>11. హెడ్ లైన్</label><input type="text" id="t-headline" placeholder="హెడ్‌లైన్..."></div>
-                <div class="tool-item"><label>12. హెడ్ లైన్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleHeadline()">ఫాంట్/కలర్</button></div>
-                <div class="tool-item"><label>13. సబ్ హెడ్ లైన్</label><input type="text" id="t-subheadline" placeholder="సబ్ హెడ్‌లైన్స్..."></div>
-                <div class="tool-item"><label>14. సబ్ హెడ్ కంట్రోలర్</label><button onclick="ToolbarEngine.styleSubheadline()">బుల్లెట్లు/అండర్‌లైన్</button></div>
-                <div class="tool-item"><label>15. డేట్ లైన్</label><input type="text" id="t-dateline" placeholder="డేట్‌లైన్..."></div>
-                <div class="tool-item"><label>16. వార్త రాయండి</label><textarea id="t-body" placeholder="వార్త వివరాలు..."></textarea></div>
-                <div class="tool-item"><label>17. అప్‌లోడ్ ఫోటో</label><button onclick="ToolbarEngine.pasteNewsPhoto()">Ctrl+V (Max 3)</button></div>
-                <div class="tool-item"><label>18. ఫోటో కంట్రోలర్</label><button onclick="ToolbarEngine.stylePhoto()">గుండ్రని/క్రాప్/సైజ్</button></div>
-                <div class="tool-item"><label>19. వార్త కంట్రోలర్</label><button onclick="ToolbarEngine.setNewsShape()">L-షేప్/ఫ్లో</button></div>
-                <div class="tool-item"><label>20. ఆటో పేజీ సెటప్</label><button onclick="AutoPageSetup.run()" class="btn-highlight">ఆటో అడ్జస్ట్</button></div>
-                <div class="tool-item"><label>21. డిలీట్ వార్త గ్రిడ్</label><button onclick="ToolbarEngine.deleteGrid()">డిలీట్</button></div>
-                <div class="tool-item"><label>22. యాడ్ అప్‌లోడ్</label><button onclick="ToolbarEngine.uploadAd()">Ctrl+V యాడ్</button></div>
-                <div class="tool-item"><label>23. PDF జనరేటర్</label><button onclick="PdfEngine.generate()" class="btn-pdf">PDF డౌన్‌లోడ్</button></div>
-                <div class="tool-item"><label>24. కలర్ సిగ్నల్ క్లీనర్</label><button onclick="ToolbarEngine.cleanSignals()">పాత వార్తలు తీసివేయి</button></div>
-                <div class="tool-item"><label>25. పిక్చర్ క్రాపర్</label><button onclick="ToolbarEngine.cropImage()">క్రాప్</button></div>
-                <div class="tool-item"><label>26. లేఅవుట్ సేవర్</label><button onclick="WelcomeScreen.saveMaster()">లేఅవుట్ సేవ్ చేయి</button></div>
+        <!-- కుడి ప్యానెల్ డిజైన్ క్యాన్వాస్ -->
+        <div class="right-canvas-area">
+            <div id="paper-canvas">
+                <!-- పేజీలు Javascript ద్వారా లోడ్ అవుతాయి -->
             </div>
-        </aside>
-
-        <!-- కుడివైపు న్యూస్‌పేపర్ కాన్వాస్ -->
-        <main class="right-canvas-area">
-            <div id="paperCanvas" class="paper-canvas"></div>
-        </main>
+        </div>
     </div>
 
-    <!-- మోడ్యూల్స్ వరుస క్రమం -->
+    <!-- మొబైల్ వ్యూ -->
+    <div id="mobile-view" class="mobile-container hidden">
+        <h2>సాత్విక పబ్లిషర్ (మొబైల్ మోడ్)</h2>
+        <label>మాస్టర్ లేఅవుట్ ఎంచుకోండి</label>
+        <select>
+            <option>మాస్టర్ లేఅవుట్ 1</option>
+            <option>మాస్టర్ లేఅవుట్ 2</option>
+        </select>
+        <label>హెడ్‌లైన్ రాయండి</label>
+        <input type="text" placeholder="వార్త హెడ్‌లైన్..." />
+        <button style="margin-top: 10px;">PNG గా డౌన్‌లోడ్ చేయి</button>
+    </div>
+
+    <!-- JavaScript ఫైళ్లు -->
     <script src="js/config/colors.js"></script>
-    <script src="js/modules/device-router.js"></script>
+    <script src="js/config/shapes-config.js"></script>
     <script src="js/modules/welcome-screen.js"></script>
-    <script src="js/modules/canvas-engine.js"></script>
-    <script src="js/modules/toolbar-engine.js"></script>
+    <script src="js/modules/news-shapes.js"></script>
     <script src="js/modules/auto-page-setup.js"></script>
     <script src="js/modules/pdf-generator.js"></script>
+    <script src="js/modules/toolbar-engine.js"></script>
+    <script src="js/modules/canvas-engine.js"></script>
+    <script src="js/modules/device-router.js"></script>
 
     <script>
-        window.onload = function() {
-            if (typeof WelcomeScreen !== 'undefined') {
-                WelcomeScreen.init();
-            }
-            if (typeof CanvasEngine !== 'undefined') {
-                CanvasEngine.renderPages(4);
-            }
-        };
+        // యాప్ ప్రారంభించడం
+        document.addEventListener('DOMContentLoaded', () => {
+            WelcomeScreenModule.init();
+            CanvasEngineModule.renderPages(4);
+        });
     </script>
 </body>
 </html>
