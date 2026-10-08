@@ -1,40 +1,42 @@
-/* సాత్విక పబ్లిషర్ ప్రధాన లేఅవుట్ స్టైల్స్ */
+/* css/styles.css */
+
 body {
     font-family: 'Mandali', 'Gidugu', Arial, sans-serif;
-    margin: 0; 
-    padding: 0; 
-    background-color: #f1f5f9; 
+    margin: 0;
+    padding: 0;
+    background-color: #f1f5f9;
     color: #0f172a;
     overflow-x: hidden;
 }
 
-/* మోడల్ & స్విచ్‌లు */
+/* వెల్కమ్ స్క్రీన్ & మోడల్స్ */
 .modal-overlay {
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    background: rgba(15, 23, 42, 0.85); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 9999;
-}
-.modal-card { 
-    background: white; 
-    padding: 30px; 
-    border-radius: 12px; 
-    text-align: center; 
-    max-width: 450px; 
-}
-.hidden { 
-    display: none !important; 
+    background: rgba(15, 23, 42, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9000;
 }
 
-/* ==========================================
-   ల్యాప్‌టాప్ వర్క్‌స్పేస్ (ఎడమ సైడ్‌బార్ + కుడి కాన్వాస్)
-   ========================================== */
+.modal-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* లాప్‌టాప్ లేఅవుట్ (ఎడమ ప్యానెల్ + కుడి కాన్వాస్) */
 .laptop-layout {
     display: flex;
     flex-direction: row;
@@ -43,10 +45,10 @@ body {
     overflow: hidden;
 }
 
-/* ఎడమవైపు సైడ్‌బార్ టూల్‌బార్ */
+/* ఎడమవైపు టూల్ బార్ */
 .left-sidebar {
-    width: 310px;
-    min-width: 310px;
+    width: 320px;
+    min-width: 320px;
     background: #1e293b;
     color: white;
     display: flex;
@@ -56,42 +58,6 @@ body {
     box-sizing: border-box;
 }
 
-.toolbar-header {
-    padding: 12px;
-    background: #0f172a;
-    border-bottom: 2px solid #334155;
-}
-
-.toolbar-header .title {
-    font-size: 15px;
-    font-weight: bold;
-    color: #f59e0b;
-    margin-bottom: 8px;
-    text-align: center;
-}
-
-.mode-buttons {
-    display: flex;
-    gap: 4px;
-    justify-content: center;
-}
-
-.btn-tab {
-    background: #334155;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.btn-tab.active {
-    background: #2563eb;
-}
-
-/* 26 ఆప్షన్ల సైడ్‌బార్ గ్రిడ్ (ఒకదాని కింద ఒకటి వరుసగా) */
 .sidebar-toolbar-grid {
     display: flex;
     flex-direction: column;
@@ -101,7 +67,7 @@ body {
     flex: 1;
 }
 
-.sidebar-toolbar-grid .tool-item {
+.tool-item {
     background: #334155;
     color: white;
     padding: 8px 10px;
@@ -109,301 +75,121 @@ body {
     border: 1px solid #475569;
     display: flex;
     flex-direction: column;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 12px;
 }
 
-.sidebar-toolbar-grid .tool-item label {
-    color: #e2e8f0;
-    margin-bottom: 4px;
-}
-
-.sidebar-toolbar-grid input, 
-.sidebar-toolbar-grid select, 
-.sidebar-toolbar-grid button, 
-.sidebar-toolbar-grid textarea {
-    font-size: 11px;
-    padding: 5px;
-    border-radius: 4px;
-    border: 1px solid #64748b;
-    background: #ffffff;
-    color: #0f172a;
-    margin-top: 2px;
-}
-
-.sidebar-toolbar-grid button {
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    border: none;
-    transition: background 0.2s;
-}
-
-.sidebar-toolbar-grid button:hover {
-    background: #1d4ed8;
-}
-
-.btn-highlight {
-    background: #d97706 !important;
-}
-
-.btn-pdf {
-    background: #dc2626 !important;
-}
-
-/* కుడివైపు న్యూస్‌పేపర్ కాన్వాస్ విస్తీర్ణం */
+/* కుడివైపు పేపర్ క్యాన్వాస్ */
 .right-canvas-area {
     flex: 1;
     overflow-y: auto;
-    background: #475569;
-    padding: 25px;
+    background: #075560;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
 }
 
-/* A3/బ్రాడ్‌షీట్ పేజీ రెండరింగ్ */
-.paper-canvas { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-}
-
 .newspaper-page {
-    width: 297mm; 
-    min-height: 420mm; 
-    background: white; 
-    padding: 12mm; 
+    width: 297mm;
+    min-height: 420mm;
+    background: white;
+    padding: 12mm;
     margin-bottom: 25px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3); 
-    box-sizing: border-box; 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
     position: relative;
 }
 
-/* మిర్రర్ గ్రిడ్ విభజనలు */
-.mirror-even { 
-    display: grid; 
-    grid-template-columns: 35% 65%; 
-    gap: 10px; 
-}
-.mirror-odd { 
-    display: grid; 
-    grid-template-columns: 65% 35%; 
-    gap: 10px; 
+/* మిర్రర్ ఎఫెక్ట్ గ్రిడ్లు */
+.mirror-even {
+    display: grid;
+    grid-template-columns: 35% 65%;
+    gap: 10px;
 }
 
-.news-card { 
-    border: 1px solid #1e293b; 
-    padding: 8px; 
-    margin-bottom: 8px; 
-    position: relative; 
-    background: #fff; 
-}
-.signal-tag { 
-    position: absolute; 
-    top: 2px; 
-    right: 2px; 
-    font-size: 9px; 
-    padding: 2px 4px; 
-    border-radius: 3px; 
-}
-.new-tag { 
-    background: #22c55e; 
-    color: white; 
+.mirror-odd {
+    display: grid;
+    grid-template-columns: 65% 35%;
+    gap: 10px;
 }
 
-/* వార్తా ఆకారాలు (Shapes - Standard Layout) */
-.shape-ball { 
-    border-radius: 50%; 
-    width: 200px; 
-    height: 200px; 
-    text-align: center; 
-    overflow: hidden; 
-}
-.shape-egg { 
-    border-radius: 50% / 60% 60% 40% 40%; 
+/* న్యూస్ కార్డులు & ఆకారాలు */
+.news-card {
+    border: 1px solid #1e293b;
+    padding: 8px;
+    margin-bottom: 8px;
+    position: relative;
+    background: #fff;
+    overflow: hidden;
 }
 
-/* బ్రాండింగ్ & ఫుటర్లు */
-.branding-header { 
-    border-bottom: 2px solid #000; 
-    margin-bottom: 10px; 
-}
-.top-row { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    border-bottom: 1px solid #000; 
-    padding-bottom: 5px; 
-}
-.branding-grid { 
-    background: #f8fafc; 
-    padding: 4px; 
-    text-align: center; 
-    font-weight: bold; 
-    font-size: 12px; 
-    border-top: 1px solid #000; 
-}
-.bullet-line { 
-    text-align: center; 
-    letter-spacing: 5px; 
-    font-size: 14px; 
-    margin-top: 5px; 
+.shape-rectangle-flexible {
+    transition: all 0.3s ease;
 }
 
-/* ==========================================
-   మొబైల్ లైవ్ ప్రివ్యూ & PNG కార్డ్ స్టైల్స్
-   ========================================== */
+.shape-ball {
+    border-radius: 50%;
+    width: 180px;
+    height: 180px;
+    text-align: center;
+    float: left;
+    margin: 5px;
+}
+
+.shape-egg {
+    border-radius: 50% / 60% 60% 40% 40%;
+    width: 180px;
+    height: 200px;
+    text-align: center;
+    float: left;
+    margin: 5px;
+}
+
+.shape-half-egg-left {
+    border-radius: 100px 0 0 100px;
+    float: left;
+}
+
+.shape-half-egg-right {
+    border-radius: 0 100px 100px 0;
+    float: right;
+}
+
+/* బ్రాండింగ్ & హెడర్ */
+.branding-header {
+    border-bottom: 2px solid #000;
+    margin-bottom: 10px;
+}
+
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #000;
+    padding-bottom: 5px;
+}
+
+.branding-grid {
+    background: #f8fafc;
+    padding: 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    border-top: 1px solid #000;
+}
+
+.bullet-line {
+    text-align: center;
+    letter-spacing: 5px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* మొబైల్ లేఅవుట్ సెట్టింగ్స్ */
 .mobile-container {
-    max-width: 500px;
-    margin: 20px auto;
+    max-width: 480px;
+    margin: 10px auto;
     padding: 15px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.mobile-container label {
-    display: block;
-    font-size: 12px;
-    font-weight: bold;
-    margin-top: 10px;
-    color: #334155;
-}
-
-.mobile-container input, 
-.mobile-container select, 
-.mobile-container textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 13px;
-}
-
-.btn-submit {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    font-weight: bold;
-    width: 100%;
-    margin-top: 15px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.preview-card { 
-    margin-top: 20px; 
-    background: #f8fafc; 
-    padding: 15px; 
-    border-radius: 8px; 
-    border: 1px solid #cbd5e1; 
-}
-
-.clipping-card { 
-    background: #ffffff; 
-    border: 2px solid #000; 
-    padding: 15px; 
-    text-align: center; 
-    max-width: 400px; 
-    margin: 10px auto; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-}
-
-.clipping-header { 
-    border-bottom: 2px solid #000; 
-    padding-bottom: 8px; 
-    margin-bottom: 12px; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-}
-
-.clipping-header img { 
-    max-height: 55px; 
-    width: auto; 
-    display: block; 
-    margin: 0 auto; 
-}
-
-.clipping-paper-title { 
-    font-size: 24px; 
-    font-weight: bold; 
-    color: #d97706; 
-}
-
-.clip-headline { 
-    font-size: 18px; 
-    color: #000; 
-    margin: 8px 0; 
-    font-weight: bold; 
-    line-height: 1.3; 
-}
-
-.clip-subhead { 
-    font-size: 13px; 
-    color: #334155; 
-    margin-bottom: 8px; 
-    font-weight: 600; 
-}
-
-.clip-main-wrap { 
-    text-align: left; 
-    font-size: 13px; 
-    line-height: 1.5; 
-    color: #0f172a; 
-}
-
-.clip-img { 
-    width: 100%; 
-    height: auto; 
-    max-height: 220px; 
-    object-fit: cover; 
-    border-radius: 4px; 
-    margin-bottom: 8px; 
-}
-
-.clip-footer-tag { 
-    font-size: 10px; 
-    background: #f1f5f9; 
-    padding: 4px; 
-    margin-top: 10px; 
-    text-align: right; 
-    border-top: 1px dashed #ccc; 
-    font-weight: bold; 
-}
-
-/* వివిధ ఆకారాల (Shapes) కోసం ఇమేజ్ స్టైల్స్ */
-.shape-ball .clip-img { 
-    border-radius: 50%; 
-    width: 160px; 
-    height: 160px; 
-    margin: 0 auto 10px auto; 
-    display: block; 
-}
-
-.shape-egg .clip-img { 
-    border-radius: 50% / 60% 60% 40% 40%; 
-    width: 180px; 
-    height: 140px; 
-    margin: 0 auto 10px auto; 
-    display: block; 
-}
-
-.btn-png { 
-    background: #16a34a; 
-    color: white; 
-    border: none; 
-    padding: 12px; 
-    border-radius: 6px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    width: 100%; 
-    margin-top: 12px; 
-    font-size: 15px; 
 }
