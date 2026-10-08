@@ -1,37 +1,52 @@
-// ఖాళీలు లేకుండా ఆటో పేజీ అడ్జస్టర్ మరియు కంటెంట్ ఫ్లో లాజిక్
-const AutoPageSetup = {
-    run: function() {
-        // 1. స్థిరమైన బాడీ ఫాంట్ పరిమాణాన్ని నిర్వచించడం
-        const FIXED_BODY_SIZE = "12px";
+// js/modules/auto-page-setup.js
 
-        const cards = document.querySelectorAll('.news-card');
+const AutoPageSetupModule = {
+    adjustPageGaps: function(pageNumber) {
+        const pageElement = document.getElementById(`page-${pageNumber}`);
+        if (!pageElement) return;
+
+        const availableHeight = pageElement.clientHeight;
+        let usedHeight = 0;
+
+        const cards = pageElement.querySelectorAll('.news-card');
         cards.forEach(card => {
-            const body = card.querySelector('.body-content');
-            if (body) {
-                body.style.fontSize = FIXED_BODY_SIZE; // బాడీ వార్త సైజ్ మారదు
-            }
-
-            // నిష్పత్తి ఆధారంగా హెడ్‌లైన్లు మరియు ఫోటో పరిమాణాలు పెంచడం/తగ్గించడం
-            const headline = card.querySelector('.headline');
-            if (headline) {
-                headline.style.fontSize = "22px"; // రేషియో ఆధారిత సర్దుబాటు
-            }
+            usedHeight += card.offsetHeight;
         });
 
-        alert("ఆటో పేజీ సెటప్ పూర్తయింది. గ్రిడ్లు పేజీ ఎత్తుకు సరిపడా సర్దుబాటు అయ్యాయి!");
-    },
+        const gap = availableHeight - usedHeight;
 
-    flowToNextPage: function(sourceNewsId, targetPageNum) {
-        // మొదటి పేజీ నుండి తరువాయి భాగాన్ని రెండవ పేజీలోకి పంపే ఫ్లో
-        const source = document.getElementById(sourceNewsId);
-        if (source) {
-            source.innerHTML += `<div class="continue-tag">(తరువాయి భాగం ${targetPageNum}వ పేజీలో)</div>`;
-            
-            const targetPageContainer = document.querySelector(`#page-${targetPageNum} .news-container`);
-            if(targetPageContainer) {
-                targetPageContainer.innerHTML = `<div class="news-card continuation"><div class="continue-header">(మొదటి పేజీ తరువాయి)</div></div>` + targetPageContainer.innerHTML;
+        if (gap > 50) {
+            const confirmFlow = confirm(`ఈ పేజీలో ఇంకా ఖాళీ ఉంది. వార్తను తర్వాతి పేజీకి ఫ్లో (Flow) చేయాలా?`);
+            if (confirmFlow) {
+                this.flowToNextPage(pageNumber);
+            } else {
+                this.scaleNewsElements(pageElement, 1.1); // 10% హెడ్‌లైన్/ఫోటో సైజ్ పెంచడం
             }
         }
+    },
+
+    flowToNextPage: function(currentPageNum) {
+        const currentCard = document.querySelector(`#page-${currentPageNum} .news-card.selected`);
+        if (currentCard) {
+            const footerTag = document.createElement('div');
+            footerTag.innerText = `(తరువాయి భాగం ${currentPageNum + 1}వ పేజీలో)`;
+            footerTag.style.color = 'red';
+            footerTag.style.fontSize = '11px';
+            currentCard.appendChild(footerTag);
+
+            alert(`వార్త విజయవంతంగా ${currentPageNum + 1}వ పేజీకి ఫ్లో చెయ్యబడింది.`);
+        }
+    },
+
+    scaleNewsElements: function(pageElement, scaleFactor) {
+        const headlines = pageElement.querySelectorAll('.news-headline');
+        headlines.forEach(h => {
+            const currentSize = parseFloat(window.getComputedStyle(h).fontSize);
+            h.style.fontSize = `${currentSize * scaleFactor}px`;
+        });
     }
 };
 
+if (typeof window !== 'undefined') {
+    window.AutoPageSetupModule = AutoPageSetupModule;
+}
