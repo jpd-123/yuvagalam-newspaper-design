@@ -1,27 +1,32 @@
-// PDF జనరేషన్ ఇంజిన్ (html2pdf Library ఆధారంగా)
-const PdfEngine = {
-    generate: function() {
-        const element = document.getElementById('paperCanvas');
-        if (!element) {
-            alert('కాన్వాస్ ఏరియా కనిపించలేదు!');
-            return;
+// js/modules/pdf-generator.js
+
+const PdfGeneratorModule = {
+    generatePdf: function(type, targetMb = 5) {
+        const element = document.getElementById('paper-canvas');
+        if (!element) return;
+
+        let imgQuality = 1.0;
+        if (type === 'social') {
+            // MB పరిమాణాన్ని బట్టి ఇమేజ్ క్వాలిటీ మార్చడం (టెక్స్ట్ HD లోనే ఉంటుంది)
+            imgQuality = Math.min(Math.max(targetMb / 100, 0.3), 1.0);
         }
 
         const options = {
-            margin:       0,
-            filename:     `Yuvagalam_Newspaper_${new Date().toISOString().slice(0,10)}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'mm', format: 'a3', orientation: 'portrait' }
+            margin: 0,
+            filename: `Satvika_Publisher_${type}_${Date.now()}.pdf`,
+            image: { type: 'jpeg', quality: imgQuality },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a3', orientation: 'portrait' }
         };
 
-        alert('PDF డౌన్‌లోడ్ ప్రాసెస్ ప్రారంభమైంది. దయచేసి కొన్ని సెకన్లు వేచి ఉండండి...');
-
-        html2pdf().set(options).from(element).save().then(() => {
-            alert('PDF విజయవంతంగా డౌన్‌లోడ్ అయ్యింది!');
-        }).catch(err => {
-            console.error('PDF generation error:', err);
-            alert('PDF జనరేట్ చేయడంలో సమస్య వచ్చింది.');
-        });
+        if (window.html2pdf) {
+            window.html2pdf().set(options).from(element).save();
+        } else {
+            alert('PDF లైబ్రరీ సరిగ్గా లోడ్ అవ్వలేదు.');
+        }
     }
 };
+
+if (typeof window !== 'undefined') {
+    window.PdfGeneratorModule = PdfGeneratorModule;
+}
