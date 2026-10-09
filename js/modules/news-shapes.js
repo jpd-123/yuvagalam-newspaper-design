@@ -1,34 +1,24 @@
 // js/modules/news-shapes.js
 
 const NewsShapesModule = {
-    applyShape: function(cardElement, shapeType) {
+    applyNewsShape: function(cardElement, shapeType) {
         if (!cardElement) return;
 
-        // పాత షేప్ క్లాసులను తొలగించడం
-        const shapeClasses = [
-            'shape-rectangle', 
-            'shape-ball', 
-            'shape-egg', 
-            'shape-half-egg-left', 
-            'shape-half-egg-right'
-        ];
-        cardElement.classList.remove(...shapeClasses);
+        const shapes = ['shape-rectangle', 'shape-ball', 'shape-egg', 'shape-half-egg-left', 'shape-half-egg-right'];
+        shapes.forEach(s => cardElement.classList.remove(s));
 
-        // కొత్త షేప్ క్లాస్ జోడించడం
         cardElement.classList.add(shapeType);
-
-        // పక్కన ఉన్న చతురస్ర వార్తలను ప్లెక్సిబుల్ చేయడం
-        this.adjustAdjacentFlexibleGrid(cardElement, shapeType);
+        this.adjustAdjacentFlexibility(cardElement);
     },
 
-    adjustAdjacentFlexibleGrid: function(cardElement, shapeType) {
-        const parentPage = cardElement.closest('.newspaper-page');
-        if (!parentPage) return;
+    adjustAdjacentFlexibility: function(cardElement) {
+        const parentRow = cardElement.parentElement;
+        if (!parentRow) return;
 
-        const allCards = parentPage.querySelectorAll('.news-card');
-        allCards.forEach(card => {
-            if (card !== cardElement && !card.classList.contains('shape-ball') && !card.classList.contains('shape-egg')) {
-                card.classList.add('shape-rectangle-flexible');
+        const siblings = parentRow.querySelectorAll('.news-card');
+        siblings.forEach(sibling => {
+            if (sibling !== cardElement && sibling.classList.contains('shape-rectangle')) {
+                sibling.classList.add('shape-rectangle-flexible');
             }
         });
     }
