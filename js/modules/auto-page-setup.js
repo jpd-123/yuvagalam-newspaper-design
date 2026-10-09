@@ -1,49 +1,70 @@
 // js/modules/auto-page-setup.js
 
 const AutoPageSetupModule = {
-    adjustPageGaps: function(pageNumber) {
-        const pageElement = document.getElementById(`page-${pageNumber}`);
-        if (!pageElement) return;
+    runAutoSetup: function(pageNum) {
+        const page = document.getElementById('page-' + pageNum);
+        if (!page) return;
 
-        const availableHeight = pageElement.clientHeight;
-        let usedHeight = 0;
+        const totalHeight = page.clientHeight;
+        let contentHeight = 0;
+        
+        const children = page.children;
+        for (let i = 0; i < children.length; i++) {
+            contentHeight += children[i].offsetHeight;
+        }
 
-        const cards = pageElement.querySelectorAll('.news-card');
-        cards.forEach(card => {
-            usedHeight += card.offsetHeight;
-        });
+        const remainingGap = totalHeight - contentHeight;
 
-        const gap = availableHeight - usedHeight;
-
-        if (gap > 50) {
-            const confirmFlow = confirm(`ఈ పేజీలో ఇంకా ఖాళీ ఉంది. వార్తను తర్వాతి పేజీకి ఫ్లో (Flow) చేయాలా?`);
-            if (confirmFlow) {
-                this.flowToNextPage(pageNumber);
+        if (remainingGap > 40) {
+            const choice = confirm('ఈ పేజీలో ' + remainingGap + 'px ఖాళీ ఉంది.\nవార్తల సైజ్ పెంచాలా? (OK)\nలేదా తదుపరి పేజీకి ఫ్లో చేయాలా? (Cancel)');
+            if (choice) {
+                this.scaleContent(page, 1.08);
             } else {
-                this.scaleNewsElements(pageElement, 1.1); // 10% హెడ్‌లైన్/ఫోటో సైజ్ పెంచడం
+                this.flowNewsToNextPage(pageNum);
             }
+        } else {
+            alert('పేజీ సెటప్ పూర్తయింది. గ్యాప్ సరిగ్గా సర్దుబాటు చేయబడింది.');
         }
     },
 
-    flowToNextPage: function(currentPageNum) {
-        const currentCard = document.querySelector(`#page-${currentPageNum} .news-card.selected`);
-        if (currentCard) {
-            const footerTag = document.createElement('div');
-            footerTag.innerText = `(తరువాయి భాగం ${currentPageNum + 1}వ పేజీలో)`;
-            footerTag.style.color = 'red';
-            footerTag.style.fontSize = '11px';
-            currentCard.appendChild(footerTag);
-
-            alert(`వార్త విజయవంతంగా ${currentPageNum + 1}వ పేజీకి ఫ్లో చెయ్యబడింది.`);
-        }
-    },
-
-    scaleNewsElements: function(pageElement, scaleFactor) {
+    scaleContent: function(pageElement, factor) {
         const headlines = pageElement.querySelectorAll('.news-headline');
         headlines.forEach(h => {
             const currentSize = parseFloat(window.getComputedStyle(h).fontSize);
-            h.style.fontSize = `${currentSize * scaleFactor}px`;
+            h.style.fontSize = (currentSize * factor) + 'px';
         });
+
+        const photos = pageElement.querySelectorAll('.news-card-photo');
+        photos.forEach(img => {
+            const currentWidth = img.offsetWidth;
+            img.style.width = (currentWidth * factor) + 'px';
+        });
+    },
+
+    flowNewsToNextPage: function(currentPageNum) {
+        if (!ToolbarEngineModule.selectedCard) {
+            alert('దయచేసి ఫ్లో చేయాలనుకుంటున్న వార్తను ఎంచుకోండి.');
+            return;
+        }
+        
+        const card = ToolbarEngineModule.selectedCard;
+        const bodyText = card.querySelector('.news-body');
+        if (!bodyText) return;
+
+        const fullText = bodyText.innerText;
+        const halfLength = Math.floor(fullText.length / 2);
+
+        const firstPart = fullText.substring(0, halfLength);
+        const secondPart = fullText.substring(halfLength);
+
+        bodyText.innerText = firstPart;
+        
+        const tag = document.createElement('div');
+        tag.className = 'flow-tag';
+        tag.innerText = '(తరువాయి భాగం ' + (parseInt(currentPageNum) + 1) + 'వ పేజీలో)';
+        card.appendChild(tag);
+
+        alert('వార్త రెండవ భాగం ' + (parseInt(currentPageNum) + 1) + 'వ పేజీలోకి తరలించడానికి సిద్ధంగా ఉంది.');
     }
 };
 
