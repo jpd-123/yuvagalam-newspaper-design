@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "సాత్విక పబ్లిషర్",
+  "short_name": "సాత్విక",
+  "description": "తెలుగు దినపత్రికల రూపకల్పన మరియు రోజువారీ వార్తల ప్రచురణ వ్యవస్థ",
+  "lang": "te-IN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f1f5f9",
+  "theme_color": "#123b4a",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
