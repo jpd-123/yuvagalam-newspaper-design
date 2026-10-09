@@ -1,109 +1,237 @@
-/* css/styles.css */
+:root {
+    --app-bg: #f1f5f9;
+    --panel-bg: #1e293b;
+    --panel-section: #334155;
+    --panel-border: #475569;
+    --primary: #075560;
+    --primary-hover: #06434b;
+    --text-main: #0f172a;
+    --text-light: #f8fafc;
+    --border: #cbd5e1;
+    --surface: #ffffff;
+    --danger: #b91c1c;
+    --success: #166534;
+    --radius: 8px;
+    --shadow: 0 5px 18px rgba(15, 23, 42, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    scroll-behavior: smooth;
+}
 
 body {
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-    font-family: 'Mandali', 'Gidugu', sans-serif;
-    background-color: #0f172a;
-    color: #333;
+    background: var(--app-bg);
+    color: var(--text-main);
+    font-family: "Noto Sans Telugu", "Gautami", "Nirmala UI", sans-serif;
+    line-height: 1.5;
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 9999;
+button,
+input,
+select,
+textarea {
+    font: inherit;
 }
 
-.modal-card {
-    background: #fff; padding: 25px; border-radius: 8px; text-align: center; max-width: 450px;
-}
-
-.hidden { display: none !important; }
-
-.laptop-layout {
-    display: flex; height: 100vh; overflow: hidden;
-}
-
-.left-sidebar {
-    width: 340px; min-width: 340px; background: #1e293b; color: #fff;
-    display: flex; flex-direction: column; height: 100vh; border-right: 2px solid #334155;
-}
-
-.sidebar-title {
-    padding: 12px; background: #0f172a; font-weight: bold; text-align: center; font-size: 14px;
-}
-
-.sidebar-toolbar-grid {
-    flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;
-}
-
-.tool-group {
-    background: #334155; padding: 8px; border-radius: 5px; font-size: 12px;
-}
-
-.tool-group label { display: block; margin-bottom: 4px; font-weight: bold; color: #cbd5e1; }
-.tool-group input, .tool-group select, .tool-group button {
-    width: 100%; padding: 5px; margin-top: 2px; border-radius: 4px; border: 1px solid #475569;
-}
-
-.right-canvas-area {
-    flex: 1; overflow-y: auto; background: #334155; padding: 20px; display: flex; justify-content: center;
-}
-
-.newspaper-page {
-    width: 297mm; min-height: 420mm; background: #fff; padding: 10mm; box-sizing: border-box;
-    margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); position: relative;
-}
-
-.newspaper-page.size-a4 { width: 210mm; min-height: 297mm; }
-.newspaper-page.size-a3 { width: 297mm; min-height: 420mm; }
-
-/* మిర్రర్ ఎఫెక్ట్ గ్రిడ్లు */
-.mirror-even { display: flex; gap: 10px; }
-.mirror-even .col-left { width: 35%; }
-.mirror-even .col-right { width: 65%; }
-
-.mirror-odd { display: flex; gap: 10px; }
-.mirror-odd .col-left { width: 65%; }
-.mirror-odd .col-right { width: 35%; }
-
-.news-row { display: flex; gap: 10px; margin-bottom: 10px; }
-.news-row.line-1 .flex-large { flex: 2; }
-.news-row.line-1 .flex-small { flex: 1; }
-.news-row.line-2 .news-card, .news-row.line-3 .news-card { flex: 1; }
-
-.news-card {
-    border: 1px solid #94a3b8; padding: 6px; background: #fff; box-sizing: border-box; position: relative;
+button {
     cursor: pointer;
 }
 
-.selected-card { outline: 2px solid #2563eb; background-color: #eff6ff; }
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
 
-/* హెడర్ అమరికలు */
-.top-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #000; padding-bottom: 5px; }
-.ad-box-left, .ad-box-right { width: 22%; border: 1px dashed #64748b; padding: 4px; font-size: 11px; text-align: center; }
-.main-logo-container { width: 50%; text-align: center; font-weight: bold; }
-.main-logo-style { max-height: 70px; width: auto; }
+input,
+select,
+textarea {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 8px 10px;
+    background: #ffffff;
+    color: var(--text-main);
+}
 
-.branding-grid { background: #e2e8f0; padding: 4px; font-size: 11px; text-align: center; margin-top: 4px; font-weight: bold; }
+input:focus,
+select:focus,
+textarea:focus,
+button:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+}
 
-.inner-top-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 4px; font-weight: bold; font-size: 12px; }
+textarea {
+    resize: vertical;
+}
 
-.bullet-line-footer { text-align: center; letter-spacing: 6px; font-size: 12px; margin-top: 10px; border-top: 1px solid #000; padding-top: 4px; }
+label {
+    display: block;
+    margin: 8px 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+}
 
-/* ఆకారాల స్టైల్స్ */
-.shape-ball { border-radius: 50%; }
-.shape-egg { border-radius: 50% / 60% 60% 40% 40%; }
-.shape-half-egg-left { border-radius: 100px 0 0 100px; }
-.shape-half-egg-right { border-radius: 0 100px 100px 0; }
-.shape-rectangle-flexible { transition: all 0.2s ease; }
+.hidden {
+    display: none !important;
+}
 
-.news-card-photo { display: block; margin: 4px auto; }
-.photo-small { width: 80px; }
-.photo-medium { width: 140px; }
-.photo-large { width: 220px; }
-.selected-img { outline: 2px solid #dc2626; }
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 5px;
+    font-weight: 700;
+    text-align: center;
+    transition: background-color 0.15s ease;
+}
 
-.flow-tag { color: red; font-size: 11px; font-weight: bold; margin-top: 4px; }
+.primary-button {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.primary-button:hover {
+    background: var(--primary-hover);
+}
+
+.secondary-button {
+    background: #e2e8f0;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+.secondary-button:hover {
+    background: #cbd5e1;
+}
+
+.toolbar-button-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.toolbar-button-row > * {
+    flex: 1;
+}
+
+.welcome-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.94);
+}
+
+.welcome-card {
+    width: min(100%, 540px);
+    padding: 30px 24px;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+    text-align: center;
+}
+
+.welcome-app-icon {
+    display: block;
+    margin: 0 auto 16px;
+}
+
+.welcome-card h1 {
+    margin: 0 0 12px;
+    font-size: clamp(22px, 4vw, 32px);
+}
+
+.welcome-card p {
+    color: #475569;
+}
+
+.welcome-card .primary-button {
+    margin-top: 18px;
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.noscript-message {
+    padding: 16px;
+    background: #fee2e2;
+    color: #7f1d1d;
+    text-align: center;
+}
+
+.status-message,
+.app-status {
+    min-height: 20px;
+    margin-top: 8px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.app-status {
+    padding: 10px;
+    color: #ffffff;
+}
+
+.status-error {
+    color: #fecaca !important;
+}
+
+.status-success {
+    color: #bbf7d0 !important;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggle-label input {
+    width: auto;
+    flex: 0 0 auto;
+}
+
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    .welcome-screen,
+    .left-sidebar,
+    .canvas-topbar,
+    .mobile-container {
+        display: none !important;
+    }
+
+    .app-shell,
+    .desktop-workspace,
+    .right-canvas-area,
+    .paper-canvas {
+        display: block !important;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        padding: 0;
+        margin: 0;
+        background: #ffffff;
+    }
+}
