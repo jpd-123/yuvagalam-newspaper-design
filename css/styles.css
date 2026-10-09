@@ -1,195 +1,109 @@
 /* css/styles.css */
 
 body {
-    font-family: 'Mandali', 'Gidugu', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f1f5f9;
-    color: #0f172a;
-    overflow-x: hidden;
+    font-family: 'Mandali', 'Gidugu', sans-serif;
+    background-color: #0f172a;
+    color: #333;
 }
 
-/* వెల్కమ్ స్క్రీన్ & మోడల్స్ */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9000;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
 }
 
 .modal-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    max-width: 500px;
-    width: 90%;
+    background: #fff; padding: 25px; border-radius: 8px; text-align: center; max-width: 450px;
 }
 
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }
 
-/* లాప్‌టాప్ లేఅవుట్ (ఎడమ ప్యానెల్ + కుడి కాన్వాస్) */
 .laptop-layout {
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
+    display: flex; height: 100vh; overflow: hidden;
 }
 
-/* ఎడమవైపు టూల్ బార్ */
 .left-sidebar {
-    width: 320px;
-    min-width: 320px;
-    background: #1e293b;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    border-right: 2px solid #334155;
-    height: 100vh;
-    box-sizing: border-box;
+    width: 340px; min-width: 340px; background: #1e293b; color: #fff;
+    display: flex; flex-direction: column; height: 100vh; border-right: 2px solid #334155;
+}
+
+.sidebar-title {
+    padding: 12px; background: #0f172a; font-weight: bold; text-align: center; font-size: 14px;
 }
 
 .sidebar-toolbar-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 12px;
-    overflow-y: auto;
-    flex: 1;
+    flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;
 }
 
-.tool-item {
-    background: #334155;
-    color: white;
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid #475569;
-    display: flex;
-    flex-direction: column;
-    font-size: 12px;
+.tool-group {
+    background: #334155; padding: 8px; border-radius: 5px; font-size: 12px;
 }
 
-/* కుడివైపు పేపర్ క్యాన్వాస్ */
+.tool-group label { display: block; margin-bottom: 4px; font-weight: bold; color: #cbd5e1; }
+.tool-group input, .tool-group select, .tool-group button {
+    width: 100%; padding: 5px; margin-top: 2px; border-radius: 4px; border: 1px solid #475569;
+}
+
 .right-canvas-area {
-    flex: 1;
-    overflow-y: auto;
-    background: #075560;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex: 1; overflow-y: auto; background: #334155; padding: 20px; display: flex; justify-content: center;
 }
 
 .newspaper-page {
-    width: 297mm;
-    min-height: 420mm;
-    background: white;
-    padding: 12mm;
-    margin-bottom: 25px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    box-sizing: border-box;
-    position: relative;
+    width: 297mm; min-height: 420mm; background: #fff; padding: 10mm; box-sizing: border-box;
+    margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); position: relative;
 }
+
+.newspaper-page.size-a4 { width: 210mm; min-height: 297mm; }
+.newspaper-page.size-a3 { width: 297mm; min-height: 420mm; }
 
 /* మిర్రర్ ఎఫెక్ట్ గ్రిడ్లు */
-.mirror-even {
-    display: grid;
-    grid-template-columns: 35% 65%;
-    gap: 10px;
-}
+.mirror-even { display: flex; gap: 10px; }
+.mirror-even .col-left { width: 35%; }
+.mirror-even .col-right { width: 65%; }
 
-.mirror-odd {
-    display: grid;
-    grid-template-columns: 65% 35%;
-    gap: 10px;
-}
+.mirror-odd { display: flex; gap: 10px; }
+.mirror-odd .col-left { width: 65%; }
+.mirror-odd .col-right { width: 35%; }
 
-/* న్యూస్ కార్డులు & ఆకారాలు */
+.news-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.news-row.line-1 .flex-large { flex: 2; }
+.news-row.line-1 .flex-small { flex: 1; }
+.news-row.line-2 .news-card, .news-row.line-3 .news-card { flex: 1; }
+
 .news-card {
-    border: 1px solid #1e293b;
-    padding: 8px;
-    margin-bottom: 8px;
-    position: relative;
-    background: #fff;
-    overflow: hidden;
+    border: 1px solid #94a3b8; padding: 6px; background: #fff; box-sizing: border-box; position: relative;
+    cursor: pointer;
 }
 
-.shape-rectangle-flexible {
-    transition: all 0.3s ease;
-}
+.selected-card { outline: 2px solid #2563eb; background-color: #eff6ff; }
 
-.shape-ball {
-    border-radius: 50%;
-    width: 180px;
-    height: 180px;
-    text-align: center;
-    float: left;
-    margin: 5px;
-}
+/* హెడర్ అమరికలు */
+.top-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #000; padding-bottom: 5px; }
+.ad-box-left, .ad-box-right { width: 22%; border: 1px dashed #64748b; padding: 4px; font-size: 11px; text-align: center; }
+.main-logo-container { width: 50%; text-align: center; font-weight: bold; }
+.main-logo-style { max-height: 70px; width: auto; }
 
-.shape-egg {
-    border-radius: 50% / 60% 60% 40% 40%;
-    width: 180px;
-    height: 200px;
-    text-align: center;
-    float: left;
-    margin: 5px;
-}
+.branding-grid { background: #e2e8f0; padding: 4px; font-size: 11px; text-align: center; margin-top: 4px; font-weight: bold; }
 
-.shape-half-egg-left {
-    border-radius: 100px 0 0 100px;
-    float: left;
-}
+.inner-top-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 4px; font-weight: bold; font-size: 12px; }
 
-.shape-half-egg-right {
-    border-radius: 0 100px 100px 0;
-    float: right;
-}
+.bullet-line-footer { text-align: center; letter-spacing: 6px; font-size: 12px; margin-top: 10px; border-top: 1px solid #000; padding-top: 4px; }
 
-/* బ్రాండింగ్ & హెడర్ */
-.branding-header {
-    border-bottom: 2px solid #000;
-    margin-bottom: 10px;
-}
+/* ఆకారాల స్టైల్స్ */
+.shape-ball { border-radius: 50%; }
+.shape-egg { border-radius: 50% / 60% 60% 40% 40%; }
+.shape-half-egg-left { border-radius: 100px 0 0 100px; }
+.shape-half-egg-right { border-radius: 0 100px 100px 0; }
+.shape-rectangle-flexible { transition: all 0.2s ease; }
 
-.top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #000;
-    padding-bottom: 5px;
-}
+.news-card-photo { display: block; margin: 4px auto; }
+.photo-small { width: 80px; }
+.photo-medium { width: 140px; }
+.photo-large { width: 220px; }
+.selected-img { outline: 2px solid #dc2626; }
 
-.branding-grid {
-    background: #f8fafc;
-    padding: 4px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 12px;
-    border-top: 1px solid #000;
-}
-
-.bullet-line {
-    text-align: center;
-    letter-spacing: 5px;
-    font-size: 14px;
-    margin-top: 5px;
-}
-
-/* మొబైల్ లేఅవుట్ సెట్టింగ్స్ */
-.mobile-container {
-    max-width: 480px;
-    margin: 10px auto;
-    padding: 15px;
-    background: white;
-    border-radius: 10px;
-}
+.flow-tag { color: red; font-size: 11px; font-weight: bold; margin-top: 4px; }
