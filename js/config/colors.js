@@ -10,9 +10,9 @@ const ConfigData = {
         "#E3F2FD", "#E0F2F1", "#E8F5E9", "#FBE9E7", "#EFEBE9"
     ],
     fonts: [
-        "Mandali", "Gidugu", "Arial", "sans-serif", "Ramabhadra", 
-        "NTR", "Suranna", "Mallanna", "Peddana", "Raviprakash", 
-        "Sree Krushnadevaraya", "Gurazada"
+        "Mandali", "Gidugu", "Ramabhadra", "NTR", "Suranna", 
+        "Mallanna", "Peddana", "Raviprakash", "Sree Krushnadevaraya", 
+        "Gurazada", "Arial", "sans-serif"
     ],
     bullets: ["●", "■", "◆", "▲", "★", "❖"],
     underlines: ["solid 2px", "double 3px"]
