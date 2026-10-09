@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <rect width="512" height="512" rx="96" fill="#123b4a"/>
+    <rect x="64" y="64" width="384" height="384" rx="24" fill="#ffffff"/>
+    <rect x="92" y="92" width="328" height="54" rx="8" fill="#075560"/>
+    <text
+        x="256"
+        y="128"
+        text-anchor="middle"
+        font-family="sans-serif"
+        font-size="26"
+        font-weight="700"
+        fill="#ffffff"
+    >సాత్విక</text>
+    <rect x="92" y="170" width="328" height="6" fill="#123b4a"/>
+    <rect x="92" y="194" width="204" height="100" rx="5" fill="#e2e8f0"/>
+    <rect x="310" y="194" width="110" height="100" rx="5" fill="#cbd5e1"/>
+    <rect x="92" y="310" width="328" height="8" fill="#123b4a"/>
+    <rect x="92" y="332" width="100" height="8" fill="#64748b"/>
+    <rect x="92" y="350" width="100" height="8" fill="#64748b"/>
+    <rect x="92" y="368" width="100" height="8" fill="#64748b"/>
+    <rect x="208" y="332" width="100" height="8" fill="#64748b"/>
+    <rect x="208" y="350" width="100" height="8" fill="#64748b"/>
+    <rect x="208" y="368" width="100" height="8" fill="#64748b"/>
+    <rect x="324" y="332" width="96" height="44" rx="4" fill="#075560"/>
+</svg>
