@@ -22,128 +22,691 @@
             <div class="sidebar-title">మాస్టర్ లేఅవుట్ టూల్ బార్</div>
             <div class="sidebar-toolbar-grid">
                 
-                <div class="tool-group">
-                    <label>1. పేపర్ సైజ్</label>
-                    <select onchange="ToolbarEngineModule.setPaperSize(this.value)">
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="theme-color"
+        content="#123b4a"
+    >
+
+    <meta
+        name="description"
+        content="సాత్విక పబ్లిషర్ - తెలుగు దినపత్రికల రూపకల్పన వ్యవస్థ"
+    >
+
+    <meta name="application-name" content="సాత్విక పబ్లిషర్">
+
+    <title>సాత్విక పబ్లిషర్</title>
+
+    <link rel="manifest" href="./manifest.json">
+
+    <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/laptop.css">
+    <link rel="stylesheet" href="./css/mobile.css">
+    <link rel="stylesheet" href="./css/newspaper-page.css">
+    <link rel="stylesheet" href="./css/news-shapes.css">
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta
+        name="apple-mobile-web-app-title"
+        content="సాత్విక పబ్లిషర్"
+    >
+</head>
+
+<body>
+
+    <noscript>
+        <div class="noscript-message">
+            సాత్విక పబ్లిషర్ ఉపయోగించడానికి మీ బ్రౌజర్‌లో JavaScript
+            ప్రారంభించాలి.
+        </div>
+    </noscript>
+
+    <!-- అప్లికేషన్ ప్రారంభ తెర -->
+    <section
+        id="welcome-screen"
+        class="welcome-screen"
+        aria-labelledby="welcome-title"
+    >
+        <div class="welcome-card">
+
+            <img
+                class="welcome-app-icon"
+                src="./assets/icons/icon.svg"
+                alt="సాత్విక పబ్లిషర్ చిహ్నం"
+                width="84"
+                height="84"
+            >
+
+            <h1 id="welcome-title">
+                సాత్విక పబ్లిషర్ కు స్వాగతం
+            </h1>
+
+            <p>
+                తెలుగు దినపత్రిక రూపకల్పన మరియు రోజువారీ వార్తల
+                ప్రచురణ వ్యవస్థ
+            </p>
+
+            <button
+                type="button"
+                id="open-project-button"
+                class="primary-button"
+            >
+                ప్రాజెక్ట్ ఓపెన్ చేయి
+            </button>
+
+            <p
+                id="welcome-status"
+                class="status-message"
+                role="status"
+                aria-live="polite"
+            ></p>
+
+        </div>
+    </section>
+
+
+    <!-- ప్రధాన అప్లికేషన్ -->
+    <main id="app-shell" class="app-shell hidden">
+
+        <!-- ల్యాప్‌టాప్ మరియు డెస్క్‌టాప్ వర్క్‌స్పేస్ -->
+        <section
+            id="desktop-workspace"
+            class="desktop-workspace"
+            aria-label="మాస్టర్ లేఅవుట్ వర్క్‌స్పేస్"
+        >
+
+            <!-- ఎడమవైపు టూల్‌బార్ -->
+            <aside class="left-sidebar">
+
+                <header class="sidebar-header">
+
+                    <div class="sidebar-brand">
+                        <img
+                            src="./assets/icons/icon.svg"
+                            alt=""
+                            width="38"
+                            height="38"
+                        >
+
+                        <div>
+                            <h2>సాత్విక పబ్లిషర్</h2>
+                            <p>న్యూస్‌పేపర్ డిజైన్</p>
+                        </div>
+                    </div>
+
+                </header>
+
+
+                <!-- పని విధానం -->
+                <section class="toolbar-section">
+
+                    <h3>పని విధానం</h3>
+
+                    <label for="workspace-mode">
+                        వర్క్‌స్పేస్
+                    </label>
+
+                    <select id="workspace-mode">
+                        <option value="master">
+                            మాస్టర్ లేఅవుట్
+                        </option>
+
+                        <option value="daily">
+                            రోజువారీ ఎడిషన్
+                        </option>
+                    </select>
+
+                </section>
+
+
+                <!-- పేపర్ సెట్టింగులు -->
+                <section class="toolbar-section master-only-tool">
+
+                    <h3>1. పేపర్ సెట్టింగులు</h3>
+
+                    <label for="paper-size">
+                        పేపర్ సైజు
+                    </label>
+
+                    <select id="paper-size">
                         <option value="A3">A3</option>
                         <option value="A4">A4</option>
+                        <option value="TABLOID">టాబ్లాయిడ్</option>
+                        <option value="BROADSHEET">బ్రాడ్‌షీట్</option>
                     </select>
-                </div>
 
-                <div class="tool-group">
-                    <label>2. పేజీల సంఖ్య</label>
-                    <select onchange="CanvasEngineModule.renderPages(this.value)">
-                        <option value="4">4 పేజీలు</option>
+                    <label for="page-count">
+                        పేజీల సంఖ్య
+                    </label>
+
+                    <select id="page-count">
+
+                        <option value="1">1 పేజీ</option>
+                        <option value="2">2 పేజీలు</option>
+                        <option value="3">3 పేజీలు</option>
+                        <option value="4" selected>4 పేజీలు</option>
+                        <option value="5">5 పేజీలు</option>
+                        <option value="6">6 పేజీలు</option>
+                        <option value="7">7 పేజీలు</option>
                         <option value="8">8 పేజీలు</option>
+                        <option value="9">9 పేజీలు</option>
+                        <option value="10">10 పేజీలు</option>
+                        <option value="11">11 పేజీలు</option>
+                        <option value="12">12 పేజీలు</option>
+                        <option value="13">13 పేజీలు</option>
+                        <option value="14">14 పేజీలు</option>
+                        <option value="15">15 పేజీలు</option>
                         <option value="16">16 పేజీలు</option>
+
                     </select>
-                </div>
 
-                <div class="tool-group">
-                    <label>3. బాటమ్ బుల్లెట్లు</label>
-                    <select onchange="ToolbarEngineModule.changeBottomBullets(this.value)">
-                        <option value="● ■ ◆ ▲">బాటమ్ మోడల్ 1</option>
-                        <option value="★ ❖ ★ ❖">బాటమ్ మోడల్ 2</option>
+                </section>
+
+
+                <!-- లోగో -->
+                <section class="toolbar-section master-only-tool">
+
+                    <h3>2. మెయిన్ లోగో</h3>
+
+                    <label for="main-logo-file">
+                        లోగో ఇమేజ్ ఎంచుకోండి
+                    </label>
+
+                    <input
+                        type="file"
+                        id="main-logo-file"
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                    >
+
+                    <div class="toolbar-button-row">
+
+                        <button
+                            type="button"
+                            id="remove-main-logo"
+                            class="secondary-button"
+                        >
+                            లోగో తొలగించు
+                        </button>
+
+                    </div>
+
+                    <label for="logo-width">
+                        లోగో వెడల్పు
+                    </label>
+
+                    <input
+                        type="range"
+                        id="logo-width"
+                        min="20"
+                        max="100"
+                        value="55"
+                    >
+
+                    <label for="logo-height">
+                        లోగో ఎత్తు
+                    </label>
+
+                    <input
+                        type="range"
+                        id="logo-height"
+                        min="10"
+                        max="80"
+                        value="20"
+                    >
+
+                </section>
+
+
+                <!-- రిపోర్టర్స్ యాడ్ -->
+                <section class="toolbar-section master-only-tool">
+
+                    <h3>3. రిపోర్టర్స్ యాడ్</h3>
+
+                    <label class="toggle-label">
+                        <input
+                            type="checkbox"
+                            id="reporters-ad-enabled"
+                            checked
+                        >
+
+                        రిపోర్టర్స్ యాడ్ చూపించు
+                    </label>
+
+                    <label for="reporters-ad-file">
+                        యాడ్ ఇమేజ్
+                    </label>
+
+                    <input
+                        type="file"
+                        id="reporters-ad-file"
+                        accept="image/*"
+                    >
+
+                </section>
+
+
+                <!-- మంచి మాట -->
+                <section class="toolbar-section master-only-tool">
+
+                    <h3>4. మంచి మాట</h3>
+
+                    <label class="toggle-label">
+                        <input
+                            type="checkbox"
+                            id="quote-enabled"
+                            checked
+                        >
+
+                        మంచి మాట చూపించు
+                    </label>
+
+                    <label for="quote-heading">
+                        శీర్షిక
+                    </label>
+
+                    <input
+                        type="text"
+                        id="quote-heading"
+                        value="మంచి మాట"
+                        maxlength="60"
+                    >
+
+                    <label for="quote-text">
+                        సూక్తి
+                    </label>
+
+                    <textarea
+                        id="quote-text"
+                        rows="3"
+                        maxlength="500"
+                    >మంచి ఆలోచన మంచి మార్పుకు నాంది.</textarea>
+
+                </section>
+
+
+                <!-- బ్రాండింగ్ -->
+                <section class="toolbar-section master-only-tool">
+
+                    <h3>5. పత్రిక వివరాలు</h3>
+
+                    <label for="newspaper-name">
+                        పత్రిక పేరు
+                    </label>
+
+                    <input
+                        type="text"
+                        id="newspaper-name"
+                        value="యువగళం"
+                        maxlength="100"
+                    >
+
+                    <label for="volume-number">
+                        సంపుటి
+                    </label>
+
+                    <input
+                        type="text"
+                        id="volume-number"
+                        value="1"
+                        maxlength="20"
+                    >
+
+                    <label for="issue-number">
+                        సంచిక
+                    </label>
+
+                    <input
+                        type="text"
+                        id="issue-number"
+                        value="1"
+                        maxlength="20"
+                    >
+
+                    <label for="publication-day">
+                        రోజు / వారం
+                    </label>
+
+                    <input
+                        type="text"
+                        id="publication-day"
+                        maxlength="30"
+                    >
+
+                    <label for="publication-date">
+                        తేదీ
+                    </label>
+
+                    <input
+                        type="date"
+                        id="publication-date"
+                    >
+
+                    <label for="cover-price">
+                        వెల
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cover-price"
+                        value="₹5"
+                        maxlength="20"
+                    >
+
+                </section>
+
+
+                <!-- బుల్లెట్లు -->
+                <section class="toolbar-section master-only-tool">
+
+                    <h3>6. పేజీ దిగువ బుల్లెట్లు</h3>
+
+                    <label for="footer-bullet-style">
+                        బుల్లెట్ రకం
+                    </label>
+
+                    <select id="footer-bullet-style">
+                        <option value="solid-circle">●</option>
+                        <option value="square">■</option>
+                        <option value="diamond">◆</option>
+                        <option value="triangle">▲</option>
+                        <option value="star">★</option>
+                        <option value="flower">❖</option>
                     </select>
+
+                </section>
+
+
+                <!-- న్యూస్ ఎడిటింగ్ -->
+                <section class="toolbar-section">
+
+                    <h3>7. వార్తల ఎడిటింగ్</h3>
+
+                    <label for="selected-page">
+                        పేజీ ఎంచుకోండి
+                    </label>
+
+                    <select id="selected-page">
+                        <option value="1">పేజీ 1</option>
+                        <option value="2">పేజీ 2</option>
+                        <option value="3">పేజీ 3</option>
+                        <option value="4">పేజీ 4</option>
+                    </select>
+
+                    <label for="news-headline">
+                        హెడ్‌లైన్
+                    </label>
+
+                    <input
+                        type="text"
+                        id="news-headline"
+                        maxlength="500"
+                        placeholder="వార్త హెడ్‌లైన్"
+                    >
+
+                    <label for="news-subheadlines">
+                        సబ్‌హెడ్‌లైన్లు
+                    </label>
+
+                    <textarea
+                        id="news-subheadlines"
+                        rows="3"
+                        maxlength="1500"
+                        placeholder="ప్రతి సబ్‌హెడ్‌లైన్‌ను కొత్త లైన్‌లో రాయండి"
+                    ></textarea>
+
+                    <label for="news-dateline">
+                        డేట్‌లైన్
+                    </label>
+
+                    <input
+                        type="text"
+                        id="news-dateline"
+                        maxlength="300"
+                        placeholder="స్థలం, తేదీ (యువగళం ప్రతినిధి)"
+                    >
+
+                    <label for="news-body">
+                        వార్త పూర్తి వివరాలు
+                    </label>
+
+                    <textarea
+                        id="news-body"
+                        rows="8"
+                        maxlength="50000"
+                        placeholder="వార్త పూర్తి వివరాలను ఇక్కడ నమోదు చేయండి"
+                    ></textarea>
+
+                    <label for="news-photo-files">
+                        ఫోటోలు (గరిష్ఠంగా 3)
+                    </label>
+
+                    <input
+                        type="file"
+                        id="news-photo-files"
+                        accept="image/*"
+                        multiple
+                    >
+
+                    <button
+                        type="button"
+                        id="add-news-button"
+                        class="primary-button"
+                    >
+                        వార్త జోడించు
+                    </button>
+
+                </section>
+
+
+                <!-- ఆటో పేజీ సెటప్ -->
+                <section class="toolbar-section">
+
+                    <h3>8. ఆటో పేజీ సెటప్</h3>
+
+                    <button
+                        type="button"
+                        id="auto-page-setup-button"
+                        class="primary-button"
+                    >
+                        ఎంచుకున్న పేజీ సర్దుబాటు చేయి
+                    </button>
+
+                </section>
+
+
+                <!-- మాస్టర్ సేవింగ్ -->
+                <section class="toolbar-section master-only-tool">
+
+                    <h3>9. మాస్టర్ లేఅవుట్</h3>
+
+                    <label for="master-layout-name">
+                        లేఅవుట్ పేరు
+                    </label>
+
+                    <input
+                        type="text"
+                        id="master-layout-name"
+                        maxlength="100"
+                        placeholder="ఉదా: యువగళం A3"
+                    >
+
+                    <button
+                        type="button"
+                        id="save-master-layout-button"
+                        class="primary-button"
+                    >
+                        మాస్టర్ సేవ్ చేయి
+                    </button>
+
+                </section>
+
+
+                <!-- PDF -->
+                <section class="toolbar-section">
+
+                    <h3>10. PDF</h3>
+
+                    <button
+                        type="button"
+                        id="print-pdf-button"
+                        class="primary-button"
+                    >
+                        ప్రింటింగ్ PDF
+                    </button>
+
+                    <label for="social-pdf-size">
+                        సోషల్ PDF లక్ష్య పరిమాణం
+                    </label>
+
+                    <select id="social-pdf-size">
+                        <option value="1">1 MB</option>
+                        <option value="2">2 MB</option>
+                        <option value="5" selected>5 MB</option>
+                        <option value="10">10 MB</option>
+                        <option value="20">20 MB</option>
+                        <option value="50">50 MB</option>
+                        <option value="100">100 MB</option>
+                    </select>
+
+                    <button
+                        type="button"
+                        id="social-pdf-button"
+                        class="secondary-button"
+                    >
+                        సోషల్ మీడియా PDF
+                    </button>
+
+                </section>
+
+
+                <!-- యాప్ సందేశాలు -->
+                <div
+                    id="app-status"
+                    class="app-status"
+                    role="status"
+                    aria-live="polite"
+                ></div>
+
+            </aside>
+
+
+            <!-- కుడివైపు న్యూస్‌పేపర్ క్యాన్వాస్ -->
+            <section class="right-canvas-area">
+
+                <header class="canvas-topbar">
+
+                    <h2 id="workspace-title">
+                        మాస్టర్ లేఅవుట్
+                    </h2>
+
+                    <div class="canvas-topbar-actions">
+
+                        <button
+                            type="button"
+                            id="install-app-button"
+                            class="secondary-button hidden"
+                        >
+                            యాప్ ఇన్‌స్టాల్ చేయి
+                        </button>
+
+                    </div>
+
+                </header>
+
+
+                <div
+                    id="paper-canvas"
+                    class="paper-canvas"
+                    aria-label="న్యూస్‌పేపర్ పేజీలు"
+                ></div>
+
+            </section>
+
+        </section>
+
+
+        <!-- మొబైల్ న్యూస్ ఫారమ్ -->
+        <section
+            id="mobile-workspace"
+            class="mobile-container hidden"
+            aria-label="మొబైల్ న్యూస్ అప్‌లోడ్"
+        >
+
+            <header class="mobile-header">
+
+                <img
+                    src="./assets/icons/icon.svg"
+                    alt=""
+                    width="48"
+                    height="48"
+                >
+
+                <div>
+                    <h1>సాత్విక పబ్లిషర్</h1>
+                    <p>మొబైల్ న్యూస్ అప్‌లోడ్</p>
                 </div>
 
-                <div class="tool-group">
-                    <label>4. మెయిన్ లోగో (Ctrl+V)</label>
-                    <button onclick="ToolbarEngineModule.handlePasteLogo()">లోగో అప్‌లోడ్ (Ctrl+V)</button>
-                </div>
+            </header>
 
-                <div class="tool-group">
-                    <label>5. లోగో రీసైజ్ కంట్రోలర్</label>
-                    <input type="range" min="30" max="200" value="70" oninput="ToolbarEngineModule.resizeLogo('height', this.value)">
-                </div>
 
-                <div class="tool-group">
-                    <label>6. రిపోర్టర్స్ యాడ్</label>
-                    <button onclick="ToolbarEngineModule.toggleReporterAd(true)">యాడ్ ఆన్</button>
-                    <button onclick="ToolbarEngineModule.toggleReporterAd(false)">యాడ్ ఆఫ్</button>
-                </div>
+            <form id="mobile-news-form">
 
-                <div class="tool-group">
-                    <label>7. సూక్తి బాక్స్</label>
-                    <button onclick="ToolbarEngineModule.toggleSuktiBox(true)">సూక్తి ఆన్</button>
-                    <button onclick="ToolbarEngineModule.toggleSuktiBox(false)">సూక్తి ఆఫ్</button>
-                    <input type="text" placeholder="సూక్తి మార్చండి" onchange="ToolbarEngineModule.updateSuktiContent(null, this.value)">
-                </div>
+                <label for="mobile-master-layout">
+                    మాస్టర్ లేఅవుట్
+                </label>
 
-                <div class="tool-group">
-                    <label>9. ఎడిటర్ వివరాలు</label>
-                    <button onclick="ToolbarEngineModule.toggleEditorDetails(true)">ఎడిటర్ వివరాలు ఆన్</button>
-                    <button onclick="ToolbarEngineModule.toggleEditorDetails(false)">ఎడిటర్ వివరాలు ఆఫ్</button>
-                </div>
+                <select id="mobile-master-layout" required>
+                    <option value="">మాస్టర్ ఎంచుకోండి</option>
+                </select>
 
-                <div class="tool-group">
-                    <label>12. హెడ్‌లైన్ మార్చండి</label>
-                    <input type="text" placeholder="ఒరిజినల్ హెడ్‌లైన్..." onchange="ToolbarEngineModule.updateHeadline(this.value)">
-                </div>
 
-                <div class="tool-group">
-                    <label>14. సబ్ హెడ్‌లైన్ మార్చండి</label>
-                    <input type="text" placeholder="సబ్ హెడ్‌లైన్..." onchange="ToolbarEngineModule.updateSubHeadline(this.value)">
-                </div>
+                <label for="mobile-page-number">
+                    పేజీ నంబర్
+                </label>
 
-                <div class="tool-group">
-                    <label>15. డేట్‌లైన్</label>
-                    <input type="text" placeholder="హైదరాబాద్:" onchange="ToolbarEngineModule.updateDateline(this.value)">
-                </div>
+                <select id="mobile-page-number" required>
+                    <option value="">ముందుగా మాస్టర్ ఎంచుకోండి</option>
+                </select>
 
-                <div class="tool-group">
-                    <label>16. వార్త వివరాలు</label>
-                    <textarea placeholder="వార్త పాఠం..." onchange="ToolbarEngineModule.updateBodyText(this.value)"></textarea>
-                </div>
 
-                <div class="tool-group">
-                    <label>17. ఫోటో అప్‌లోడ్ (Ctrl+V)</label>
-                    <button onclick="ToolbarEngineModule.uploadPhotoToCard()">ఫోటో అప్‌లోడ్ చేయి</button>
-                </div>
+                <label for="mobile-news-headline">
+                    హెడ్‌లైన్
+                </label>
 
-                <div class="tool-group">
-                    <label>18. ఫోటో ఆకారం</label>
-                    <button onclick="ToolbarEngineModule.applyPhotoShape('shape-ball')">బంతి ఆకారం</button>
-                    <button onclick="ToolbarEngineModule.applyPhotoShape('shape-egg')">కోడిగుడ్డు ఆకారం</button>
-                </div>
+                <input
+                    type="text"
+                    id="mobile-news-headline"
+                    maxlength="500"
+                    required
+                >
 
-                <div class="tool-group">
-                    <label>20. ఆటో పేజీ సెటప్</label>
-                    <button onclick="AutoPageSetupModule.runAutoSetup(1)">పేజీ 1 ఆటో సెటప్</button>
-                </div>
 
-                <div class="tool-group">
-                    <label>21. వార్త తొలగించు</label>
-                    <button onclick="ToolbarEngineModule.deleteSelectedCard()">సెలెక్టెడ్ వార్త డిలీట్</button>
-                </div>
+                <label for="mobile-news-subheadlines">
+                    సబ్‌హెడ్‌లైన్లు
+                </label>
 
-                <div class="tool-group">
-                    <label>23. PDF జనరేటర్</label>
-                    <button onclick="PdfGeneratorModule.downloadPdf('print')">ప్రింటింగ్ PDF</button>
-                    <button onclick="PdfGeneratorModule.downloadPdf('social', 10)">సోషల్ మీడియా PDF</button>
-                </div>
+                <textarea
+                    id="mobile-news-subheadlines"
+                    rows="3"
+                    maxlength="1500"
+                ></textarea>
 
-            </div>
-        </div>
 
-        <div class="right-canvas-area">
-            <div id="paper-canvas"></div>
-        </div>
-    </div>
+                <label for="mobile-news-dateline">
+                    డేట్‌లైన్
+                </label>
 
-    <script src="js/config/colors.js"></script>
-    <script src="js/modules/welcome-screen.js"></script>
-    <script src="js/modules/news-shapes.js"></script>
-    <script src="js/modules/auto-page-setup.js"></script>
-    <script src="js/modules/pdf-generator.js"></script>
-    <script src="js/modules/toolbar-engine.js"></script>
-    <script src="js/modules/canvas-engine.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            WelcomeScreenModule.init();
-            CanvasEngineModule.renderPages(4);
-        });
-    </script>
-</body>
-</html>
+                <input
+                 
