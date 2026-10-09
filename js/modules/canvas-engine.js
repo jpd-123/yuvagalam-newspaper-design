@@ -1,25 +1,26 @@
 // js/modules/canvas-engine.js
 
 const CanvasEngineModule = {
-    renderPages: function(totalPages = 4) {
+    renderPages: function(totalPages) {
         const canvas = document.getElementById('paper-canvas');
         if (!canvas) return;
         canvas.innerHTML = '';
 
-        for (let i = 1; i <= totalPages; i++) {
+        const count = parseInt(totalPages) || 4;
+
+        for (let i = 1; i <= count; i++) {
             const page = document.createElement('div');
             page.className = 'newspaper-page';
-            page.id = `page-${i}`;
-
-            // మిర్రర్ ఎఫెక్ట్ గ్రిడ్ అమరిక
-            const gridClass = (i % 2 === 0) ? 'mirror-even' : 'mirror-odd';
+            page.id = 'page-' + i;
+            page.setAttribute('data-page-number', i);
 
             if (i === 1) {
                 page.innerHTML = this.getFrontPageHTML();
-            } else if (i === totalPages) {
-                page.innerHTML = this.getFinalPageHTML(i, gridClass);
+            } else if (i === count) {
+                page.innerHTML = this.getInnerPageHTML(i, 'mirror-even', true);
             } else {
-                page.innerHTML = this.getInnerPageHTML(i, gridClass);
+                const gridClass = (i % 2 === 0) ? 'mirror-even' : 'mirror-odd';
+                page.innerHTML = this.getInnerPageHTML(i, gridClass, false);
             }
 
             canvas.appendChild(page);
@@ -27,66 +28,86 @@ const CanvasEngineModule = {
     },
 
     getFrontPageHTML: function() {
-        return `
-            <div class="branding-header">
-                <div class="top-row">
-                    <div style="width: 20%; border: 1px dashed #ccc;">రిపోర్టర్ యాడ్</div>
-                    <div style="width: 55%; text-align: center;">
-                        <span id="welcome-text">సాత్విక పబ్లిషర్ కు స్వాగతం</span>
-                        <img id="main-logo-target" style="max-height: 60px; display: none;" />
-                    </div>
-                    <div style="width: 20%; border: 1px dashed #ccc;"><b>మంచి మాట</b><br><small>డమ్మీ సూక్తి</small></div>
-                </div>
-                <div class="branding-grid">
-                    సంపుటి: 1 | సంచిక: 1 | రోజు: సోమవారం | తేదీ: 01/10/2026 | పేజీలు: 4 | వెల: ₹5.00
-                </div>
-            </div>
-            <div class="news-container">
-                <div class="news-card shape-rectangle">
-                    <h2 class="news-headline">ప్రధాన వార్త హెడ్‌లైన్</h2>
-                    <p>డమ్మీ ప్రధాన వార్త బాడీ టెక్స్ట్...</p>
-                </div>
-            </div>
-            <div class="bullet-line">● ■ ◆ ▲ ★ ❖</div>
-        `;
+        return '<div class="branding-header">' +
+            '<div class="top-row">' +
+                '<div class="ad-box-left" id="reporter-ad-box">పత్రిక ప్రకటన (యాడ్)</div>' +
+                '<div class="main-logo-container" id="front-logo-container">' +
+                    '<span id="welcome-text-placeholder">సాత్విక పబ్లిషర్ కు స్వాగతం</span>' +
+                    '<img id="main-logo-img" class="main-logo-style hidden" alt="Main Logo" />' +
+                '</div>' +
+                '<div class="ad-box-right" id="sukti-box">' +
+                    '<b id="sukti-title">మంచి మాట</b><br>' +
+                    '<span id="sukti-text">ఒక మంచి మాట సూక్తి...</span>' +
+                '</div>' +
+            '</div>' +
+            '<div class="branding-grid" id="branding-grid-page-1">' +
+                'సంపుటి: 1 | సంచిక: 1 | రోజు: సోమవారం | తేదీ: 01 | నెల: జనవరి | సంవత్సరం: 2026 | పేజీలు: 4 | వెల: ₹5.00' +
+            '</div>' +
+        '</div>' +
+        '<div class="news-container">' +
+            '<div class="news-row line-1">' +
+                '<div class="news-card flex-large shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)">' +
+                    '<h2 class="news-headline">ప్రధాన వార్త హెడ్‌లైన్</h2>' +
+                    '<div class="news-subheadline">సబ్ హెడ్‌లైన్ 1</div>' +
+                    '<div class="news-dateline">హైదరాబాద్:</div>' +
+                    '<div class="news-body">ప్రధాన వార్త వివరణ ఇక్కడ ప్రచురించబడుతుంది...</div>' +
+                '</div>' +
+                '<div class="news-card flex-small shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)">' +
+                    '<h3 class="news-headline">చిన్న వార్త</h3>' +
+                    '<div class="news-dateline">అమరావతి:</div>' +
+                    '<div class="news-body">చిన్న వార్త వివరణ...</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="news-row line-2">' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">మధ్యస్థ వార్త 1</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">మధ్యస్థ వార్త 2</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">మధ్యస్థ వార్త 3</h3><div class="news-body">వివరణ...</div></div>' +
+            '</div>' +
+            '<div class="news-row line-3">' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">మధ్యస్థ వార్త 4</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">మధ్యస్థ వార్త 5</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">మధ్యస్థ వార్త 6</h3><div class="news-body">వివరణ...</div></div>' +
+            '</div>' +
+        '</div>' +
+        '<div class="bullet-line-footer">● ■ ◆ ▲</div>';
     },
 
-    getInnerPageHTML: function(pageNum, gridClass) {
-        return `
-            <div class="branding-header">
-                <div class="top-row">
-                    <img class="side-branding-logo" style="height: 30px;" />
-                    <span>యువగళం దినపత్రిక</span>
-                    <span>జనరల్ వార్తలు</span>
-                    <span>పేజీ: ${pageNum}</span>
-                </div>
-            </div>
-            <div class="${gridClass}">
-                <div class="news-card">సాధారణ వార్త గ్రిడ్</div>
-                <div class="news-card">సాధారణ వార్త గ్రిడ్</div>
-            </div>
-            <div class="bullet-line">● ■ ◆ ▲ ★ ❖</div>
-        `;
-    },
+    getInnerPageHTML: function(pageNum, gridClass, isLastPage) {
+        let footerContent = '<div class="bullet-line-footer">● ■ ◆ ▲</div>';
+        if (isLastPage) {
+            footerContent = '<div id="editor-details-container-' + pageNum + '" class="editor-details-box hidden">' +
+                'ఎడిటర్ వివరాలు: ప్రింటర్, పబ్లిషర్ వివరాలు నమోదు చేయబడతాయి.' +
+            '</div>' +
+            '<div id="editor-bullet-container-' + pageNum + '" class="bullet-line-footer">● ■ ◆ ▲</div>';
+        }
 
-    getFinalPageHTML: function(pageNum, gridClass) {
-        return `
-            <div class="branding-header">
-                <div class="top-row">
-                    <img class="side-branding-logo" style="height: 30px;" />
-                    <span>యువగళం దినపత్రిక</span>
-                    <span>చివరి పేజీ</span>
-                    <span>పేజీ: ${pageNum}</span>
-                </div>
-            </div>
-            <div class="${gridClass}">
-                <div class="news-card">చివరి పేజీ వార్త</div>
-            </div>
-            <div id="editor-details-area" class="branding-grid hidden">
-                ప్రింటర్, పబ్లిషర్ మరియు ఎడిటర్ వివరాలు...
-            </div>
-            <div class="bullet-line">● ■ ◆ ▲ ★ ❖</div>
-        `;
+        return '<div class="branding-header" id="branding-header-page-' + pageNum + '">' +
+            '<div class="inner-top-row">' +
+                '<div class="inner-header-left">' +
+                    '<img class="secondary-logo-img hidden" alt="Logo" />' +
+                '</div>' +
+                '<div class="inner-header-center">' +
+                    '<span class="paper-title-text">పత్రిక పేరు</span>' +
+                '</div>' +
+                '<div class="inner-header-right">' +
+                    '<span class="general-news-text">జనరల్ వార్తలు</span>' +
+                    '<span class="page-number-display">పేజీ: ' + pageNum + '</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div class="news-container ' + gridClass + '">' +
+            '<div class="col-left">' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">వార్త 1</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">వార్త 2</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">వార్త 3</h3><div class="news-body">వివరణ...</div></div>' +
+            '</div>' +
+            '<div class="col-right">' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">వార్త 4</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">వార్త 5</h3><div class="news-body">వివరణ...</div></div>' +
+                '<div class="news-card shape-rectangle" onclick="ToolbarEngineModule.selectCard(this)"><h3 class="news-headline">వార్త 6</h3><div class="news-body">వివరణ...</div></div>' +
+            '</div>' +
+        '</div>' +
+        footerContent;
     }
 };
 
