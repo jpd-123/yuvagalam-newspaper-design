@@ -2,40 +2,13 @@
 <html lang="te">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>సాత్విక పబ్లిషర్</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-</head>
-<body>
-
-    <div id="welcome-modal" class="modal-overlay">
-        <div class="modal-card">
-            <h2>సాత్విక పబ్లిషర్ కు സ്വാగతం</h2>
-            <p>మాస్టర్ లేఅవుట్ డిజైనింగ్ ప్రారంభించడానికి క్లిక్ చేయండి.</p>
-            <button onclick="document.getElementById('welcome-modal').classList.add('hidden')">వర్క్‌స్పేస్ ఓపెన్ చేయి</button>
-        </div>
-    </div>
-
-    <div id="laptop-view" class="laptop-layout">
-        <div class="left-sidebar">
-            <div class="sidebar-title">మాస్టర్ లేఅవుట్ టూల్ బార్</div>
-            <div class="sidebar-toolbar-grid">
-                
-<!DOCTYPE html>
-<html lang="te">
-<head>
-    <meta charset="UTF-8">
 
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <meta
-        name="theme-color"
-        content="#123b4a"
-    >
+    <meta name="theme-color" content="#123b4a">
 
     <meta
         name="description"
@@ -44,49 +17,59 @@
 
     <meta name="application-name" content="సాత్విక పబ్లిషర్">
 
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="సాత్విక పబ్లిషర్"
+    >
+
     <title>సాత్విక పబ్లిషర్</title>
 
     <link rel="manifest" href="./manifest.json">
 
-    <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml">
+    <link
+        rel="icon"
+        href="./assets/icons/icon.svg"
+        type="image/svg+xml"
+    >
 
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="./css/laptop.css">
     <link rel="stylesheet" href="./css/mobile.css">
     <link rel="stylesheet" href="./css/newspaper-page.css">
     <link rel="stylesheet" href="./css/news-shapes.css">
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta
-        name="apple-mobile-web-app-title"
-        content="సాత్విక పబ్లిషర్"
-    >
 </head>
 
 <body>
 
     <noscript>
         <div class="noscript-message">
-            సాత్విక పబ్లిషర్ ఉపయోగించడానికి మీ బ్రౌజర్‌లో JavaScript
-            ప్రారంభించాలి.
+            సాత్విక పబ్లిషర్ ఉపయోగించడానికి JavaScript ప్రారంభించాలి.
         </div>
     </noscript>
 
-    <!-- అప్లికేషన్ ప్రారంభ తెర -->
+
+    <!-- =====================================
+         1. స్వాగత తెర
+    ====================================== -->
+
     <section
         id="welcome-screen"
         class="welcome-screen"
         aria-labelledby="welcome-title"
     >
+
         <div class="welcome-card">
 
             <img
                 class="welcome-app-icon"
                 src="./assets/icons/icon.svg"
-                alt="సాత్విక పబ్లిషర్ చిహ్నం"
-                width="84"
-                height="84"
+                alt="సాత్విక పబ్లిషర్"
+                width="100"
+                height="100"
             >
 
             <h1 id="welcome-title">
@@ -114,25 +97,32 @@
             ></p>
 
         </div>
+
     </section>
 
 
-    <!-- ప్రధాన అప్లికేషన్ -->
+    <!-- =====================================
+         2. ప్రధాన అప్లికేషన్
+    ====================================== -->
+
     <main id="app-shell" class="app-shell hidden">
 
-        <!-- ల్యాప్‌టాప్ మరియు డెస్క్‌టాప్ వర్క్‌స్పేస్ -->
+        <!-- కంప్యూటర్ వర్క్‌స్పేస్ -->
+
         <section
             id="desktop-workspace"
             class="desktop-workspace"
-            aria-label="మాస్టర్ లేఅవుట్ వర్క్‌స్పేస్"
+            aria-label="న్యూస్‌పేపర్ డిజైన్ వర్క్‌స్పేస్"
         >
 
             <!-- ఎడమవైపు టూల్‌బార్ -->
+
             <aside class="left-sidebar">
 
                 <header class="sidebar-header">
 
                     <div class="sidebar-brand">
+
                         <img
                             src="./assets/icons/icon.svg"
                             alt=""
@@ -144,12 +134,14 @@
                             <h2>సాత్విక పబ్లిషర్</h2>
                             <p>న్యూస్‌పేపర్ డిజైన్</p>
                         </div>
+
                     </div>
 
                 </header>
 
 
                 <!-- పని విధానం -->
+
                 <section class="toolbar-section">
 
                     <h3>పని విధానం</h3>
@@ -159,6 +151,7 @@
                     </label>
 
                     <select id="workspace-mode">
+
                         <option value="master">
                             మాస్టర్ లేఅవుట్
                         </option>
@@ -166,30 +159,30 @@
                         <option value="daily">
                             రోజువారీ ఎడిషన్
                         </option>
+
                     </select>
 
                 </section>
 
 
                 <!-- పేపర్ సెట్టింగులు -->
+
                 <section class="toolbar-section master-only-tool">
 
                     <h3>1. పేపర్ సెట్టింగులు</h3>
 
-                    <label for="paper-size">
-                        పేపర్ సైజు
-                    </label>
+                    <label for="paper-size">పేపర్ సైజు</label>
 
                     <select id="paper-size">
+
                         <option value="A3">A3</option>
                         <option value="A4">A4</option>
                         <option value="TABLOID">టాబ్లాయిడ్</option>
                         <option value="BROADSHEET">బ్రాడ్‌షీట్</option>
+
                     </select>
 
-                    <label for="page-count">
-                        పేజీల సంఖ్య
-                    </label>
+                    <label for="page-count">పేజీల సంఖ్య</label>
 
                     <select id="page-count">
 
@@ -215,7 +208,8 @@
                 </section>
 
 
-                <!-- లోగో -->
+                <!-- ప్రధాన లోగో -->
+
                 <section class="toolbar-section master-only-tool">
 
                     <h3>2. మెయిన్ లోగో</h3>
@@ -230,21 +224,15 @@
                         accept="image/png,image/jpeg,image/webp,image/svg+xml"
                     >
 
-                    <div class="toolbar-button-row">
+                    <button
+                        type="button"
+                        id="remove-main-logo"
+                        class="secondary-button"
+                    >
+                        లోగో తొలగించు
+                    </button>
 
-                        <button
-                            type="button"
-                            id="remove-main-logo"
-                            class="secondary-button"
-                        >
-                            లోగో తొలగించు
-                        </button>
-
-                    </div>
-
-                    <label for="logo-width">
-                        లోగో వెడల్పు
-                    </label>
+                    <label for="logo-width">లోగో వెడల్పు</label>
 
                     <input
                         type="range"
@@ -254,9 +242,7 @@
                         value="55"
                     >
 
-                    <label for="logo-height">
-                        లోగో ఎత్తు
-                    </label>
+                    <label for="logo-height">లోగో ఎత్తు</label>
 
                     <input
                         type="range"
@@ -270,11 +256,13 @@
 
 
                 <!-- రిపోర్టర్స్ యాడ్ -->
+
                 <section class="toolbar-section master-only-tool">
 
                     <h3>3. రిపోర్టర్స్ యాడ్</h3>
 
                     <label class="toggle-label">
+
                         <input
                             type="checkbox"
                             id="reporters-ad-enabled"
@@ -282,6 +270,7 @@
                         >
 
                         రిపోర్టర్స్ యాడ్ చూపించు
+
                     </label>
 
                     <label for="reporters-ad-file">
@@ -298,11 +287,13 @@
 
 
                 <!-- మంచి మాట -->
+
                 <section class="toolbar-section master-only-tool">
 
                     <h3>4. మంచి మాట</h3>
 
                     <label class="toggle-label">
+
                         <input
                             type="checkbox"
                             id="quote-enabled"
@@ -310,11 +301,10 @@
                         >
 
                         మంచి మాట చూపించు
+
                     </label>
 
-                    <label for="quote-heading">
-                        శీర్షిక
-                    </label>
+                    <label for="quote-heading">శీర్షిక</label>
 
                     <input
                         type="text"
@@ -323,9 +313,7 @@
                         maxlength="60"
                     >
 
-                    <label for="quote-text">
-                        సూక్తి
-                    </label>
+                    <label for="quote-text">సూక్తి</label>
 
                     <textarea
                         id="quote-text"
@@ -336,14 +324,13 @@
                 </section>
 
 
-                <!-- బ్రాండింగ్ -->
+                <!-- పత్రిక వివరాలు -->
+
                 <section class="toolbar-section master-only-tool">
 
                     <h3>5. పత్రిక వివరాలు</h3>
 
-                    <label for="newspaper-name">
-                        పత్రిక పేరు
-                    </label>
+                    <label for="newspaper-name">పత్రిక పేరు</label>
 
                     <input
                         type="text"
@@ -352,9 +339,7 @@
                         maxlength="100"
                     >
 
-                    <label for="volume-number">
-                        సంపుటి
-                    </label>
+                    <label for="volume-number">సంపుటి</label>
 
                     <input
                         type="text"
@@ -363,9 +348,7 @@
                         maxlength="20"
                     >
 
-                    <label for="issue-number">
-                        సంచిక
-                    </label>
+                    <label for="issue-number">సంచిక</label>
 
                     <input
                         type="text"
@@ -374,9 +357,7 @@
                         maxlength="20"
                     >
 
-                    <label for="publication-day">
-                        రోజు / వారం
-                    </label>
+                    <label for="publication-day">రోజు / వారం</label>
 
                     <input
                         type="text"
@@ -384,18 +365,14 @@
                         maxlength="30"
                     >
 
-                    <label for="publication-date">
-                        తేదీ
-                    </label>
+                    <label for="publication-date">తేదీ</label>
 
                     <input
                         type="date"
                         id="publication-date"
                     >
 
-                    <label for="cover-price">
-                        వెల
-                    </label>
+                    <label for="cover-price">వెల</label>
 
                     <input
                         type="text"
@@ -407,7 +384,8 @@
                 </section>
 
 
-                <!-- బుల్లెట్లు -->
+                <!-- దిగువ బుల్లెట్లు -->
+
                 <section class="toolbar-section master-only-tool">
 
                     <h3>6. పేజీ దిగువ బుల్లెట్లు</h3>
@@ -417,36 +395,37 @@
                     </label>
 
                     <select id="footer-bullet-style">
+
                         <option value="solid-circle">●</option>
                         <option value="square">■</option>
                         <option value="diamond">◆</option>
                         <option value="triangle">▲</option>
                         <option value="star">★</option>
                         <option value="flower">❖</option>
+
                     </select>
 
                 </section>
 
 
-                <!-- న్యూస్ ఎడిటింగ్ -->
+                <!-- వార్తల ఎడిటింగ్ -->
+
                 <section class="toolbar-section">
 
                     <h3>7. వార్తల ఎడిటింగ్</h3>
 
-                    <label for="selected-page">
-                        పేజీ ఎంచుకోండి
-                    </label>
+                    <label for="selected-page">పేజీ ఎంచుకోండి</label>
 
                     <select id="selected-page">
+
                         <option value="1">పేజీ 1</option>
                         <option value="2">పేజీ 2</option>
                         <option value="3">పేజీ 3</option>
                         <option value="4">పేజీ 4</option>
+
                     </select>
 
-                    <label for="news-headline">
-                        హెడ్‌లైన్
-                    </label>
+                    <label for="news-headline">హెడ్‌లైన్</label>
 
                     <input
                         type="text"
@@ -455,9 +434,7 @@
                         placeholder="వార్త హెడ్‌లైన్"
                     >
 
-                    <label for="news-subheadlines">
-                        సబ్‌హెడ్‌లైన్లు
-                    </label>
+                    <label for="news-subheadlines">సబ్‌హెడ్‌లైన్లు</label>
 
                     <textarea
                         id="news-subheadlines"
@@ -466,9 +443,7 @@
                         placeholder="ప్రతి సబ్‌హెడ్‌లైన్‌ను కొత్త లైన్‌లో రాయండి"
                     ></textarea>
 
-                    <label for="news-dateline">
-                        డేట్‌లైన్
-                    </label>
+                    <label for="news-dateline">డేట్‌లైన్</label>
 
                     <input
                         type="text"
@@ -477,15 +452,13 @@
                         placeholder="స్థలం, తేదీ (యువగళం ప్రతినిధి)"
                     >
 
-                    <label for="news-body">
-                        వార్త పూర్తి వివరాలు
-                    </label>
+                    <label for="news-body">వార్త పూర్తి వివరాలు</label>
 
                     <textarea
                         id="news-body"
                         rows="8"
                         maxlength="50000"
-                        placeholder="వార్త పూర్తి వివరాలను ఇక్కడ నమోదు చేయండి"
+                        placeholder="వార్త పూర్తి వివరాలను నమోదు చేయండి"
                     ></textarea>
 
                     <label for="news-photo-files">
@@ -511,6 +484,7 @@
 
 
                 <!-- ఆటో పేజీ సెటప్ -->
+
                 <section class="toolbar-section">
 
                     <h3>8. ఆటో పేజీ సెటప్</h3>
@@ -526,7 +500,8 @@
                 </section>
 
 
-                <!-- మాస్టర్ సేవింగ్ -->
+                <!-- మాస్టర్ లేఅవుట్ సేవింగ్ -->
+
                 <section class="toolbar-section master-only-tool">
 
                     <h3>9. మాస్టర్ లేఅవుట్</h3>
@@ -554,6 +529,7 @@
 
 
                 <!-- PDF -->
+
                 <section class="toolbar-section">
 
                     <h3>10. PDF</h3>
@@ -571,6 +547,7 @@
                     </label>
 
                     <select id="social-pdf-size">
+
                         <option value="1">1 MB</option>
                         <option value="2">2 MB</option>
                         <option value="5" selected>5 MB</option>
@@ -578,6 +555,7 @@
                         <option value="20">20 MB</option>
                         <option value="50">50 MB</option>
                         <option value="100">100 MB</option>
+
                     </select>
 
                     <button
@@ -592,6 +570,7 @@
 
 
                 <!-- యాప్ సందేశాలు -->
+
                 <div
                     id="app-status"
                     class="app-status"
@@ -602,7 +581,8 @@
             </aside>
 
 
-            <!-- కుడివైపు న్యూస్‌పేపర్ క్యాన్వాస్ -->
+            <!-- న్యూస్‌పేపర్ క్యాన్వాస్ -->
+
             <section class="right-canvas-area">
 
                 <header class="canvas-topbar">
@@ -625,7 +605,6 @@
 
                 </header>
 
-
                 <div
                     id="paper-canvas"
                     class="paper-canvas"
@@ -637,7 +616,10 @@
         </section>
 
 
-        <!-- మొబైల్ న్యూస్ ఫారమ్ -->
+        <!-- =====================================
+             3. మొబైల్ న్యూస్ ఫారమ్
+        ====================================== -->
+
         <section
             id="mobile-workspace"
             class="mobile-container hidden"
@@ -667,7 +649,11 @@
                     మాస్టర్ లేఅవుట్
                 </label>
 
-                <select id="mobile-master-layout" required>
+                <select
+                    id="mobile-master-layout"
+                    name="masterLayoutId"
+                    required
+                >
                     <option value="">మాస్టర్ ఎంచుకోండి</option>
                 </select>
 
@@ -676,8 +662,12 @@
                     పేజీ నంబర్
                 </label>
 
-                <select id="mobile-page-number" required>
-                    <option value="">ముందుగా మాస్టర్ ఎంచుకోండి</option>
+                <select
+                    id="mobile-page-number"
+                    name="pageNumber"
+                    required
+                >
+                    <option value="">పేజీ ఎంచుకోండి</option>
                 </select>
 
 
@@ -688,19 +678,33 @@
                 <input
                     type="text"
                     id="mobile-news-headline"
+                    name="headline"
                     maxlength="500"
                     required
                 >
 
 
-                <label for="mobile-news-subheadlines">
-                    సబ్‌హెడ్‌లైన్లు
+                <label for="mobile-news-subheadline1">
+                    సబ్‌హెడ్‌లైన్ 1
                 </label>
 
                 <textarea
-                    id="mobile-news-subheadlines"
-                    rows="3"
-                    maxlength="1500"
+                    id="mobile-news-subheadline1"
+                    name="subheadline1"
+                    rows="2"
+                    maxlength="750"
+                ></textarea>
+
+
+                <label for="mobile-news-subheadline2">
+                    సబ్‌హెడ్‌లైన్ 2
+                </label>
+
+                <textarea
+                    id="mobile-news-subheadline2"
+                    name="subheadline2"
+                    rows="2"
+                    maxlength="750"
                 ></textarea>
 
 
@@ -709,4 +713,5 @@
                 </label>
 
                 <input
-                 
+                    type="text"
+      
