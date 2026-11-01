@@ -1,27 +1,45 @@
 import React from 'react';
 
-export const MasterToolbar = ({ onSaveMaster, onUploadLogo }) => {
+export function MasterToolbar({ onSaveMaster, onUploadLogo }) {
   return (
-    <div style={{ padding: '10px 20px', background: '#1a1a1a', color: '#fff', display: 'flex', gap: '15px', alignItems: 'center', flexWrap: 'wrap' }}>
-      <span style={{ color: '#ffcc00', fontWeight: 'bold' }}>[మాస్టర్ లేఅవుట్ టూల్‌బార్]</span>
+    <div style={{ background: '#222', color: '#fff', padding: '10px 15px', display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', borderBottom: '2px solid #d32f2f' }}>
+      <div style={{ fontWeight: 'bold', color: '#ff4444', fontSize: '15px' }}>[మాస్టర్ లేఅవుట్ టూల్‌బార్]</div>
       
-      <select style={{ padding: '5px' }}>
-        <option>పేజీ సైజ్: A3 Broadsheet</option>
-      </select>
+      {/* పేపర్ సైజ్ సెలెక్షన్ */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <label style={{ fontSize: '13px' }}>పేపర్ సైజ్:</label>
+        <select style={{ padding: '5px', borderRadius: '4px', background: '#333', color: '#fff', border: '1px solid #555' }}>
+          <option value="BROADSHEET">A3 బ్రాడ్‌షీట్</option>
+          <option value="MEDIUM">మీడియం</option>
+          <option value="DISTRICT_TABLOID">జిల్లా టాబ్లెట్ షీట్</option>
+        </select>
+      </div>
 
-      <input type="number" placeholder="పేజీల సంఖ్య" defaultValue={4} style={{ width: '90px', padding: '5px' }} />
+      {/* నంబర్స్ ఆఫ్ పేజీలు */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <label style={{ fontSize: '13px' }}>పేజీలు:</label>
+        <select style={{ padding: '5px', borderRadius: '4px', background: '#333', color: '#fff', border: '1px solid #555', width: '60px' }}>
+          {[...Array(16)].map((_, i) => (
+            <option key={i + 1} value={i + 1}>{i + 1}</option>
+          ))}
+        </select>
+      </div>
 
-      <button onClick={onUploadLogo} style={{ padding: '5px 10px', background: '#0055ff', color: '#fff', border: 'none', cursor: 'pointer' }}>
+      {/* లోగో అప్‌లోడ్ బటన్ */}
+      <button 
+        onClick={onUploadLogo}
+        style={{ background: '#1976d2', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold' }}
+      >
         Upload Main Logo
       </button>
 
-      <button style={{ padding: '5px 10px', background: '#444', color: '#fff', border: 'none' }}>
-        బాటమ్ బుల్లెట్స్ ఆన్/ఆఫ్
-      </button>
-
-      <button style={{ padding: '5px 15px', background: '#00aa00', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }} onClick={onSaveMaster}>
+      {/* సేవ్ మాస్టర్ లేఅవుట్ */}
+      <button 
+        onClick={onSaveMaster}
+        style={{ background: '#388e3c', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px', fontWeight: 'bold', marginLeft: 'auto' }}
+      >
         మాస్టర్ లేఅవుట్‌గా సేవ్ చేయి
       </button>
     </div>
   );
-};
+}
