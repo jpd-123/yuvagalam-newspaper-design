@@ -1,23 +1,24 @@
 import React from 'react';
-import { BULLET_TYPES, UNDERLINE_STYLES } from '../../constants/themeConstants';
 
-export const BottomStyleBar = () => {
+export function BottomStyleBar() {
   return (
-    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#333', color: '#fff', padding: '8px 20px', display: 'flex', gap: '20px', alignItems: 'center', zIndex: 999 }}>
-      <span><strong>ఫాంట్ సైజ్:</strong></span>
-      <button style={{ padding: '2px 8px' }}>-</button>
-      <span>12pt</span>
-      <button style={{ padding: '2px 8px' }}>+</button>
+    <div style={{ background: '#222', color: '#fff', padding: '8px 15px', display: 'flex', alignItems: 'center', gap: '15px', fontSize: '13px', borderTop: '1px solid #444' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <span style={{ fontWeight: 'bold' }}>ఫాంట్ సైజ్:</span>
+        <button style={{ background: '#444', color: '#fff', border: 'none', padding: '2px 8px', cursor: 'pointer', borderRadius: '3px' }}>-</button>
+        <span style={{ background: '#333', padding: '2px 10px', borderRadius: '3px', border: '1px solid #555' }}>12pt</span>
+        <button style={{ background: '#444', color: '#fff', border: 'none', padding: '2px 8px', cursor: 'pointer', borderRadius: '3px' }}>+</button>
+      </div>
 
-      <span><strong>బుల్లెట్లు:</strong></span>
-      <select style={{ padding: '3px' }}>
-        {BULLET_TYPES.map((b, i) => <option key={i}>{b}</option>)}
-      </select>
-
-      <span><strong>అండర్‌లైన్:</strong></span>
-      <select style={{ padding: '3px' }}>
-        {UNDERLINE_STYLES.map((u) => <option key={u.id}>{u.name}</option>)}
-      </select>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginLeft: '20px' }}>
+        <span style={{ fontWeight: 'bold' }}>బుల్లెట్లు:</span>
+        <select style={{ background: '#333', color: '#fff', border: '1px solid #555', padding: '3px 6px', borderRadius: '3px' }}>
+          <option value="none">ఏదీ వద్దు</option>
+          <option value="bullet1">బుల్లెట్ 1</option>
+          <option value="bullet2">బుల్లెట్ 2</option>
+          <option value="bullet3">బుల్లెట్ 3</option>
+        </select>
+      </div>
     </div>
   );
-};
+}
