@@ -8,7 +8,6 @@ import { RightStylePanel } from './components/Panels/RightStylePanel';
 import { BottomStyleBar } from './components/Panels/BottomStyleBar';
 import PageCanvas from './components/Canvas/PageCanvas';
 import { ExportPdfModal } from './components/Modals/ExportPdfModal';
-
 export default function App() {
   const { activeMode, openDailyLayout, setActiveMode } = useMasterStore();
   const [showPdfModal, setShowPdfModal] = useState(false);
@@ -39,7 +38,6 @@ export default function App() {
       }
     }
   };
-
   const handleCanvasClick = (e) => {
     if (!selectedShape || activeTool === 'POINTER') return;
 
@@ -72,7 +70,6 @@ export default function App() {
       default: return { width: '820px', minHeight: '1160px' };
     }
   };
-
   const dimensions = getPaperDimensions();
 
   return (
@@ -164,4 +161,4 @@ export default function App() {
       {showPdfModal && <ExportPdfModal pageRef={pageRef} onClose={() => setShowPdfModal(false)} />}
     </div>
   );
-            }
+                                                                  }
