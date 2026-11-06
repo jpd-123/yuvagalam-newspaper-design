@@ -6,31 +6,7 @@ import { MobileToolbar } from './components/Toolbars/MobileToolbar';
 import { LeftToolPanel } from './components/Panels/LeftToolPanel';
 import { RightStylePanel } from './components/Panels/RightStylePanel';
 import { BottomStyleBar } from './components/Panels/BottomStyleBar';
-import { FrontHeaderBar } from './components/Canvas/FrontHeaderBar';
-import { InnerHeaderBar } from './components/Canvas/InnerHeaderBar';
-import { FooterCMYK } from './components/Canvas/FooterCMYK';
-import { ShapeContainer } from './components/NewsShapes/ShapeContainer';
-import { ExportPdfModal } from './components/Modals/ExportPdfModal';
-
-export default function App() {
-  const { activeMode, openDailyLayout, setActiveMode } = useMasterStore();
-  const [showPdfModal, setShowPdfModal] = useState(false);
-  const [selectedShape, setSelectedShape] = useState('RECTANGLE');
-  const [selectedFont, setSelectedFont] = useState('Gidugu');
-  const [bgColor, setBgColor] = useState('#ffffff');
-  const [currentPage, setCurrentPage] = useState(1); // 1 = Front Page, 2 = Inner Page
-  const pageRef = useRef(null);
-
-  const handleColorSelect = (type, color) => {
-    if (type === 'LIGHT') {
-import React, { useState, useRef } from 'react';
-import { useMasterStore } from './store/useMasterStore';
-import { MasterToolbar } from './components/Toolbars/MasterToolbar';
-import { DailyToolbar } from './components/Toolbars/DailyToolbar';
-import { MobileToolbar } from './components/Toolbars/MobileToolbar';
-import { LeftToolPanel } from './components/Panels/LeftToolPanel';
-import { RightStylePanel } from './components/Panels/RightStylePanel';
-import { BottomStyleBar } from './components/Panels/BottomStyleBar';
+import PageCanvas from './components/Canvas/PageCanvas';
 import { ExportPdfModal } from './components/Modals/ExportPdfModal';
 
 export default function App() {
@@ -159,65 +135,17 @@ export default function App() {
             />
 
             {/* సెంటర్ క్లీన్ వైట్ పేపర్ కాన్వాస్ */}
-            <div style={{ flex: 1, background: '#444', overflowY: 'auto', padding: '20px', display: 'flex', justifyContent: 'center' }}>
-              <div 
-                ref={pageRef}
-                onClick={handleCanvasClick}
-                style={{ 
-                  width: dimensions.width, 
-                  minHeight: dimensions.minHeight, 
-                  background: bgColor, 
-                  boxShadow: '0 0 20px rgba(0,0,0,0.6)', 
-                  padding: '20px',
-                  fontFamily: selectedFont,
-                  boxSizing: 'border-box',
-                  position: 'relative',
-                  cursor: selectedShape ? 'crosshair' : 'default'
-                }}
-              >
-                {/* పూర్తిగా ఖాళీ అయిన క్లీన్ వైట్ పేపర్ మెసేజ్ */}
-                {canvasElements.length === 0 && (
-                  <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)', color: '#aaa', textAlign: 'center', pointerEvents: 'none', border: '2px dashed #ccc', padding: '40px', borderRadius: '10px' }}>
-                    <h3 style={{ margin: '0 0 10px 0', color: '#666' }}>మాస్టర్ లేఅవుట్ - పేజీ {currentPage}</h3>
-                    <p style={{ margin: 0, fontSize: '13px' }}>ఇది పూర్తిగా ఖాళీగా ఉన్న క్లీన్ వైట్ పేపర్. ఎడమ వైపు టూల్స్ ద్వారా మీరు మాన్యువల్‌గా డిజైన్ ప్రారంభించండి.</p>
-                  </div>
-                )}
-
-                {/* యూజర్ గీసే గ్రిడ్స్ / ఎలిమెంట్స్ */}
-                {canvasElements.map((el) => (
-                  <div
-                    key={el.id}
-                    onClick={(e) => { e.stopPropagation(); setSelectedElementId(el.id); }}
-                    style={{
-                      position: 'absolute',
-                      left: `${el.x}px`,
-                      top: `${el.y}px`,
-                      width: `${el.width}px`,
-                      height: `${el.height}px`,
-                      border: selectedElementId === el.id ? '2px solid #d32f2f' : '1px solid #888',
-                      background: el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO' ? '#f0f0f0' : 'transparent',
-                      color: el.color,
-                      borderRadius: el.type === 'CIRCLE' || el.type === 'CIRCLE_PHOTO' ? '50%' : el.type === 'OVAL' ? '50% / 30%' : '0px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '5px',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    {el.type === 'PICTURE' && <span style={{ fontSize: '11px', color: '#555' }}>❎ పిక్చర్ బాక్స్</span>}
-                    {el.type === 'CIRCLE_PHOTO' && <span style={{ fontSize: '10px', color: '#555' }}>⊗ సర్కిల్ ఫోటో</span>}
-                    {el.type === 'DIVIDER' && <div style={{ width: '100%', height: '2px', background: el.color }} />}
-                    {el.type === 'RECTANGLE' && (
-                      <textarea 
-                        defaultValue={el.text}
-                        style={{ width: '100%', height: '100%', border: 'none', outline: 'none', background: 'transparent', resize: 'none', color: el.color, fontFamily: selectedFont, fontSize: `${fontSize}pt` }}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <PageCanvas 
+              pageTitle={`మాస్టర్ లేఅవుట్ - పేజీ ${currentPage}`}
+              bgColor={bgColor}
+              selectedFont={selectedFont}
+              dimensions={dimensions}
+              onCanvasClick={handleCanvasClick}
+              canvasElements={canvasElements}
+              selectedElementId={selectedElementId}
+              onSelectElement={(id) => setSelectedElementId(id)}
+              fontSize={fontSize}
+            />
 
             {/* రైట్ సైడ్ స్టైల్ & కలర్ ప్యానెల్ */}
             <RightStylePanel 
