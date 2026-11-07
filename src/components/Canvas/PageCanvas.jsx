@@ -28,18 +28,10 @@ export default function PageCanvas({
           cursor: 'crosshair'
         }}
       >
-        {/* ఎలాంటి డమ్మీ వార్తలు లేని పూర్తిగా ఖాళీ అయిన క్లీన్ వైట్ పేపర్ సందేశం */}
-        {canvasElements.length === 0 && !children && (
-          <div style={{ position: 'absolute', top: '45%', left: '50%', transform: 'translate(-50%, -50%)', color: '#aaa', textAlign: 'center', pointerEvents: 'none', border: '2px dashed #ccc', padding: '40px', borderRadius: '10px' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#666' }}>{pageTitle || "మాస్టర్ లేఅవుట్ - క్లీన్ వైట్ పేపర్"}</h3>
-            <p style={{ margin: 0, fontSize: '13px' }}>ఇది పూర్తిగా ఖాళీ పేపర్. ఎడమ వైపు టూల్ ప్యానెల్ నుండి గ్రిడ్స్ లేదా టెక్స్ట్ ఎంచుకొని ఇక్కడ క్లిక్ చేసి డిజైన్ ప్రారంభించండి.</p>
-          </div>
-        )}
-
-        {/* ఒకవేళ చిల్డ్రన్ ఉంటే వాటిని చూపుతుంది */}
+        {/* ఎలాంటి ముందస్తు అక్షరాలు లేదా డమ్మీ మెసేజ్‌లు లేకుండా పూర్తిగా ఖాళీగా ఉండే క్లీన్ వైట్ పేపర్ */}
         {children}
 
-        {/* యూజర్ మ్యాన్యువల్‌గా గీసిన గ్రిడ్స్ / ఎలిమెంట్స్ */}
+        {/* యూజర్ మ్యాన్యువల్‌గా లేదా ఆటోమేటిక్‌గా గీసిన గ్రిడ్స్ / ఎలిమెంట్స్ */}
         {canvasElements.map((el) => (
           <div
             key={el.id}
