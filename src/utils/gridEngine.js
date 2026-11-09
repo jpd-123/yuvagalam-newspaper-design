@@ -40,13 +40,11 @@ export const getWrapStyle = (wrapMode, shapeType = 'RECTANGLE') => {
 
 // 3. ఆటోమేటిక్ టెక్స్ట్ ఫ్లో & జంప్ లైన్ లాజిక్ (1వ పేజీ నుండి 2వ పేజీకి వార్తా ఫ్లో)
 export const handleTextFlow = (currentText, boxHeight, fontSize, currentPage = 1) => {
-  // గ్రిడ్‌లో పట్టే అక్షరాల అంచనా లెక్కింపు
-  const charsPerLine = 35; // సగటున ఒక లైన్‌కు అక్షరాలు
+  const charsPerLine = 35; 
   const totalLinesAllowed = Math.floor(boxHeight / (fontSize * 1.3));
   const maxChars = totalLinesAllowed * charsPerLine;
 
   if (currentText.length > maxChars) {
-    // వాక్యం ఆగిపోయిన పదాన్ని కనుగొనడం
     const splitIndex = currentText.lastIndexOf(' ', maxChars);
     
     const page1Text = currentText.substring(0, splitIndex) + " ... (తరువాయి 2వ పేజీలో)";
@@ -77,4 +75,38 @@ export const calculateColumnDividers = (containerWidth, columnsCount, gutter = 1
   }
 
   return dividers;
+};
+
+// ==========================================
+// 5. కొత్త ఫీచర్: సెక్షన్-వైజ్ రౌటింగ్ & రియల్ టైమ్ ఆటో-ఫిట్ ఇంజిన్
+// ==========================================
+
+// వార్త రకాన్ని బట్టి సరైన విభాగంలోకి (Column) పంపడం
+export const routeNewsToSection = (newsItem, sectionType) => {
+  return {
+    ...newsItem,
+    targetSection: sectionType === 'BRIEF' ? 'COLUMN_SHORT_NEWS' : 'COLUMN_MAIN_STORY',
+    timestamp: Date.now()
+  };
+};
+
+// గ్రిడ్ అడుగుభాగం వరకు టెక్స్ట్ రాగానే ఖాళీ లేకుండా ఫాంట్ & ఫోటో నిష్పత్తిని ఆటో-అడ్జస్ట్ చేయడం
+export const autoFitSectionContent = (contentLength, boxHeight, currentFontSize, currentPhotoSize) => {
+  const estimatedCapacity = Math.floor(boxHeight * 0.8); // గ్రిడ్ సామర్థ్య అంచనా
+  
+  let adjustedFontSize = currentFontSize;
+  let adjustedPhotoSize = currentPhotoSize;
+
+  // ఒకవేళ టెక్స్ట్ బాక్స్ సామర్థ్యానికి తక్కువగా ఉండి, అడుగున గ్యాప్ వస్తుంటే నిష్పత్తి ప్రకారం సర్దుబాటు
+  if (contentLength < estimatedCapacity && contentLength > 50) {
+    // ఖాళీని భర్తీ చేయడానికి ఫాంట్ సైజ్ లేదా ఫోటో సైజును స్వల్పంగా సర్దుబాటు చేయడం
+    adjustedFontSize = Math.min(currentFontSize + 1, 14); // గరిష్టంగా 14pt దాటకుండా
+    adjustedPhotoSize = Math.round(currentPhotoSize * 1.05); // ఫోటో సైజ్ 5% పెంచడం
+  }
+
+  return {
+    adjustedFontSize,
+    adjustedPhotoSize,
+    isFitOptimized: true
+  };
 };
