@@ -5,17 +5,17 @@ export const calculateGridBounds = (containerWidth, columnsCount = 1, gutter = 1
   return { columnWidth, gutter };
 };
 
-// 2. ఫోటో చుట్టూ టెక్స్ట్ రాపింగ్ స్టైల్స్ (షేప్ రాపింగ్ తో సహా)
-export const getWrapStyle = (wrapMode, shapeType = 'RECTANGLE') => {
+// 2. ఫోటో చుట్టూ టెక్స్ట్ రాపింగ్ స్టైల్्स (L-షేప్ మరియు షేప్ రాపింగ్ తో సహా)
+export const getWrapStyle = (wrapMode, shapeType = 'RECTANGLE', isVerticalPhoto = false) => {
   let style = {};
 
   switch (wrapMode) {
     case 'FLOAT_LEFT':
-      style = { float: 'left', marginRight: '10px', marginBottom: '10px' };
+      style = { float: 'left', marginRight: '12px', marginBottom: '10px' };
       break;
 
     case 'FLOAT_RIGHT':
-      style = { float: 'right', marginLeft: '10px', marginBottom: '10px' };
+      style = { float: 'right', marginLeft: '12px', marginBottom: '10px' };
       break;
 
     case 'CENTER_TOP':
@@ -26,8 +26,14 @@ export const getWrapStyle = (wrapMode, shapeType = 'RECTANGLE') => {
       style = { float: 'none', marginBottom: '10px' };
   }
 
-  // గుండ్రని / అండాకార ఫోటోల చుట్టూ టెక్స్ట్ ఆకారానికి తగ్గట్లు వంగడానికి
-  if (shapeType === 'CIRCLE' || shapeType === 'CIRCLE_PHOTO') {
+  // నిలువు ఫోటో (Vertical Photo) అయినప్పుడు 'L-షేప్' రాపింగ్ లేదా ప్రత్యేక ఆకారాలు వర్తింపజేయడం
+  if (isVerticalPhoto || shapeType === 'VERTICAL_PHOTO') {
+    // L-Shape text wrap simulation using CSS shape-outside or float bounds
+    style.float = 'left';
+    style.marginRight = '15px';
+    style.marginBottom = '12px';
+    style.maxWidth = '45%'; // నిలువు ఫోటో గ్రిడ్‌లో సగం భాగం తీసుకునేలా
+  } else if (shapeType === 'CIRCLE' || shapeType === 'CIRCLE_PHOTO') {
     style.shapeOutside = 'circle(50%)';
     style.borderRadius = '50%';
   } else if (shapeType === 'OVAL') {
@@ -78,30 +84,41 @@ export const calculateColumnDividers = (containerWidth, columnsCount, gutter = 1
 };
 
 // ==========================================
-// 5. కొత్త ఫీచర్: సెక్షన్-వైజ్ రౌటింగ్ & రియల్ టైమ్ ఆటో-ఫిట్ ఇంజిన్
+// 5. సెక్షన్-వైజ్ రౌటింగ్ & L-షేప్ కాలమ్ మేనేజ్‌మెంట్
 // ==========================================
 
-// వార్త రకాన్ని బట్టి సరైన విభాగంలోకి (Column) పంపడం
+// వార్త రకాన్ని బట్టి సింగిల్ కాలమ్ లేదా డబుల్/మెయిన్ కాలమ్‌లోకి పంపడం
 export const routeNewsToSection = (newsItem, sectionType) => {
+  let targetCol = 'COLUMN_SINGLE_BRIEF'; // చిన్న వార్తలు (Single Column)
+  
+  if (sectionType === 'MEDIUM_STORY') {
+    targetCol = 'COLUMN_MEDIUM_DOUBLE'; // మధ్యస్థ వార్తలు (Double Column)
+  } else if (sectionType === 'MAIN_STORY') {
+    targetCol = 'COLUMN_MAIN_TRIPLE'; // పెద్ద వార్తలు (Double/Triple Column)
+  }
+
   return {
     ...newsItem,
-    targetSection: sectionType === 'BRIEF' ? 'COLUMN_SHORT_NEWS' : 'COLUMN_MAIN_STORY',
+    targetSection: targetCol,
+    columnSpan: sectionType === 'BRIEF' ? 1 : 2, // కాలమ్ వెడల్పు కేటాయింపు
     timestamp: Date.now()
   };
 };
 
-// గ్రిడ్ అడుగుభాగం వరకు టెక్స్ట్ రాగానే ఖాళీ లేకుండా ఫాంట్ & ఫోటో నిష్పత్తిని ఆటో-అడ్జస్ట్ చేయడం
-export const autoFitSectionContent = (contentLength, boxHeight, currentFontSize, currentPhotoSize) => {
-  const estimatedCapacity = Math.floor(boxHeight * 0.8); // గ్రిడ్ సామర్థ్య అంచనా
+// ==========================================
+// 6. రియల్ టైమ్ ఆటో-ఫిట్ ఇంజిన్ & రేషియో అడ్జస్ట్‌మెంట్
+// ==========================================
+
+export const autoFitSectionContent = (contentLength, boxHeight, currentFontSize, currentPhotoSize, isVertical = false) => {
+  const estimatedCapacity = Math.floor(boxHeight * 0.82); 
   
   let adjustedFontSize = currentFontSize;
   let adjustedPhotoSize = currentPhotoSize;
 
-  // ఒకవేళ టెక్స్ట్ బాక్స్ సామర్థ్యానికి తక్కువగా ఉండి, అడుగున గ్యాప్ వస్తుంటే నిష్పత్తి ప్రకారం సర్దుబాటు
-  if (contentLength < estimatedCapacity && contentLength > 50) {
-    // ఖాళీని భర్తీ చేయడానికి ఫాంట్ సైజ్ లేదా ఫోటో సైజును స్వల్పంగా సర్దుబాటు చేయడం
-    adjustedFontSize = Math.min(currentFontSize + 1, 14); // గరిష్టంగా 14pt దాటకుండా
-    adjustedPhotoSize = Math.round(currentPhotoSize * 1.05); // ఫోటో సైజ్ 5% పెంచడం
+  // బాక్స్‌లో అడుగుభాగం వరకు గ్యాప్ లేకుండా సర్దుబాటు చేయడం
+  if (contentLength < estimatedCapacity && contentLength > 40) {
+    adjustedFontSize = Math.min(currentFontSize + 1, 14); 
+    adjustedPhotoSize = isVertical ? Math.round(currentPhotoSize * 1.08) : Math.round(currentPhotoSize * 1.05);
   }
 
   return {
