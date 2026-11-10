@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getNewspaperDate } from '../../utils/dateEngine'; // మనం సృష్టించిన డేట్ ఇంజిన్ ఇంపోర్ట్ చేయడం
 
 export function MobileToolbar({ onUploadClick }) {
   const [headline, setHeadline] = useState('');
@@ -20,7 +21,11 @@ export function MobileToolbar({ onUploadClick }) {
   const [imageFile, setImageFile] = useState(null);
 
   const handleSaveNews = () => {
-    alert(`వార్త విజయవంతంగా సేవ్ చేయబడింది!\n\nపత్రిక: ${targetEdition}\nవిభాగం: ${sectionType}\nఫోటో స్టైల్: ${photoOrientation === 'VERTICAL' ? 'నిలువు ఫోటో (L-Shape Wrap)' : 'సాధారణ ఫోటో'}\nమాస్టర్: ${selectedMaster} | పేజీ: ${selectedPage}`);
+    // ఆటోమేటిక్‌గా రేపటి తేదీని పొందడం (Night-Shift Date Logic)
+    const { dateString } = getNewspaperDate();
+
+    alert(`వార్త విజయవంతంగా సేవ్ చేయబడింది!\n\nపత్రిక: ${targetEdition}\nప్రచురణ తేదీ: ${dateString}\nవిభాగం: ${sectionType}\nఫోటో స్టైల్: ${photoOrientation === 'VERTICAL' ? 'నిలువు ఫోటో (L-Shape Wrap)' : 'సాధారణ ఫోటో'}\nమాస్టర్: ${selectedMaster} | పేజీ: ${selectedPage}`);
+    
     if (onUploadClick) onUploadClick();
   };
 
@@ -191,7 +196,7 @@ export function MobileToolbar({ onUploadClick }) {
             </select>
             <select 
               value={newsIndex} 
-              onChange={(e) => setSelectedNewsIndex(e.target.value)}
+              onChange={(e) => setNewsIndex(e.target.value)}
               style={{ width: '50px', padding: '6px', borderRadius: '4px', border: '1px solid #ccc' }}
             >
               <option value="1">#1</option>
