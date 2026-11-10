@@ -1,5 +1,6 @@
 import React from 'react';
 import { getWrapStyle } from '../../utils/gridEngine'; // గ్రిడ్ ఇంజిన్ నుండి రాపింగ్ స్టైల్స్ ఇంపోర్ట్ చేయడం
+import { getNewspaperDate } from '../../utils/dateEngine'; // ఆటోమేటిక్ డేట్ ఇంజిన్ ఇంపోర్ట్ చేయడం
 
 export default function PageCanvas({ 
   pageTitle, 
@@ -13,6 +14,9 @@ export default function PageCanvas({
   onSelectElement,
   fontSize = 12
 }) {
+  // ఆటోమేటిక్‌గా రేపటి తేదీ మరియు వారాన్ని పొందడం
+  const { dateString } = getNewspaperDate();
+
   return (
     <div style={{ flex: 1, background: '#444', overflowY: 'auto', padding: '20px', display: 'flex', justifyContent: 'center' }}>
       <div 
@@ -29,6 +33,13 @@ export default function PageCanvas({
           cursor: 'crosshair'
         }}
       >
+        {/* పత్రిక హెడర్ / మాస్ట్ హెడ్ వద్ద ఆటోమేటిక్ తేదీ & సంపుటి డిస్ప్లే */}
+        <div style={{ borderBottom: '2px solid #333', paddingBottom: '8px', marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', fontWeight: 'bold', color: '#333' }}>
+          <div>సంపుటి: 1 | సంచిక: 12</div>
+          <div style={{ color: '#d32f2f', fontSize: '14px' }}>{pageTitle || "యువగళం దినపత్రిక"}</div>
+          <div>తేదీ: {dateString}</div>
+        </div>
+
         {/* ఎలాంటి ముందస్తు అక్షరాలు లేదా డమ్మీ మెసేజ్‌లు లేకుండా పూర్తిగా ఖాళీగా ఉండే క్లీన్ వైట్ పేపర్ */}
         {children}
 
