@@ -12,7 +12,10 @@ export default function PageCanvas({
   canvasElements = [],
   selectedElementId,
   onSelectElement,
-  fontSize = 12
+  fontSize = 12,
+  isMasterDesignMode = false, // మొదటిసారి మాస్టర్ డిజైన్ మోడ్ కోసం (True అయితే క్లీన్ పేపర్ ఉంటుంది)
+  volume = 1,                 // సంపుటి
+  issue = 12                  // సంచిక
 }) {
   // ఆటోమేటిక్‌గా రేపటి తేదీ మరియు వారాన్ని పొందడం
   const { dateString } = getNewspaperDate();
@@ -33,12 +36,17 @@ export default function PageCanvas({
           cursor: 'crosshair'
         }}
       >
-        {/* పత్రిక హెడర్ / మాస్ట్ హెడ్ వద్ద ఆటోమేటిక్ తేదీ & సంపుటి డిస్ప్లే */}
-        <div style={{ borderBottom: '2px solid #333', paddingBottom: '8px', marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', fontWeight: 'bold', color: '#333' }}>
-          <div>సంపుటి: 1 | సంచిక: 12</div>
-          <div style={{ color: '#d32f2f', fontSize: '14px' }}>{pageTitle || "యువగళం దినపత్రిక"}</div>
-          <div>తేదీ: {dateString}</div>
-        </div>
+        {/* 
+          ఒకవేళ ఇది 'మాస్టర్ డిజైన్ మోడ్' అయితే హెడర్ కనిపించదు (పూర్తిగా క్లీన్ వైట్ పేపర్ ఉంటుంది).
+          రోజువారీ ప్రొడక్షన్ సమయంలో ఆటోమేటిక్‌గా సంపుటి, సంచిక మరియు రేపటి తేదీ హెడర్‌లో డిస్ప్లే అవుతాయి.
+        */}
+        {!isMasterDesignMode && (
+          <div style={{ borderBottom: '2px solid #333', paddingBottom: '8px', marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', fontWeight: 'bold', color: '#333' }}>
+            <div>సంపుటి: {volume} | సంచిక: {issue}</div>
+            <div style={{ color: '#d32f2f', fontSize: '14px' }}>{pageTitle || "యువగళం దినపత్రిక"}</div>
+            <div>తేదీ: {dateString}</div>
+          </div>
+        )}
 
         {/* ఎలాంటి ముందస్తు అక్షరాలు లేదా డమ్మీ మెసేజ్‌లు లేకుండా పూర్తిగా ఖాళీగా ఉండే క్లీన్ వైట్ పేపర్ */}
         {children}
