@@ -1,11 +1,15 @@
+// ==========================================
 // 1. గ్రిడ్ సరిహద్దులు మరియు కాలమ్స్ లెక్కింపు
+// ==========================================
 export const calculateGridBounds = (containerWidth, columnsCount = 1, gutter = 10) => {
   const availableWidth = containerWidth - (gutter * (columnsCount - 1));
   const columnWidth = availableWidth / columnsCount;
   return { columnWidth, gutter };
 };
 
-// 2. ఫోటో చుట్టూ టెక్స్ట్ రాపింగ్ స్టైల్्स (L-షేప్ మరియు షేప్ రాపింగ్ తో సహా)
+// ==========================================
+// 2. ఫోటో చుట్టూ టెక్స్ట్ రాపింగ్ స్టైల్స్ (L-షేప్ మరియు షేప్ రాపింగ్ తో సహా)
+// ==========================================
 export const getWrapStyle = (wrapMode, shapeType = 'RECTANGLE', isVerticalPhoto = false) => {
   let style = {};
 
@@ -28,7 +32,6 @@ export const getWrapStyle = (wrapMode, shapeType = 'RECTANGLE', isVerticalPhoto 
 
   // నిలువు ఫోటో (Vertical Photo) అయినప్పుడు 'L-షేప్' రాపింగ్ లేదా ప్రత్యేక ఆకారాలు వర్తింపజేయడం
   if (isVerticalPhoto || shapeType === 'VERTICAL_PHOTO') {
-    // L-Shape text wrap simulation using CSS shape-outside or float bounds
     style.float = 'left';
     style.marginRight = '15px';
     style.marginBottom = '12px';
@@ -44,7 +47,9 @@ export const getWrapStyle = (wrapMode, shapeType = 'RECTANGLE', isVerticalPhoto 
   return style;
 };
 
+// ==========================================
 // 3. ఆటోమేటిక్ టెక్స్ట్ ఫ్లో & జంప్ లైన్ లాజిక్ (1వ పేజీ నుండి 2వ పేజీకి వార్తా ఫ్లో)
+// ==========================================
 export const handleTextFlow = (currentText, boxHeight, fontSize, currentPage = 1) => {
   const charsPerLine = 35; 
   const totalLinesAllowed = Math.floor(boxHeight / (fontSize * 1.3));
@@ -70,7 +75,9 @@ export const handleTextFlow = (currentText, boxHeight, fontSize, currentPage = 1
   };
 };
 
+// ==========================================
 // 4. కాలమ్ డివైడర్ గీతల పొజిషనింగ్ లెక్కింపు
+// ==========================================
 export const calculateColumnDividers = (containerWidth, columnsCount, gutter = 10) => {
   const { columnWidth } = calculateGridBounds(containerWidth, columnsCount, gutter);
   const dividers = [];
@@ -86,8 +93,6 @@ export const calculateColumnDividers = (containerWidth, columnsCount, gutter = 1
 // ==========================================
 // 5. సెక్షన్-వైజ్ రౌటింగ్ & L-షేప్ కాలమ్ మేనేజ్‌మెంట్
 // ==========================================
-
-// వార్త రకాన్ని బట్టి సింగిల్ కాలమ్ లేదా డబుల్/మెయిన్ కాలమ్‌లోకి పంపడం
 export const routeNewsToSection = (newsItem, sectionType) => {
   let targetCol = 'COLUMN_SINGLE_BRIEF'; // చిన్న వార్తలు (Single Column)
   
@@ -100,7 +105,7 @@ export const routeNewsToSection = (newsItem, sectionType) => {
   return {
     ...newsItem,
     targetSection: targetCol,
-    columnSpan: sectionType === 'BRIEF' ? 1 : 2, // కాలమ్ వెడల్పు కేటాయింపు
+    columnSpan: sectionType === 'BRIEF' ? 1 : 2, 
     timestamp: Date.now()
   };
 };
@@ -108,14 +113,12 @@ export const routeNewsToSection = (newsItem, sectionType) => {
 // ==========================================
 // 6. రియల్ టైమ్ ఆటో-ఫిట్ ఇంజిన్ & రేషియో అడ్జస్ట్‌మెంట్
 // ==========================================
-
 export const autoFitSectionContent = (contentLength, boxHeight, currentFontSize, currentPhotoSize, isVertical = false) => {
   const estimatedCapacity = Math.floor(boxHeight * 0.82); 
   
   let adjustedFontSize = currentFontSize;
   let adjustedPhotoSize = currentPhotoSize;
 
-  // బాక్స్‌లో అడుగుభాగం వరకు గ్యాప్ లేకుండా సర్దుబాటు చేయడం
   if (contentLength < estimatedCapacity && contentLength > 40) {
     adjustedFontSize = Math.min(currentFontSize + 1, 14); 
     adjustedPhotoSize = isVertical ? Math.round(currentPhotoSize * 1.08) : Math.round(currentPhotoSize * 1.05);
@@ -125,5 +128,35 @@ export const autoFitSectionContent = (contentLength, boxHeight, currentFontSize,
     adjustedFontSize,
     adjustedPhotoSize,
     isFitOptimized: true
+  };
+};
+
+// ==========================================
+// 7. నైట్-షిఫ్ట్ డేట్ & ఎడిషన్ మెటాడేటా ఇంజిన్ (కొత్తగా చేర్చబడినది)
+// ==========================================
+export const getNewspaperEditionMetadata = (lastVolume = 1, lastIssue = 1, lastDateStr = null) => {
+  const now = new Date();
+  
+  // రాత్రి 12 గంటలలోపు అప్‌లోడ్ చేసినా మరుసటి రోజు తేదీ రావాలనే రూల్ ప్రకారం (+1 day)
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+
+  const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+  const formattedDate = tomorrow.toLocaleDateString('te-IN', options);
+  const rawDateStr = tomorrow.toISOString().split('T')[0];
+
+  let currentVolume = lastVolume;
+  let currentIssue = lastIssue;
+
+  // తేదీ మారితే సంచిక నంబర్ ఆటోమేటిక్‌గా +1 పెరగడం
+  if (lastDateStr && lastDateStr !== rawDateStr) {
+    currentIssue += 1;
+  }
+
+  return {
+    dateString: formattedDate,
+    rawDate: rawDateStr,
+    volume: currentVolume,
+    issue: currentIssue
   };
 };
