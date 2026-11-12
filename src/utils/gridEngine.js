@@ -132,7 +132,7 @@ export const autoFitSectionContent = (contentLength, boxHeight, currentFontSize,
 };
 
 // ==========================================
-// 7. నైట్-షిఫ్ట్ డేట్ & ఎడిషన్ మెటాడేటా ఇంజిన్ (కొత్తగా చేర్చబడినది)
+// 7. నైట్-షిఫ్ట్ డేట్ & ఎడిషన్ మెటాడేటా ఇంజిన్
 // ==========================================
 export const getNewspaperEditionMetadata = (lastVolume = 1, lastIssue = 1, lastDateStr = null) => {
   const now = new Date();
@@ -148,7 +148,6 @@ export const getNewspaperEditionMetadata = (lastVolume = 1, lastIssue = 1, lastD
   let currentVolume = lastVolume;
   let currentIssue = lastIssue;
 
-  // తేదీ మారితే సంచిక నంబర్ ఆటోమేటిక్‌గా +1 పెరగడం
   if (lastDateStr && lastDateStr !== rawDateStr) {
     currentIssue += 1;
   }
@@ -159,4 +158,41 @@ export const getNewspaperEditionMetadata = (lastVolume = 1, lastIssue = 1, lastD
     volume: currentVolume,
     issue: currentIssue
   };
+};
+
+// ==========================================
+// 8. హెడ్‌లైన్, సబ్-హెడ్‌లైన్ & డేట్‌లైన్ స్టైల్ ఇంజిన్ (కొత్తగా చేర్చినది)
+// ==========================================
+export const getHeadlineStyle = (type = 'MAIN_HEADLINE') => {
+  switch (type) {
+    case 'MAIN_HEADLINE':
+      // హెడ్‌లైన్: ఎక్స్ట్రా బోల్డ్ + షార్ప్ లుక్ కోసం వైట్ షాడో/స్ట్రోక్ ఎఫెక్ట్
+      return {
+        fontWeight: '900',
+        textShadow: '-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0px 2px 4px rgba(0,0,0,0.3)',
+        letterSpacing: '-0.5px'
+      };
+
+    case 'SUB_HEADLINE':
+      // సబ్-హెడ్‌లైన్: మీడియం బోల్డ్
+      return {
+        fontWeight: '600',
+        textShadow: 'none',
+        letterSpacing: '0px'
+      };
+
+    case 'DATELINE':
+      // డేట్‌లైన్ & బాడీ టెక్స్ట్: సాధారణ టెక్స్ట్
+      return {
+        fontWeight: '400',
+        textShadow: 'none',
+        letterSpacing: '0.2px'
+      };
+
+    default:
+      return {
+        fontWeight: '400',
+        textShadow: 'none'
+      };
+  }
 };
