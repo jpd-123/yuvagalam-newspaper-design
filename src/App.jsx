@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useMasterStore } from './store/useMasterStore';
 import { MasterToolbar } from './components/Toolbars/MasterToolbar';
 import { DailyToolbar } from './components/Toolbars/DailyToolbar';
@@ -8,6 +8,7 @@ import { RightStylePanel } from './components/Panels/RightStylePanel';
 import { BottomStyleBar } from './components/Panels/BottomStyleBar';
 import PageCanvas from './components/Canvas/PageCanvas';
 import { ExportPdfModal } from './components/Modals/ExportPdfModal';
+
 export default function App() {
   const { activeMode, openDailyLayout, setActiveMode } = useMasterStore();
   const [showPdfModal, setShowPdfModal] = useState(false);
@@ -28,6 +29,22 @@ export default function App() {
 
   const pageRef = useRef(null);
 
+  // కీబోర్డ్ ద్వారా సెలెక్ట్ చేసిన ఎలిమెంట్‌ని డిలీట్ చేయడానికి (Delete / Backspace key support)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId !== null) {
+        // టెక్స్ట్ ఏరియాలో టైప్ చేస్తున్నప్పుడు డిలీట్ అవ్వకుండా చెక్ చేయడం
+        if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') {
+          return;
+        }
+        setCanvasElements(prev => prev.filter(el => el.id !== selectedElementId));
+        setSelectedElementId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedElementId]);
+
   const handleColorSelect = (type, color) => {
     if (type === 'LIGHT') {
       setBgColor(color);
@@ -38,6 +55,7 @@ export default function App() {
       }
     }
   };
+
   const handleCanvasClick = (e) => {
     if (!selectedShape || activeTool === 'POINTER') return;
 
@@ -50,8 +68,8 @@ export default function App() {
       type: selectedShape,
       x: Math.max(10, x - 100),
       y: Math.max(10, y - 50),
-      width: 220,
-      height: selectedShape === 'DIVIDER' ? 4 : 130,
+      width: 240,
+      height: selectedShape === 'DIVIDER' ? 4 : 140,
       color: textColor || '#000000',
       text: selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త లేదా శీర్షిక టైప్ చేయండి...' : '',
       fontSize: fontSize
@@ -60,6 +78,11 @@ export default function App() {
     setCanvasElements([...canvasElements, newElement]);
     setSelectedElementId(newElement.id);
     setSelectedShape(null);
+  };
+
+  // ఎలిమెంట్‌ని అప్‌డేట్ చేసే ఫంక్షన్ (టెక్స్ట్ మార్పులు లేదా ఇమేజ్ అప్‌లోడ్ కోసం)
+  const handleUpdateElementText = (id, newText) => {
+    setCanvasElements(prev => prev.map(el => el.id === id ? { ...el, text: newText } : el));
   };
 
   const getPaperDimensions = () => {
@@ -142,6 +165,7 @@ export default function App() {
               selectedElementId={selectedElementId}
               onSelectElement={(id) => setSelectedElementId(id)}
               fontSize={fontSize}
+              isMasterDesignMode={activeMode === 'MASTER'}
             />
 
             {/* రైట్ సైడ్ స్టైల్ & కలర్ ప్యానెల్ */}
@@ -161,4 +185,4 @@ export default function App() {
       {showPdfModal && <ExportPdfModal pageRef={pageRef} onClose={() => setShowPdfModal(false)} />}
     </div>
   );
-                                                                  }
+}
