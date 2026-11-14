@@ -33,8 +33,7 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId !== null) {
-        // టెక్స్ట్ ఏరియాలో టైప్ చేస్తున్నప్పుడు డిలీట్ అవ్వకుండా చెక్ చేయడం
-        if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') {
+        if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT' || document.activeElement.isContentEditable) {
           return;
         }
         setCanvasElements(prev => prev.filter(el => el.id !== selectedElementId));
@@ -72,7 +71,10 @@ export default function App() {
       height: selectedShape === 'DIVIDER' ? 4 : 140,
       color: textColor || '#000000',
       text: selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త లేదా శీర్షిక టైప్ చేయండి...' : '',
-      fontSize: fontSize
+      fontSize: fontSize,
+      bgColor: '#ffffff',
+      imageUrl: null,
+      isVerticalPhoto: false
     };
 
     setCanvasElements([...canvasElements, newElement]);
@@ -80,9 +82,15 @@ export default function App() {
     setSelectedShape(null);
   };
 
-  // ఎలిమెంట్‌ని అప్‌డేట్ చేసే ఫంక్షన్ (టెక్స్ట్ మార్పులు లేదా ఇమేజ్ అప్‌లోడ్ కోసం)
-  const handleUpdateElementText = (id, newText) => {
-    setCanvasElements(prev => prev.map(el => el.id === id ? { ...el, text: newText } : el));
+  // గ్రిడ్ ప్రాపర్టీస్ (పొజిషన్, సైజ్, టెక్స్ట్, ఇమేజ్, కలర్) అప్‌డేట్ చేయడానికి
+  const handleUpdateElement = (id, updates) => {
+    setCanvasElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
+  };
+
+  // గ్రిడ్ డిలీట్ చేయడానికి
+  const handleDeleteElement = (id) => {
+    setCanvasElements(prev => prev.filter(el => el.id !== id));
+    if (selectedElementId === id) setSelectedElementId(null);
   };
 
   const getPaperDimensions = () => {
@@ -157,11 +165,14 @@ export default function App() {
             {/* సెంటర్ క్లీన్ వైట్ పేపర్ కాన్వాస్ */}
             <PageCanvas 
               pageTitle={`మాస్టర్ లేఅవుట్ - పేజీ ${currentPage}`}
+              pageNumber={currentPage}
               bgColor={bgColor}
               selectedFont={selectedFont}
               dimensions={dimensions}
               onCanvasClick={handleCanvasClick}
               canvasElements={canvasElements}
+              onUpdateElement={handleUpdateElement}
+              onDeleteElement={handleDeleteElement}
               selectedElementId={selectedElementId}
               onSelectElement={(id) => setSelectedElementId(id)}
               fontSize={fontSize}
