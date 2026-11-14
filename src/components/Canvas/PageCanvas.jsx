@@ -30,7 +30,7 @@ export default function PageCanvas({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [selectionToolbar, setSelectionToolbar] = useState({ show: false, x: 0, y: 0 });
 
-  // టూల్ మారినప్పుడు (ఉదాహరణకు బాణం గుర్తుకి మారితే) ఎడిటింగ్ ఆటోమేటిక్‌గా ఆగిపోతుంది
+  // టూల్ 'POINTER' కి మారితే ఎడిటింగ్ ఆగిపోతుంది
   useEffect(() => {
     if (activeTool === 'POINTER') {
       setEditingId(null);
@@ -53,7 +53,7 @@ export default function PageCanvas({
   }, [selectedElementId, onDeleteElement]);
 
   const handleMouseMove = (e) => {
-    if (!canvasRef.current || activeTool === 'TEXT') return; // టెక్స్ట్ టూల్ ఉన్నప్పుడు మూవ్ అవ్వకూడదు
+    if (!canvasRef.current || activeTool === 'TEXT') return;
     const rect = canvasRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -205,7 +205,6 @@ export default function PageCanvas({
 
         {children}
 
-        {/* 'T' టూల్ యాక్టివ్‌గా ఉన్నప్పుడు సెలెక్ట్ చేసిన టెక్స్ట్‌కి ఫార్మాటింగ్ టూల్‌బార్ */}
         {selectionToolbar.show && activeTool === 'TEXT' && (
           <div 
             onClick={(e) => e.stopPropagation()}
@@ -242,7 +241,8 @@ export default function PageCanvas({
 
         {canvasElements.map((el) => {
           const isSelected = selectedElementId === el.id;
-          const isEditing = editingId === el.id;
+          // 'T' టూల్ సెలెక్ట్ చేసి ఉంటే మరియు ఈ గ్రిడ్ సెలెక్ట్ అయి ఉంటే నేరుగా ఎడిట్ మోడ్ ఆన్ అవుతుంది
+          const isEditing = (activeTool === 'TEXT' && isSelected) || editingId === el.id;
           const overlappingImages = el.type === 'RECTANGLE' ? getOverlappingImages(el) : [];
           const isPageOne = pageNumber === 1;
 
@@ -254,9 +254,7 @@ export default function PageCanvas({
             <div
               key={el.id}
               onMouseDown={(e) => {
-                // 'T' టూల్ సెలెక్ట్ చేసి ఉంటే డ్రాగ్ అవ్వకూడదు
                 if (activeTool === 'TEXT') return;
-                if (isEditing) return;
                 e.stopPropagation();
                 if (onSelectElement) onSelectElement(el.id);
 
@@ -267,11 +265,11 @@ export default function PageCanvas({
                 }
               }}
               onClick={(e) => {
-                // 'T' గుర్తు (Text Tool) క్లిక్ చేసి ఉంటే, టెక్స్ట్ బాక్స్ పై క్లిక్ చేయగానే కర్సర్ బ్లింక్ అవ్వాలి
+                e.stopPropagation();
+                if (onSelectElement) onSelectElement(el.id);
+                // 'T' టూల్ సెలెక్ట్ చేసి ఉంటే క్లిక్ చేయగానే ఎడిటింగ్ ఆన్ అవుతుంది
                 if (activeTool === 'TEXT' && el.type === 'RECTANGLE') {
-                  e.stopPropagation();
                   setEditingId(el.id);
-                  if (onSelectElement) onSelectElement(el.id);
                 }
               }}
               style={{
@@ -292,7 +290,7 @@ export default function PageCanvas({
                 overflow: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 'hidden' : 'visible'
               }}
             >
-              {/* బాణం గుర్తు (POINTER) టూల్ యాక్టివ్‌గా ఉన్నప్పుడు మాత్రమే గ్రిడ్ డిలీట్ & బ్యాక్‌గ్రౌండ్ కలర్ ఆప్షన్స్ కనిపిస్తాయి */}
+              {/* బాణం గుర్తు (POINTER) టూల్ యాక్టివ్‌గా ఉన్నప్పుడు మాత్రమే గ్రిడ్ డిలీట్ & గ్రిడ్ బ్యాక్‌గ్రౌండ్ కలర్ ఆప్షన్స్ కనిపిస్తాయి */}
               {isSelected && activeTool === 'POINTER' && (
                 <div 
                   onMouseDown={(e) => e.stopPropagation()}
@@ -301,19 +299,24 @@ export default function PageCanvas({
                     top: '-24px',
                     right: '0px',
                     display: 'flex',
-                    gap: '4px',
+                    gap: '6px',
                     background: '#1976d2',
-                    padding: '2px 6px',
+                    padding: '3px 8px',
                     borderRadius: '4px 4px 0 0',
-                    zIndex: 50
+                    zIndex: 50,
+                    alignItems: 'center'
                   }}
                 >
+                  <span style={{ fontSize: '10px', color: '#fff' }}>బాక్స్ కలర్:</span>
                   <input 
                     type="color" 
                     value={el.bgColor || '#ffffff'}
-                    onChange={(e) => onUpdateElement && onUpdateElement(el.id, { bgColor: e.target.value })}
-                    title="గ్రిడ్ బ్యాక్‌గ్రౌండ్ కలర్ మార్చండి"
-                    style={{ width: '16px', height: '16px', border: 'none', padding: 0, cursor: 'pointer' }}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      if (onUpdateElement) onUpdateElement(el.id, { bgColor: e.target.value });
+                    }}
+                    title="ఈ గ్రిడ్ బాక్స్ బ్యాక్‌గ్రౌండ్ కలర్ మాత్రమే మారుతుంది"
+                    style={{ width: '18px', height: '18px', border: 'none', padding: 0, cursor: 'pointer', background: 'transparent' }}
                   />
                   <button
                     onClick={(e) => {
