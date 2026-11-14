@@ -177,6 +177,7 @@ export default function App() {
               onSelectElement={(id) => setSelectedElementId(id)}
               fontSize={fontSize}
               isMasterDesignMode={activeMode === 'MASTER'}
+              activeTool={activeTool}  {/* ఇక్కడ activeTool ని పాస్ చేయడం జరిగింది */}
             />
 
             {/* రైట్ సైడ్ స్టైల్ & కలర్ ప్యానెల్ */}
