@@ -24,10 +24,14 @@ export default function App() {
   const [selectedFont, setSelectedFont] = useState('Gidugu');
   const [fontSize, setFontSize] = useState(12);
 
-  const [canvasElements, setCanvasElements] = useState([]);
-  const [selectedElementId, setSelectedElementId] = useState(null);
+  // ప్రతి పేజీకి విడివిడిగా గ్రిడ్స్ సేవ్ అయ్యేలా మల్టీ-పేజీ స్టేట్ మేనేజ్‌మెంట్ (Pages State)
+  const [pagesElements, setPagesElements] = useState({});
 
+  const [selectedElementId, setSelectedElementId] = useState(null);
   const pageRef = useRef(null);
+
+  // ప్రస్తుత పేజీలో ఉన్న ఎలిమెంట్స్
+  const currentCanvasElements = pagesElements[currentPage] || [];
 
   // కీబోర్డ్ ద్వారా సెలెక్ట్ చేసిన ఎలిమెంట్‌ని డిలీట్ చేయడానికి (Delete / Backspace key support)
   useEffect(() => {
@@ -36,13 +40,16 @@ export default function App() {
         if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT' || document.activeElement.isContentEditable) {
           return;
         }
-        setCanvasElements(prev => prev.filter(el => el.id !== selectedElementId));
+        setPagesElements(prev => ({
+          ...prev,
+          [currentPage]: (prev[currentPage] || []).filter(el => el.id !== selectedElementId)
+        }));
         setSelectedElementId(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedElementId]);
+  }, [selectedElementId, currentPage]);
 
   const handleColorSelect = (type, color) => {
     if (type === 'LIGHT') {
@@ -50,7 +57,10 @@ export default function App() {
     } else {
       setTextColor(color);
       if (selectedElementId !== null) {
-        setCanvasElements(prev => prev.map(el => el.id === selectedElementId ? { ...el, color: color } : el));
+        setPagesElements(prev => ({
+          ...prev,
+          [currentPage]: (prev[currentPage] || []).map(el => el.id === selectedElementId ? { ...el, color: color } : el)
+        }));
       }
     }
   };
@@ -64,11 +74,11 @@ export default function App() {
 
     const newElement = {
       id: Date.now(),
-      type: selectedShape,
+      type: selectedShape, // 'RECTANGLE', 'PICTURE', 'CIRCLE_PHOTO', 'DIVIDER' etc.
       x: Math.max(10, x - 100),
       y: Math.max(10, y - 50),
-      width: 240,
-      height: selectedShape === 'DIVIDER' ? 4 : 140,
+      width: selectedShape === 'CIRCLE_PHOTO' ? 140 : 240,
+      height: selectedShape === 'DIVIDER' ? 4 : (selectedShape === 'CIRCLE_PHOTO' ? 140 : 140),
       color: textColor || '#000000',
       text: selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త లేదా శీర్షిక టైప్ చేయండి...' : '',
       fontSize: fontSize,
@@ -77,19 +87,28 @@ export default function App() {
       isVerticalPhoto: false
     };
 
-    setCanvasElements([...canvasElements, newElement]);
+    setPagesElements(prev => ({
+      ...prev,
+      [currentPage]: [...(prev[currentPage] || []), newElement]
+    }));
     setSelectedElementId(newElement.id);
     setSelectedShape(null);
   };
 
   // గ్రిడ్ ప్రాపర్టీస్ (పొజిషన్, సైజ్, టెక్స్ట్, ఇమేజ్, కలర్) అప్‌డేట్ చేయడానికి
   const handleUpdateElement = (id, updates) => {
-    setCanvasElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
+    setPagesElements(prev => ({
+      ...prev,
+      [currentPage]: (prev[currentPage] || []).map(el => el.id === id ? { ...el, ...updates } : el)
+    }));
   };
 
   // గ్రిడ్ డిలీట్ చేయడానికి
   const handleDeleteElement = (id) => {
-    setCanvasElements(prev => prev.filter(el => el.id !== id));
+    setPagesElements(prev => ({
+      ...prev,
+      [currentPage]: (prev[currentPage] || []).filter(el => el.id !== id)
+    }));
     if (selectedElementId === id) setSelectedElementId(null);
   };
 
@@ -141,7 +160,10 @@ export default function App() {
               {[...Array(Number(pageCount))].map((_, i) => (
                 <button 
                   key={i + 1} 
-                  onClick={() => setCurrentPage(i + 1)} 
+                  onClick={() => {
+                    setCurrentPage(i + 1);
+                    setSelectedElementId(null);
+                  }} 
                   style={{ fontWeight: currentPage === (i + 1) ? 'bold' : 'normal', marginLeft: '4px', background: currentPage === (i + 1) ? '#d32f2f' : '#ccc', color: currentPage === (i + 1) ? '#fff' : '#000', border: 'none', padding: '2px 6px', borderRadius: '3px', cursor: 'pointer' }}
                 >
                   {i + 1}
@@ -170,14 +192,14 @@ export default function App() {
               selectedFont={selectedFont}
               dimensions={dimensions}
               onCanvasClick={handleCanvasClick}
-              canvasElements={canvasElements}
+              canvasElements={currentCanvasElements}
               onUpdateElement={handleUpdateElement}
               onDeleteElement={handleDeleteElement}
               selectedElementId={selectedElementId}
               onSelectElement={(id) => setSelectedElementId(id)}
               fontSize={fontSize}
               isMasterDesignMode={activeMode === 'MASTER'}
-              activeTool={activeTool}  {/* ఇక్కడ activeTool ని పాస్ చేయడం జరిగింది */}
+              activeTool={activeTool}
             />
 
             {/* రైట్ సైడ్ స్టైల్ & కలర్ ప్యానెల్ */}
