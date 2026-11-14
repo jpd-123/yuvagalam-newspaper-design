@@ -19,7 +19,7 @@ export default function PageCanvas({
   isMasterDesignMode = false,
   volume = 1,
   issue = 12,
-  activeTool = 'POINTER' // టూల్‌బార్ నుండి వచ్చే యాక్టివ్ టూల్ (POINTER లేదా TEXT)
+  activeTool = 'POINTER' 
 }) {
   const { dateString } = getNewspaperDate();
   const canvasRef = useRef(null);
@@ -30,7 +30,6 @@ export default function PageCanvas({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [selectionToolbar, setSelectionToolbar] = useState({ show: false, x: 0, y: 0 });
 
-  // టూల్ 'POINTER' కి మారితే ఎడిటింగ్ ఆగిపోతుంది
   useEffect(() => {
     if (activeTool === 'POINTER') {
       setEditingId(null);
@@ -38,7 +37,6 @@ export default function PageCanvas({
     }
   }, [activeTool]);
 
-  // కీబోర్డ్ Delete బటన్ ద్వారా సెలెక్ట్ చేసిన గ్రిడ్ డిలీట్ చేయడం
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId !== null) {
@@ -67,6 +65,7 @@ export default function PageCanvas({
       if (targetEl) {
         const newWidth = Math.max(60, mouseX - targetEl.x);
         const newHeight = Math.max(40, mouseY - targetEl.y);
+        // సర్కిల్ ఫోటో / బంతి ఆకారం అయితే వెడల్పు, ఎత్తు ఎప్పుడూ సమానంగా (బంతి ఆకారం) ఉండేలా లాక్ చేయడం
         if (targetEl.type === 'CIRCLE_PHOTO' || targetEl.type === 'CIRCLE') {
           const size = Math.max(newWidth, newHeight);
           if (onUpdateElement) onUpdateElement(resizingId, { width: size, height: size });
@@ -140,7 +139,14 @@ export default function PageCanvas({
         const aspectRatio = img.width / img.height;
 
         if (el.type === 'CIRCLE_PHOTO') {
-          if (onUpdateElement) onUpdateElement(el.id, { imageUrl: event.target.result });
+          // బంతి ఆకారం (సర్కిల్) అయితే బాక్స్ వెడల్పు ఎత్తు సమానంగా ఉంచి ఇమేజ్ అప్‌డేట్ చేయడం
+          if (onUpdateElement) {
+            onUpdateElement(el.id, { 
+              imageUrl: event.target.result,
+              width: Math.max(el.width, el.height),
+              height: Math.max(el.width, el.height)
+            });
+          }
         } else {
           const adjustedHeight = Math.round(el.width / aspectRatio);
           if (onUpdateElement) {
@@ -241,7 +247,6 @@ export default function PageCanvas({
 
         {canvasElements.map((el) => {
           const isSelected = selectedElementId === el.id;
-          // 'T' టూల్ సెలెక్ట్ చేసి ఉంటే మరియు ఈ గ్రిడ్ సెలెక్ట్ అయి ఉంటే నేరుగా ఎడిట్ మోడ్ ఆన్ అవుతుంది
           const isEditing = (activeTool === 'TEXT' && isSelected) || editingId === el.id;
           const overlappingImages = el.type === 'RECTANGLE' ? getOverlappingImages(el) : [];
           const isPageOne = pageNumber === 1;
@@ -267,7 +272,6 @@ export default function PageCanvas({
               onClick={(e) => {
                 e.stopPropagation();
                 if (onSelectElement) onSelectElement(el.id);
-                // 'T' టూల్ సెలెక్ట్ చేసి ఉంటే క్లిక్ చేయగానే ఎడిటింగ్ ఆన్ అవుతుంది
                 if (activeTool === 'TEXT' && el.type === 'RECTANGLE') {
                   setEditingId(el.id);
                 }
@@ -287,10 +291,9 @@ export default function PageCanvas({
                 boxSizing: 'border-box',
                 cursor: activeTool === 'TEXT' && el.type === 'RECTANGLE' ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
                 zIndex: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 10 : 5,
-                overflow: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 'hidden' : 'visible'
+                overflow: 'hidden'
               }}
             >
-              {/* బాణం గుర్తు (POINTER) టూల్ యాక్టివ్‌గా ఉన్నప్పుడు మాత్రమే గ్రిడ్ డిలీట్ & గ్రిడ్ బ్యాక్‌గ్రౌండ్ కలర్ ఆప్షన్స్ కనిపిస్తాయి */}
               {isSelected && activeTool === 'POINTER' && (
                 <div 
                   onMouseDown={(e) => e.stopPropagation()}
@@ -370,7 +373,7 @@ export default function PageCanvas({
               {el.type === 'DIVIDER' && <div style={{ width: '100%', height: '2px', background: el.color || '#000' }} />}
               
               {el.type === 'RECTANGLE' && (
-                <div style={{ width: '100%', height: '100%', position: 'relative', textAlign: 'justify', lineHeight: '1.35' }}>
+                <div style={{ width: '100%', height: '100%', position: 'relative', textAlign: 'justify', lineHeight: '1.35', overflowY: 'auto' }}>
                   {overlappingImages.map(imgEl => {
                     const relLeft = imgEl.x - el.x;
                     const isRightSide = relLeft > (el.width / 2);
@@ -419,7 +422,6 @@ export default function PageCanvas({
                 </div>
               )}
 
-              {/* బాణం గుర్తు (POINTER) టూల్ యాక్టివ్‌గా ఉన్నప్పుడు మాత్రమే రీసైజ్ హ్యాండిల్ కనిపిస్తుంది */}
               {isSelected && activeTool === 'POINTER' && (
                 <div
                   onMouseDown={(e) => {
@@ -436,7 +438,7 @@ export default function PageCanvas({
                     background: '#1976d2',
                     border: '2px solid #fff',
                     borderRadius: '50%',
-                    cursor: 'nwse-resize',
+                    cursor: el.type === 'CIRCLE_PHOTO' ? 'se-resize' : 'nwse-resize',
                     zIndex: 60
                   }}
                 />
