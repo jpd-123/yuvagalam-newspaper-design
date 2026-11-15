@@ -65,7 +65,6 @@ export default function PageCanvas({
       if (targetEl) {
         const newWidth = Math.max(60, mouseX - targetEl.x);
         const newHeight = Math.max(40, mouseY - targetEl.y);
-        // సర్కిల్ ఫోటో / బంతి ఆకారం అయితే వెడల్పు, ఎత్తు ఎప్పుడూ సమానంగా (బంతి ఆకారం) ఉండేలా లాక్ చేయడం
         if (targetEl.type === 'CIRCLE_PHOTO' || targetEl.type === 'CIRCLE') {
           const size = Math.max(newWidth, newHeight);
           if (onUpdateElement) onUpdateElement(resizingId, { width: size, height: size });
@@ -139,7 +138,6 @@ export default function PageCanvas({
         const aspectRatio = img.width / img.height;
 
         if (el.type === 'CIRCLE_PHOTO') {
-          // బంతి ఆకారం (సర్కిల్) అయితే బాక్స్ వెడల్పు ఎత్తు సమానంగా ఉంచి ఇమేజ్ అప్‌డేట్ చేయడం
           if (onUpdateElement) {
             onUpdateElement(el.id, { 
               imageUrl: event.target.result,
@@ -182,6 +180,9 @@ export default function PageCanvas({
       <div 
         ref={canvasRef}
         onClick={(e) => {
+          // 'T' టూల్ యాక్టివ్‌లో ఉన్నప్పుడు లేదా టెక్స్ట్ సెలెక్ట్ చేసేటప్పుడు పొరపాటున కొత్త గ్రిడ్ పడకుండా పూర్తిగా ఆపడం
+          if (activeTool === 'TEXT' || editingId !== null) return;
+
           if (activeTool === 'POINTER') {
             setEditingId(null);
             setSelectionToolbar({ show: false, x: 0, y: 0 });
@@ -272,7 +273,7 @@ export default function PageCanvas({
               onClick={(e) => {
                 e.stopPropagation();
                 if (onSelectElement) onSelectElement(el.id);
-                if (activeTool === 'TEXT' && el.type === 'RECTANGLE') {
+                if (activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE')) {
                   setEditingId(el.id);
                 }
               }}
@@ -284,12 +285,13 @@ export default function PageCanvas({
                 height: (el.type === 'RECTANGLE' && !isPageOne) ? 'auto' : `${el.height}px`,
                 minHeight: `${el.height}px`,
                 border: isSelected ? '2px solid #1976d2' : '1px solid #888',
+                // ఇక్కడ గ్రిడ్ బాక్స్ యొక్క సొంత బ్యాక్‌గ్రౌండ్ కలర్ మాత్రమే వర్తిస్తుంది (పేజీ కలర్ మారదు)
                 background: el.bgColor || (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO' ? '#f0f0f0' : 'transparent'),
                 color: el.color || '#000',
                 borderRadius: el.type === 'CIRCLE' || el.type === 'CIRCLE_PHOTO' ? '50%' : el.type === 'OVAL' ? '50% / 30%' : '0px',
                 padding: '6px',
                 boxSizing: 'border-box',
-                cursor: activeTool === 'TEXT' && el.type === 'RECTANGLE' ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
+                cursor: activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE') ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
                 zIndex: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 10 : 5,
                 overflow: 'hidden'
               }}
@@ -372,7 +374,7 @@ export default function PageCanvas({
 
               {el.type === 'DIVIDER' && <div style={{ width: '100%', height: '2px', background: el.color || '#000' }} />}
               
-              {el.type === 'RECTANGLE' && (
+              {(el.type === 'RECTANGLE' || el.type === 'HEADLINE') && (
                 <div style={{ width: '100%', height: '100%', position: 'relative', textAlign: 'justify', lineHeight: '1.35', overflowY: 'auto' }}>
                   {overlappingImages.map(imgEl => {
                     const relLeft = imgEl.x - el.x;
@@ -411,13 +413,14 @@ export default function PageCanvas({
                       height: '100%',
                       outline: 'none',
                       fontFamily: selectedFont,
-                      fontSize: `${fontSize}pt`,
+                      fontSize: el.type === 'HEADLINE' ? `${fontSize + 6}pt` : `${fontSize}pt`,
+                      fontWeight: el.type === 'HEADLINE' ? '900' : 'normal',
                       color: el.color || '#000',
                       wordBreak: 'break-word',
                       cursor: activeTool === 'TEXT' ? 'text' : 'default'
                     }}
                   >
-                    {flowResult.page1Content || "T టూల్ సెలెక్ట్ చేసి ఇక్కడ వార్త రాయండి లేదా పేస్ట్ చేయండి..."}
+                    {flowResult.page1Content || (el.type === 'HEADLINE' ? "ఇక్కడ హెడ్‌లైన్ టైప్ చేయండి..." : "T టూల్ సెలెక్ట్ చేసి ఇక్కడ వార్త టైప్ చేయండి...")}
                   </div>
                 </div>
               )}
