@@ -66,7 +66,7 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
         {/* Pointer Tool */}
         <button 
           onClick={() => handleToolClick('POINTER')}
-          title="పాయింటర్ టూల్ (మౌస్ సెలెక్షన్)"
+          title="పాయింటర్ టూల్ (మౌస్ సెలెక్షన్ & మూవింగ్)"
           style={{ background: activeTool === 'POINTER' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
         >
           ↖️
@@ -75,31 +75,40 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
         {/* Text Tool */}
         <button 
           onClick={() => handleToolClick('TEXT', 'TEXT_BOX')}
-          title="టెక్స్ట్ టూల్"
+          title="టెక్స్ట్ ఎడిటింగ్ టూల్ (T)"
           style={{ background: activeTool === 'TEXT' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center', fontWeight: 'bold' }}
         >
           T
         </button>
 
-        {/* 3. న్యూ రియాక్టర్ గ్రిడ్ (Rectangle Box) */}
+        {/* ప్రధాన వార్త గ్రిడ్ (Rectangle Box) */}
         <button 
           onClick={() => handleToolClick('RECTANGLE', 'RECTANGLE')}
-          title="న్యూ రియాక్టర్ గ్రిడ్ (వార్త బాక్స్)"
+          title="వార్త గ్రిడ్ బాక్స్ (Rectangle)"
           style={{ background: activeTool === 'RECTANGLE' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
         >
           ◻️
         </button>
 
-        {/* 7 & 8. పిక్చర్ బాక్స్ (Photo Grid / Logo) */}
+        {/* హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (Headline Box) */}
+        <button 
+          onClick={() => handleToolClick('HEADLINE_BOX', 'HEADLINE')}
+          title="హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్"
+          style={{ background: activeTool === 'HEADLINE_BOX' ? '#d32f2f' : '#3a3a3a', color: '#ffcc00', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px', textAlign: 'center', fontWeight: 'bold' }}
+        >
+          H1
+        </button>
+
+        {/* పిక్చర్ బాక్స్ (Photo Grid / Logo) */}
         <button 
           onClick={() => handleToolClick('PICTURE_BOX', 'PICTURE')}
           title="పిక్చర్ బాక్స్ (ఫోటో / లోగో అప్‌లోడ్)"
           style={{ background: activeTool === 'PICTURE_BOX' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
         >
-          ❎
+          📷
         </button>
 
-        {/* 8. గుండ్రని బంతి ఆకారపు ఫోటో బాక్స్ (Circle Photo Box) */}
+        {/* గుండ్రని బంతి ఆకారపు ఫోటో బాక్స్ (Circle Photo Box) */}
         <button 
           onClick={() => handleToolClick('CROSS_CIRCLE', 'CIRCLE_PHOTO')}
           title="గుండ్రని బంతి ఆకారపు ఫోటో గ్రిడ్"
@@ -108,7 +117,7 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           ⊗
         </button>
 
-        {/* 4. అండర్‌లైన్ / స్ట్రైట్ లైన్ టూల్ */}
+        {/* అండర్‌లైన్ / స్ట్రైట్ లైన్ టూల్ */}
         <button 
           onClick={() => handleToolClick('STRAIGHT_LINE', 'DIVIDER')}
           title="అండర్‌లైన్ / డివైడర్ గీత"
@@ -117,7 +126,7 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           │
         </button>
 
-        {/* 6. చతురస్ర బోర్డర్ గ్రిడ్ (Highlight Border Box) */}
+        {/* చతురస్ర బోర్డర్ గ్రిడ్ (Highlight Border Box) */}
         <button 
           onClick={() => handleToolClick('BORDER_BOX', 'BORDER')}
           title="హైలైట్ వార్త బోర్డర్ బాక్స్"
@@ -126,23 +135,32 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           🔲
         </button>
 
-        {/* Oval / Polygon Box */}
-        <button 
-          onClick={() => handleToolClick('OVAL', 'OVAL')}
-          title="అండాకార గ్రిడ్"
-          style={{ background: activeTool === 'OVAL' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
-        >
-          ⬭
-        </button>
-
       </div>
 
-      {/* 5. 6 రకాల బుల్లెట్లు సెలెక్షన్ */}
+      {/* 6 రకాల బుల్లెట్లు సెలెక్షన్ */}
       <div style={{ background: '#3a3a3a', padding: '6px', borderRadius: '4px' }}>
         <span style={{ fontWeight: 'bold', fontSize: '10px', display: 'block', marginBottom: '3px', color: '#ffcc00' }}>బుల్లెట్ గుర్తులు (6 రకాలు):</span>
         <select 
           value={selectedBullet} 
-          onChange={(e) => setSelectedBullet(e.target.value)}
+          onChange={(e) => {
+            setSelectedBullet(e.target.value);
+            // బుల్లెట్ సెలెక్ట్ చేయగానే టెక్స్ట్ ఎడిటర్‌లో ఇన్సర్ట్ చేసే లాజిక్
+            const selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+              const bulletSymbols = {
+                bullet1: '■ ',
+                bullet2: '● ',
+                bullet3: '◆ ',
+                bullet4: '▶ ',
+                bullet5: '★ ',
+                bullet6: '✔ '
+              };
+              const symbol = bulletSymbols[e.target.value];
+              if (symbol) {
+                document.execCommand('insertText', false, symbol);
+              }
+            }
+          }}
           style={{ width: '100%', background: '#222', color: '#fff', border: '1px solid #555', padding: '3px', fontSize: '11px', borderRadius: '3px' }}
         >
           <option value="none">బుల్లెట్లు ఎంచుకోండి</option>
@@ -155,7 +173,7 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
         </select>
       </div>
 
-      {/* 9. ఆటో పేజీ సెటప్ (Auto Fit Engine) బటన్ */}
+      {/* ఆటో పేజీ సెటప్ (Auto Fit Engine) బటన్ */}
       <div style={{ marginTop: 'auto', borderTop: '1px solid #444', paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <button 
           onClick={() => {
