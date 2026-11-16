@@ -37,19 +37,6 @@ export default function PageCanvas({
     }
   }, [activeTool]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId !== null) {
-        if (document.activeElement.isContentEditable || document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') {
-          return;
-        }
-        if (onDeleteElement) onDeleteElement(selectedElementId);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedElementId, onDeleteElement]);
-
   const handleMouseMove = (e) => {
     if (!canvasRef.current || activeTool === 'TEXT') return;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -104,13 +91,13 @@ export default function PageCanvas({
 
     if (styleType === 'MAIN_HEADLINE') {
       const hStyle = getHeadlineStyle('MAIN_HEADLINE');
-      Object.assign(span.style, hStyle, { fontSize: `${fontSize + 8}pt` });
+      Object.assign(span.style, hStyle);
     } else if (styleType === 'SUB_HEADLINE') {
       const subStyle = getHeadlineStyle('SUB_HEADLINE');
-      Object.assign(span.style, subStyle, { fontSize: `${fontSize + 3}pt` });
+      Object.assign(span.style, subStyle);
     } else if (styleType === 'DATELINE') {
       const dateStyle = getHeadlineStyle('DATELINE');
-      Object.assign(span.style, dateStyle, { fontSize: `${fontSize}pt` });
+      Object.assign(span.style, dateStyle);
     } else if (styleType === 'COLOR') {
       span.style.color = value;
     } else if (styleType === 'FONT_SIZE') {
@@ -121,7 +108,6 @@ export default function PageCanvas({
       range.surroundContents(span);
     } catch (err) {
       if (styleType === 'COLOR') document.execCommand('foreColor', false, value);
-      if (styleType === 'MAIN_HEADLINE' || styleType === 'SUB_HEADLINE') document.execCommand('bold', false, null);
     }
     setSelectionToolbar({ show: false, x: 0, y: 0 });
   };
@@ -170,7 +156,6 @@ export default function PageCanvas({
       other.y + other.height > textEl.y
     );
   };
-
   return (
     <div 
       onMouseMove={handleMouseMove}
@@ -180,9 +165,7 @@ export default function PageCanvas({
       <div 
         ref={canvasRef}
         onClick={(e) => {
-          // 'T' టూల్ యాక్టివ్‌లో ఉన్నప్పుడు లేదా టెక్స్ట్ సెలెక్ట్ చేసేటప్పుడు పొరపాటున కొత్త గ్రిడ్ పడకుండా పూర్తిగా ఆపడం
           if (activeTool === 'TEXT' || editingId !== null) return;
-
           if (activeTool === 'POINTER') {
             setEditingId(null);
             setSelectionToolbar({ show: false, x: 0, y: 0 });
@@ -231,12 +214,10 @@ export default function PageCanvas({
               fontSize: '11px'
             }}
           >
-            <button onClick={() => applyInlineStyle('MAIN_HEADLINE')} style={{ background: '#d32f2f', color: '#fff', border: 'none', padding: '3px 6px', borderRadius: '3px', cursor: 'pointer', fontWeight: 'bold' }} title="హెడ్‌లైన్ (Extra Bold)">H1</button>
-            <button onClick={() => applyInlineStyle('SUB_HEADLINE')} style={{ background: '#444', color: '#fff', border: 'none', padding: '3px 6px', borderRadius: '3px', cursor: 'pointer' }} title="సబ్ హెడ్‌లైన్">H2</button>
-            <button onClick={() => applyInlineStyle('DATELINE')} style={{ background: '#444', color: '#fff', border: 'none', padding: '3px 6px', borderRadius: '3px', cursor: 'pointer' }} title="బాడీ టెక్స్ట్">Body</button>
+            <button onClick={() => applyInlineStyle('MAIN_HEADLINE')} style={{ background: '#d32f2f', color: '#fff', border: 'none', padding: '3px 6px', borderRadius: '3px', cursor: 'pointer', fontWeight: 'bold' }}>H1</button>
+            <button onClick={() => applyInlineStyle('SUB_HEADLINE')} style={{ background: '#444', color: '#fff', border: 'none', padding: '3px 6px', borderRadius: '3px', cursor: 'pointer' }}>H2</button>
+            <button onClick={() => applyInlineStyle('DATELINE')} style={{ background: '#444', color: '#fff', border: 'none', padding: '3px 6px', borderRadius: '3px', cursor: 'pointer' }}>Body</button>
             <span style={{ color: '#666' }}>|</span>
-            <button onClick={() => applyInlineStyle('FONT_SIZE', fontSize + 4)} style={{ background: '#333', color: '#fff', border: '1px solid #555', padding: '2px 5px', cursor: 'pointer' }}>A+</button>
-            <button onClick={() => applyInlineStyle('FONT_SIZE', Math.max(9, fontSize - 2))} style={{ background: '#333', color: '#fff', border: '1px solid #555', padding: '2px 5px', cursor: 'pointer' }}>A-</button>
             <input 
               type="color" 
               onChange={(e) => applyInlineStyle('COLOR', e.target.value)} 
@@ -285,7 +266,6 @@ export default function PageCanvas({
                 height: (el.type === 'RECTANGLE' && !isPageOne) ? 'auto' : `${el.height}px`,
                 minHeight: `${el.height}px`,
                 border: isSelected ? '2px solid #1976d2' : '1px solid #888',
-                // ఇక్కడ గ్రిడ్ బాక్స్ యొక్క సొంత బ్యాక్‌గ్రౌండ్ కలర్ మాత్రమే వర్తిస్తుంది (పేజీ కలర్ మారదు)
                 background: el.bgColor || (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO' ? '#f0f0f0' : 'transparent'),
                 color: el.color || '#000',
                 borderRadius: el.type === 'CIRCLE' || el.type === 'CIRCLE_PHOTO' ? '50%' : el.type === 'OVAL' ? '50% / 30%' : '0px',
@@ -329,16 +309,7 @@ export default function PageCanvas({
                       if (onDeleteElement) onDeleteElement(el.id);
                     }}
                     title="ఈ గ్రిడ్ డిలీట్ చేయండి"
-                    style={{
-                      background: '#d32f2f',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '2px',
-                      fontSize: '11px',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      padding: '0 5px'
-                    }}
+                    style={{ background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '2px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', padding: '0 5px' }}
                   >
                     ×
                   </button>
@@ -347,23 +318,9 @@ export default function PageCanvas({
 
               {(el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') && (
                 <label style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', margin: 0 }}>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={(e) => handleImageUpload(e, el)} 
-                    style={{ display: 'none' }} 
-                  />
+                  <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, el)} style={{ display: 'none' }} />
                   {el.imageUrl ? (
-                    <img 
-                      src={el.imageUrl} 
-                      alt="Uploaded" 
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        objectFit: 'cover',
-                        borderRadius: el.type === 'CIRCLE_PHOTO' ? '50%' : '0px'
-                      }} 
-                    />
+                    <img src={el.imageUrl} alt="Uploaded" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: el.type === 'CIRCLE_PHOTO' ? '50%' : '0px' }} />
                   ) : (
                     <span style={{ fontSize: '11px', color: '#555', textAlign: 'center', padding: '4px' }}>
                       {el.type === 'CIRCLE_PHOTO' ? '⊗ బంతి ఆకారం ఫోటో' : '📷 ఫోటో అప్‌లోడ్ చేయండి'}
@@ -379,22 +336,9 @@ export default function PageCanvas({
                   {overlappingImages.map(imgEl => {
                     const relLeft = imgEl.x - el.x;
                     const isRightSide = relLeft > (el.width / 2);
-                    const wrapCSS = getWrapStyle(
-                      isRightSide ? 'FLOAT_RIGHT' : 'FLOAT_LEFT',
-                      imgEl.type === 'CIRCLE_PHOTO' ? 'CIRCLE' : 'RECTANGLE',
-                      imgEl.isVerticalPhoto
-                    );
+                    const wrapCSS = getWrapStyle(isRightSide ? 'FLOAT_RIGHT' : 'FLOAT_LEFT', imgEl.type === 'CIRCLE_PHOTO' ? 'CIRCLE' : 'RECTANGLE', imgEl.isVerticalPhoto);
                     return (
-                      <div
-                        key={`wrap-${imgEl.id}`}
-                        style={{
-                          ...wrapCSS,
-                          width: `${Math.min(imgEl.width + 10, el.width * 0.7)}px`,
-                          height: `${imgEl.height + 10}px`,
-                          shapeOutside: imgEl.type === 'CIRCLE_PHOTO' ? 'circle(50%)' : 'none',
-                          pointerEvents: 'none'
-                        }}
-                      />
+                      <div key={`wrap-${imgEl.id}`} style={{ ...wrapCSS, width: `${Math.min(imgEl.width + 10, el.width * 0.7)}px`, height: `${imgEl.height + 10}px`, shapeOutside: imgEl.type === 'CIRCLE_PHOTO' ? 'circle(50%)' : 'none', pointerEvents: 'none' }} />
                     );
                   })}
 
@@ -413,8 +357,7 @@ export default function PageCanvas({
                       height: '100%',
                       outline: 'none',
                       fontFamily: selectedFont,
-                      fontSize: el.type === 'HEADLINE' ? `${fontSize + 6}pt` : `${fontSize}pt`,
-                      fontWeight: el.type === 'HEADLINE' ? '900' : 'normal',
+                      fontSize: `${fontSize}pt`,
                       color: el.color || '#000',
                       wordBreak: 'break-word',
                       cursor: activeTool === 'TEXT' ? 'text' : 'default'
@@ -432,18 +375,7 @@ export default function PageCanvas({
                     setResizingId(el.id);
                   }}
                   title="లాగి సైజ్ పెంచండి / తగ్గించండి"
-                  style={{
-                    position: 'absolute',
-                    right: '-6px',
-                    bottom: '-6px',
-                    width: '12px',
-                    height: '12px',
-                    background: '#1976d2',
-                    border: '2px solid #fff',
-                    borderRadius: '50%',
-                    cursor: el.type === 'CIRCLE_PHOTO' ? 'se-resize' : 'nwse-resize',
-                    zIndex: 60
-                  }}
+                  style={{ position: 'absolute', right: '-6px', bottom: '-6px', width: '12px', height: '12px', background: '#1976d2', border: '2px solid #fff', borderRadius: '50%', cursor: 'nwse-resize', zIndex: 60 }}
                 />
               )}
             </div>
@@ -452,4 +384,5 @@ export default function PageCanvas({
       </div>
     </div>
   );
-}
+            }
+                    
