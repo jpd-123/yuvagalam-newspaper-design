@@ -15,7 +15,7 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect }) => {
         ))}
       </select>
 
-      <label style={{ fontSize: '12px', fontWeight: 'bold' }}>ముదురు రంగులు (హెడ్‌లైన్స్):</label>
+      <label style={{ fontSize: '12px', fontWeight: 'bold' }}>ముదురు రంగులు (అక్షరాలు/హెడ్‌లైన్స్):</label>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '5px', marginBottom: '15px' }}>
         {DARK_COLORS.map((color, idx) => (
           <div 
@@ -26,13 +26,14 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect }) => {
         ))}
       </div>
 
-      <label style={{ fontSize: '12px', fontWeight: 'bold' }}>లేత రంగులు (బ్యాక్‌గ్రౌండ్స్):</label>
+      <label style={{ fontSize: '12px', fontWeight: 'bold' }}>లేత రంగులు (గ్రిడ్ బ్యాక్‌గ్రౌండ్):</label>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '5px' }}>
         {LIGHT_COLORS.map((color, idx) => (
           <div 
             key={idx} 
             onClick={() => onColorSelect('LIGHT', color)} 
             style={{ width: '30px', height: '30px', background: color, cursor: 'pointer', border: '1px solid #000' }} 
+            title="సెలెక్ట్ చేసిన గ్రిడ్ బాక్స్‌కి మాత్రమే బ్యాక్‌గ్రౌండ్ మారుతుంది"
           />
         ))}
       </div>
