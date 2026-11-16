@@ -24,16 +24,12 @@ export default function App() {
   const [selectedFont, setSelectedFont] = useState('Gidugu');
   const [fontSize, setFontSize] = useState(12);
 
-  // ప్రతి పేజీకి విడివిడిగా గ్రిడ్స్ సేవ్ అయ్యేలా మల్టీ-పేజీ స్టేట్ మేనేజ్‌మెంట్ (Pages State)
   const [pagesElements, setPagesElements] = useState({});
-
   const [selectedElementId, setSelectedElementId] = useState(null);
   const pageRef = useRef(null);
 
-  // ప్రస్తుత పేజీలో ఉన్న ఎలిమెంట్స్
   const currentCanvasElements = pagesElements[currentPage] || [];
 
-  // కీబోర్డ్ ద్వారా సెలెక్ట్ చేసిన ఎలిమెంట్‌ని డిలీట్ చేయడానికి (Delete / Backspace key support)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedElementId !== null) {
@@ -51,9 +47,17 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedElementId, currentPage]);
 
+  // గమనిక: లైట్ కలర్ ఎంచుకుంటే సెలెక్ట్ చేసిన గ్రిడ్ బాక్స్ బ్యాక్‌గ్రౌండ్ మాత్రమే మారుతుంది
   const handleColorSelect = (type, color) => {
     if (type === 'LIGHT') {
-      setBgColor(color);
+      if (selectedElementId !== null) {
+        setPagesElements(prev => ({
+          ...prev,
+          [currentPage]: (prev[currentPage] || []).map(el => el.id === selectedElementId ? { ...el, bgColor: color } : el)
+        }));
+      } else {
+        setBgColor(color);
+      }
     } else {
       setTextColor(color);
       if (selectedElementId !== null) {
@@ -74,13 +78,13 @@ export default function App() {
 
     const newElement = {
       id: Date.now(),
-      type: selectedShape, // 'RECTANGLE', 'PICTURE', 'CIRCLE_PHOTO', 'DIVIDER' etc.
+      type: selectedShape, 
       x: Math.max(10, x - 100),
       y: Math.max(10, y - 50),
       width: selectedShape === 'CIRCLE_PHOTO' ? 140 : 240,
       height: selectedShape === 'DIVIDER' ? 4 : (selectedShape === 'CIRCLE_PHOTO' ? 140 : 140),
       color: textColor || '#000000',
-      text: selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త లేదా శీర్షిక టైప్ చేయండి...' : '',
+      text: selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త టైప్ చేయండి...' : (selectedShape === 'HEADLINE' ? 'ఇక్కడ హెడ్‌లైన్ టైప్ చేయండి...' : ''),
       fontSize: fontSize,
       bgColor: '#ffffff',
       imageUrl: null,
@@ -95,7 +99,6 @@ export default function App() {
     setSelectedShape(null);
   };
 
-  // గ్రిడ్ ప్రాపర్టీస్ (పొజిషన్, సైజ్, టెక్స్ట్, ఇమేజ్, కలర్) అప్‌డేట్ చేయడానికి
   const handleUpdateElement = (id, updates) => {
     setPagesElements(prev => ({
       ...prev,
@@ -103,7 +106,6 @@ export default function App() {
     }));
   };
 
-  // గ్రిడ్ డిలీట్ చేయడానికి
   const handleDeleteElement = (id) => {
     setPagesElements(prev => ({
       ...prev,
@@ -125,7 +127,6 @@ export default function App() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif' }}>
       
-      {/* హెడర్ బార్ */}
       <div style={{ background: '#222', color: '#fff', padding: '8px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
         <h2 style={{ margin: 0, fontSize: '16px', color: '#ff4444' }}>సాత్విక పబ్లిషర్</h2>
         <div style={{ display: 'flex', gap: '8px', fontSize: '12px' }}>
@@ -143,16 +144,12 @@ export default function App() {
       ) : (
         <>
           {activeMode === 'MASTER' && (
-            <MasterToolbar 
-              onSaveMaster={() => alert('మాస్టర్ లేఅవుట్ భద్రపరచబడింది!')} 
-              onUploadLogo={() => alert('లోగో అప్‌లోడర్ ఓపెన్ అయింది')} 
-            />
+            <MasterToolbar onSaveMaster={() => alert('మాస్టర్ లేఅవుట్ భద్రపరచబడింది!')} onUploadLogo={() => alert('లోగో అప్‌లోడర్ ఓపెన్ అయింది')} />
           )}
           {activeMode === 'DAILY' && (
             <DailyToolbar onExportPdfClick={() => setShowPdfModal(true)} />
           )}
 
-          {/* పేజీ సెలెక్టర్ బార్ */}
           <div style={{ background: '#eee', padding: '5px 15px', fontSize: '12px', display: 'flex', gap: '10px', alignItems: 'center' }}>
             <span style={{ fontWeight: 'bold' }}>వర్క్‌స్పేస్: {paperSize}</span>
             <span style={{ marginLeft: 'auto' }}>
@@ -172,10 +169,7 @@ export default function App() {
             </span>
           </div>
 
-          {/* మెయిన్ 3-ప్యానెల్ లేఅవుట్ */}
           <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-            
-            {/* లెఫ్ట్ టూల్ ప్యానెల్ */}
             <LeftToolPanel 
               onSelectTool={(tool) => setActiveTool(tool)}
               onSelectShape={(shape) => setSelectedShape(shape)}
@@ -184,7 +178,6 @@ export default function App() {
               onAutoPageSetup={() => alert('ఆటో పేజీ సెటప్ రన్ అయింది!')}
             />
 
-            {/* సెంటర్ క్లీన్ వైట్ పేపర్ కాన్వాస్ */}
             <PageCanvas 
               pageTitle={`మాస్టర్ లేఅవుట్ - పేజీ ${currentPage}`}
               pageNumber={currentPage}
@@ -202,7 +195,6 @@ export default function App() {
               activeTool={activeTool}
             />
 
-            {/* రైట్ సైడ్ స్టైల్ & కలర్ ప్యానెల్ */}
             <RightStylePanel 
               onColorSelect={handleColorSelect} 
               onFontSelect={(font) => setSelectedFont(font)} 
