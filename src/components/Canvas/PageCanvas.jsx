@@ -242,19 +242,24 @@ export default function PageCanvas({
               key={el.id}
               onMouseDown={(e) => {
                 if (activeTool === 'TEXT') return;
+                // కొత్త గ్రిడ్/హెడ్‌లైన్ వేయడానికి క్లిక్ చేస్తుంటే, ఎలిమెంట్ డ్రాగ్/సెలెక్ట్ ఆపి కాన్వాస్ క్లిక్‌కి అనుమతి ఇవ్వాలి
+                if (activeTool !== 'POINTER') return;
+
                 e.stopPropagation();
                 if (onSelectElement) onSelectElement(el.id);
 
-                if (activeTool === 'POINTER') {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setDragOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-                  setDraggingId(el.id);
-                }
+                const rect = e.currentTarget.getBoundingClientRect();
+                setDragOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+                setDraggingId(el.id);
               }}
               onClick={(e) => {
+                // కొత్త షేప్/హెడ్‌లైన్ వేసే మోడ్‌లో ఉన్నప్పుడు e.stopPropagation() చేయకూడదు, అప్పుడే కాన్వాస్ మీద క్లిక్ పనిచేస్తుంది
+                if (activeTool !== 'POINTER' && activeTool !== 'TEXT') {
+                  return;
+                }
                 e.stopPropagation();
                 if (onSelectElement) onSelectElement(el.id);
-                if (activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE')) {
+                if (activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE')) {
                   setEditingId(el.id);
                 }
               }}
@@ -271,7 +276,7 @@ export default function PageCanvas({
                 borderRadius: el.type === 'CIRCLE' || el.type === 'CIRCLE_PHOTO' ? '50%' : el.type === 'OVAL' ? '50% / 30%' : '0px',
                 padding: '6px',
                 boxSizing: 'border-box',
-                cursor: activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE') ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
+                cursor: activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE') ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
                 zIndex: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 10 : 5,
                 overflow: 'hidden'
               }}
@@ -331,7 +336,7 @@ export default function PageCanvas({
 
               {el.type === 'DIVIDER' && <div style={{ width: '100%', height: '2px', background: el.color || '#000' }} />}
               
-              {(el.type === 'RECTANGLE' || el.type === 'HEADLINE') && (
+              {(el.type === 'RECTANGLE' || el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE') && (
                 <div style={{ width: '100%', height: '100%', position: 'relative', textAlign: 'justify', lineHeight: '1.35', overflowY: 'auto' }}>
                   {overlappingImages.map(imgEl => {
                     const relLeft = imgEl.x - el.x;
@@ -357,13 +362,14 @@ export default function PageCanvas({
                       height: '100%',
                       outline: 'none',
                       fontFamily: selectedFont,
-                      fontSize: `${fontSize}pt`,
+                      fontSize: `${el.fontSize || fontSize}pt`,
                       color: el.color || '#000',
+                      fontWeight: el.type === 'HEADLINE' ? '900' : (el.type === 'SUB_HEADLINE' ? '600' : 'normal'),
                       wordBreak: 'break-word',
                       cursor: activeTool === 'TEXT' ? 'text' : 'default'
                     }}
                   >
-                    {flowResult.page1Content || (el.type === 'HEADLINE' ? "ఇక్కడ హెడ్‌లైన్ టైప్ చేయండి..." : "T టూల్ సెలెక్ట్ చేసి ఇక్కడ వార్త టైప్ చేయండి...")}
+                    {flowResult.page1Content || (el.type === 'HEADLINE' ? "ఇక్కడ హెడ్‌లైన్ టైప్ చేయండి..." : (el.type === 'SUB_HEADLINE' ? "ఇక్కడ సబ్-హెడ్‌లైన్ టైప్ చేయండి..." : "T టూల్ సెలెక్ట్ చేసి ఇక్కడ వార్త టైప్ చేయండి..."))}
                   </div>
                 </div>
               )}
@@ -384,5 +390,5 @@ export default function PageCanvas({
       </div>
     </div>
   );
-            }
+              }
                     
