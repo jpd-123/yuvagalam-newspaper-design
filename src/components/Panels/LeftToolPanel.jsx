@@ -9,7 +9,7 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
   const handleToolClick = (toolName, shapeType = null) => {
     setActiveTool(toolName);
     if (onSelectTool) onSelectTool(toolName);
-    if (shapeType && onSelectShape) onSelectShape(shapeType);
+    if (onSelectShape) onSelectShape(shapeType);
   };
 
   return (
@@ -60,28 +60,25 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
         </div>
       </div>
 
-      {/* 2-Column Grid Layout అచ్చం పేజ్‌మేకర్ లాగా */}
+      {/* 2-Column Grid Layout */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
         
-        {/* Pointer Tool */}
         <button 
-          onClick={() => handleToolClick('POINTER')}
+          onClick={() => handleToolClick('POINTER', null)}
           title="పాయింటర్ టూల్ (మౌస్ సెలెక్షన్ & మూవింగ్)"
           style={{ background: activeTool === 'POINTER' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
         >
           ↖️
         </button>
 
-        {/* Text Tool */}
         <button 
-          onClick={() => handleToolClick('TEXT', 'TEXT_BOX')}
+          onClick={() => handleToolClick('TEXT', null)}
           title="టెక్స్ట్ ఎడిటింగ్ టూల్ (T)"
           style={{ background: activeTool === 'TEXT' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center', fontWeight: 'bold' }}
         >
           T
         </button>
 
-        {/* ప్రధాన వార్త గ్రిడ్ (Rectangle Box) */}
         <button 
           onClick={() => handleToolClick('RECTANGLE', 'RECTANGLE')}
           title="వార్త గ్రిడ్ బాక్స్ (Rectangle)"
@@ -90,16 +87,24 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           ◻️
         </button>
 
-        {/* హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (Headline Box) */}
+        {/* హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H1) */}
         <button 
           onClick={() => handleToolClick('HEADLINE_BOX', 'HEADLINE')}
-          title="హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్"
+          title="హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H1)"
           style={{ background: activeTool === 'HEADLINE_BOX' ? '#d32f2f' : '#3a3a3a', color: '#ffcc00', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px', textAlign: 'center', fontWeight: 'bold' }}
         >
           H1
         </button>
 
-        {/* పిక్చర్ బాక్స్ (Photo Grid / Logo) */}
+        {/* సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H2) */}
+        <button 
+          onClick={() => handleToolClick('SUB_HEADLINE_BOX', 'SUB_HEADLINE')}
+          title="సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H2)"
+          style={{ background: activeTool === 'SUB_HEADLINE_BOX' ? '#d32f2f' : '#3a3a3a', color: '#90caf9', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px', textAlign: 'center', fontWeight: 'bold' }}
+        >
+          H2
+        </button>
+
         <button 
           onClick={() => handleToolClick('PICTURE_BOX', 'PICTURE')}
           title="పిక్చర్ బాక్స్ (ఫోటో / లోగో అప్‌లోడ్)"
@@ -108,7 +113,6 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           📷
         </button>
 
-        {/* గుండ్రని బంతి ఆకారపు ఫోటో బాక్స్ (Circle Photo Box) */}
         <button 
           onClick={() => handleToolClick('CROSS_CIRCLE', 'CIRCLE_PHOTO')}
           title="గుండ్రని బంతి ఆకారపు ఫోటో గ్రిడ్"
@@ -117,7 +121,6 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           ⊗
         </button>
 
-        {/* అండర్‌లైన్ / స్ట్రైట్ లైన్ టూల్ */}
         <button 
           onClick={() => handleToolClick('STRAIGHT_LINE', 'DIVIDER')}
           title="అండర్‌లైన్ / డివైడర్ గీత"
@@ -126,7 +129,6 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           │
         </button>
 
-        {/* చతురస్ర బోర్డర్ గ్రిడ్ (Highlight Border Box) */}
         <button 
           onClick={() => handleToolClick('BORDER_BOX', 'BORDER')}
           title="హైలైట్ వార్త బోర్డర్ బాక్స్"
@@ -144,7 +146,6 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           value={selectedBullet} 
           onChange={(e) => {
             setSelectedBullet(e.target.value);
-            // బుల్లెట్ సెలెక్ట్ చేయగానే టెక్స్ట్ ఎడిటర్‌లో ఇన్సర్ట్ చేసే లాజిక్
             const selection = window.getSelection();
             if (selection.rangeCount > 0) {
               const bulletSymbols = {
@@ -173,7 +174,7 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
         </select>
       </div>
 
-      {/* ఆటో పేజీ సెటప్ (Auto Fit Engine) బటన్ */}
+      {/* ఆటో పేజీ సెటప్ బటన్ */}
       <div style={{ marginTop: 'auto', borderTop: '1px solid #444', paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <button 
           onClick={() => {
