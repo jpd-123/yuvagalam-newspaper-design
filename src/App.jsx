@@ -70,23 +70,28 @@ export default function App() {
   };
 
   const handleCanvasClick = (e) => {
-    if (!selectedShape || activeTool === 'POINTER') return;
+    if (!selectedShape || activeTool === 'POINTER' || activeTool === 'TEXT') return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const canvasRect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - canvasRect.left;
+    const y = e.clientY - canvasRect.top;
+
+    const isHeadline = selectedShape === 'HEADLINE';
+    const isSubHeadline = selectedShape === 'SUB_HEADLINE';
 
     const newElement = {
       id: Date.now(),
-      type: selectedShape, 
-      x: Math.max(10, x - 100),
-      y: Math.max(10, y - 50),
-      width: selectedShape === 'CIRCLE_PHOTO' ? 140 : 240,
-      height: selectedShape === 'DIVIDER' ? 4 : (selectedShape === 'CIRCLE_PHOTO' ? 140 : 140),
-      color: textColor || '#000000',
-      text: selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త టైప్ చేయండి...' : (selectedShape === 'HEADLINE' ? 'ఇక్కడ హెడ్‌లైన్ టైప్ చేయండి...' : ''),
-      fontSize: fontSize,
-      bgColor: '#ffffff',
+      type: selectedShape,
+      x: Math.max(10, x - 120),
+      y: Math.max(10, y - 25),
+      width: selectedShape === 'CIRCLE_PHOTO' ? 140 : (isHeadline || isSubHeadline ? 320 : 240),
+      height: selectedShape === 'DIVIDER' ? 4 : (selectedShape === 'CIRCLE_PHOTO' ? 140 : (isHeadline ? 55 : (isSubHeadline ? 40 : 140))),
+      color: isHeadline ? '#b71c1c' : (isSubHeadline ? '#0d47a1' : (textColor || '#000000')),
+      text: isHeadline 
+        ? 'ప్రధాన హెడ్‌లైన్ ఇక్కడ టైప్ చేయండి...' 
+        : (isSubHeadline ? 'సబ్-హెడ్‌లైన్ ఇక్కడ టైప్ చేయండి...' : (selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త టైప్ చేయండి...' : '')),
+      fontSize: isHeadline ? Math.max(fontSize + 8, 20) : (isSubHeadline ? Math.max(fontSize + 4, 16) : fontSize),
+      bgColor: isHeadline ? '#fff8e1' : (isSubHeadline ? '#f3f8ff' : '#ffffff'),
       imageUrl: null,
       isVerticalPhoto: false
     };
@@ -97,6 +102,7 @@ export default function App() {
     }));
     setSelectedElementId(newElement.id);
     setSelectedShape(null);
+    setActiveTool('POINTER');
   };
 
   const handleUpdateElement = (id, updates) => {
