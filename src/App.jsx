@@ -9,6 +9,18 @@ import { BottomStyleBar } from './components/Panels/BottomStyleBar';
 import PageCanvas from './components/Canvas/PageCanvas';
 import { ExportPdfModal } from './components/Modals/ExportPdfModal';
 
+// హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ గ్రిడ్ వెడల్పు ఆధారంగా ఒకే లైన్‌లో సరిపోయేలా ఫాంట్ సైజ్ లెక్కించే ఫంక్షన్
+const calculateSingleLineFontSize = (text, boxWidth, isSubHeadline = false) => {
+  const usableWidth = Math.max(80, (boxWidth || 300) - 24);
+  const cleanLength = Math.max(1, (text || '').trim().length);
+  const maxAllowed = isSubHeadline ? 24 : 32;
+  const minAllowed = isSubHeadline ? 11 : 13;
+
+  // తెలుగు అక్షరాల సగటు వెడల్పు ఆధారంగా సింగిల్-లైన్ సైజ్ అంచనా
+  const estimatedPt = Math.floor((usableWidth / cleanLength) * 1.15);
+  return Math.max(minAllowed, Math.min(maxAllowed, estimatedPt));
+};
+
 export default function App() {
   const { activeMode, openDailyLayout, setActiveMode } = useMasterStore();
   const [showPdfModal, setShowPdfModal] = useState(false);
@@ -47,7 +59,22 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedElementId, currentPage]);
 
-  // గమనిక: లైట్ కలర్ ఎంచుకుంటే సెలెక్ట్ చేసిన గ్రిడ్ బాక్స్ బ్యాక్‌గ్రౌండ్ మాత్రమే మారుతుంది
+  // ఫాంట్ సైజ్ మారితే సెలెక్ట్ అయిన గ్రిడ్‌కి కూడా అప్‌డేట్ అవుతుంది (ఆటో-సైజ్‌ని ఓవర్‌రైడ్ చేసి మాన్యువల్ సైజ్ సెట్ చేస్తుంది)
+  const handleFontSizeChange = (newSize) => {
+    setFontSize(newSize);
+    if (selectedElementId !== null) {
+      setPagesElements(prev => ({
+        ...prev,
+        [currentPage]: (prev[currentPage] || []).map(el =>
+          el.id === selectedElementId
+            ? { ...el, fontSize: newSize, manualFontSize: true }
+            : el
+        )
+      }));
+    }
+  };
+
+  // లైట్ కలర్ -> సెలెక్ట్ చేసిన బాక్స్ బ్యాక్‌గ్రౌండ్; డార్క్ కలర్ -> సెలెక్ట్ చేసిన బాక్స్/టెక్స్ట్ కలర్
   const handleColorSelect = (type, color) => {
     if (type === 'LIGHT') {
       if (selectedElementId !== null) {
@@ -69,6 +96,19 @@ export default function App() {
     }
   };
 
+  // క్లిక్ చేసిన చోట ఉన్న లేదా దగ్గరగా ఉన్న వార్త గ్రిడ్ (RECTANGLE) ను కనుగొనడం
+  const findTargetNewsGrid = (elements, clickX, clickY) => {
+    const rectGrids = elements.filter(el => el.type === 'RECTANGLE');
+    if (rectGrids.length === 0) return null;
+
+    const containing = rectGrids.find(
+      g => clickX >= g.x - 20 && clickX <= g.x + g.width + 20 && clickY >= g.y - 100 && clickY <= g.y + g.height + 20
+    );
+    if (containing) return containing;
+
+    return rectGrids[rectGrids.length - 1];
+  };
+
   const handleCanvasClick = (e) => {
     if (!selectedShape || activeTool === 'POINTER' || activeTool === 'TEXT') return;
 
@@ -78,19 +118,33 @@ export default function App() {
 
     const isHeadline = selectedShape === 'HEADLINE';
     const isSubHeadline = selectedShape === 'SUB_HEADLINE';
+    const targetGrid = (isHeadline || isSubHeadline) ? findTargetNewsGrid(currentCanvasElements, x, y) : null;
+
+    const linkedWidth = targetGrid ? targetGrid.width : (isHeadline || isSubHeadline ? 320 : 240);
+    const linkedX = targetGrid ? targetGrid.x : Math.max(10, x - 120);
+
+    const defaultHeadlineText = 'ప్రధాన హెడ్‌లైన్ ఇక్కడ టైప్ చేయండి...';
+    const defaultSubHeadlineText = 'సబ్-హెడ్‌లైన్ ఇక్కడ టైప్ చేయండి...';
+
+    const autoSize = isHeadline
+      ? calculateSingleLineFontSize(defaultHeadlineText, linkedWidth, false)
+      : (isSubHeadline ? calculateSingleLineFontSize(defaultSubHeadlineText, linkedWidth, true) : fontSize);
 
     const newElement = {
       id: Date.now(),
       type: selectedShape,
-      x: Math.max(10, x - 120),
+      parentRectId: targetGrid ? targetGrid.id : null,
+      x: linkedX,
       y: Math.max(10, y - 25),
-      width: selectedShape === 'CIRCLE_PHOTO' ? 140 : (isHeadline || isSubHeadline ? 320 : 240),
-      height: selectedShape === 'DIVIDER' ? 4 : (selectedShape === 'CIRCLE_PHOTO' ? 140 : (isHeadline ? 55 : (isSubHeadline ? 40 : 140))),
+      width: selectedShape === 'CIRCLE_PHOTO' ? 140 : linkedWidth,
+      height: selectedShape === 'DIVIDER' ? 4 : (selectedShape === 'CIRCLE_PHOTO' ? 140 : (isHeadline ? 52 : (isSubHeadline ? 38 : 140))),
       color: isHeadline ? '#b71c1c' : (isSubHeadline ? '#0d47a1' : (textColor || '#000000')),
-      text: isHeadline 
-        ? 'ప్రధాన హెడ్‌లైన్ ఇక్కడ టైప్ చేయండి...' 
-        : (isSubHeadline ? 'సబ్-హెడ్‌లైన్ ఇక్కడ టైప్ చేయండి...' : (selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త టైప్ చేయండి...' : '')),
-      fontSize: isHeadline ? Math.max(fontSize + 8, 20) : (isSubHeadline ? Math.max(fontSize + 4, 16) : fontSize),
+      text: isHeadline
+        ? defaultHeadlineText
+        : (isSubHeadline ? defaultSubHeadlineText : (selectedShape === 'RECTANGLE' ? 'ఇక్కడ మీ వార్త టైప్ చేయండి...' : '')),
+      fontSize: autoSize,
+      singleLine: isHeadline || isSubHeadline,
+      manualFontSize: false,
       bgColor: isHeadline ? '#fff8e1' : (isSubHeadline ? '#f3f8ff' : '#ffffff'),
       imageUrl: null,
       isVerticalPhoto: false
@@ -105,11 +159,57 @@ export default function App() {
     setActiveTool('POINTER');
   };
 
+  // ఎలిమెంట్ అప్‌డేట్:
+  // 1. వార్త గ్రిడ్ వెడల్పు మారితే దాని హెడ్‌లైన్/సబ్-హెడ్‌లైన్ గ్రిడ్‌ల వెడల్పు & ఆటో-సైజ్ మారుతుంది
+  // 2. హెడ్‌లైన్/సబ్-హెడ్‌లైన్ టెక్స్ట్ మారితే ఒకే లైన్‌లో సరిపోయేలా ఫాంట్ సైజ్ ఆటోమేటిక్‌గా సర్దుబాటు అవుతుంది
   const handleUpdateElement = (id, updates) => {
-    setPagesElements(prev => ({
-      ...prev,
-      [currentPage]: (prev[currentPage] || []).map(el => el.id === id ? { ...el, ...updates } : el)
-    }));
+    setPagesElements(prev => {
+      const pageEls = prev[currentPage] || [];
+      const targetEl = pageEls.find(el => el.id === id);
+      const isResizingRectangle = targetEl && targetEl.type === 'RECTANGLE' && typeof updates.width === 'number';
+
+      const updatedEls = pageEls.map(el => {
+        if (el.id === id) {
+          const nextEl = { ...el, ...updates };
+          if ((nextEl.type === 'HEADLINE' || nextEl.type === 'SUB_HEADLINE') && nextEl.singleLine && !nextEl.manualFontSize) {
+            if (typeof updates.text === 'string' || typeof updates.width === 'number') {
+              nextEl.fontSize = calculateSingleLineFontSize(
+                nextEl.text,
+                nextEl.width,
+                nextEl.type === 'SUB_HEADLINE'
+              );
+            }
+          }
+          return nextEl;
+        }
+
+        if (
+          isResizingRectangle &&
+          (el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE') &&
+          (el.parentRectId === id || Math.abs(el.x - targetEl.x) < 25)
+        ) {
+          const nextWidth = updates.width;
+          const nextX = typeof updates.x === 'number' ? updates.x : el.x;
+          const nextFontSize = (el.singleLine && !el.manualFontSize)
+            ? calculateSingleLineFontSize(el.text, nextWidth, el.type === 'SUB_HEADLINE')
+            : el.fontSize;
+
+          return {
+            ...el,
+            width: nextWidth,
+            x: nextX,
+            fontSize: nextFontSize
+          };
+        }
+
+        return el;
+      });
+
+      return {
+        ...prev,
+        [currentPage]: updatedEls
+      };
+    });
   };
 
   const handleDeleteElement = (id) => {
@@ -209,7 +309,7 @@ export default function App() {
 
           <BottomStyleBar 
             fontSize={fontSize} 
-            setFontSize={setFontSize} 
+            setFontSize={handleFontSizeChange} 
           />
         </>
       )}
