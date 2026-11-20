@@ -23,6 +23,7 @@ export default function PageCanvas({
 }) {
   const { dateString } = getNewspaperDate();
   const canvasRef = useRef(null);
+  const editableRefs = useRef({});
 
   const [draggingId, setDraggingId] = useState(null);
   const [resizingId, setResizingId] = useState(null);
@@ -36,6 +37,16 @@ export default function PageCanvas({
       setSelectionToolbar({ show: false, x: 0, y: 0 });
     }
   }, [activeTool]);
+
+  // ఎడిటింగ్ మోడ్‌లోకి వెళ్ళినప్పుడు కర్సర్ వెంటనే బ్లింక్ అయ్యేలా ఫోకస్ చేయడం
+  useEffect(() => {
+    const activeEditTarget = editingId || (activeTool === 'TEXT' ? selectedElementId : null);
+    if (activeEditTarget && editableRefs.current[activeEditTarget]) {
+      setTimeout(() => {
+        editableRefs.current[activeEditTarget]?.focus();
+      }, 0);
+    }
+  }, [editingId, selectedElementId, activeTool]);
 
   const handleMouseMove = (e) => {
     if (!canvasRef.current || activeTool === 'TEXT') return;
@@ -75,7 +86,7 @@ export default function PageCanvas({
       const canvasRect = canvasRef.current.getBoundingClientRect();
       setSelectionToolbar({
         show: true,
-        x: rect.left - canvasRect.left,
+        x: Math.max(10, rect.left - canvasRect.left),
         y: Math.max(10, rect.top - canvasRect.top - 45)
       });
     } else {
@@ -87,6 +98,8 @@ export default function PageCanvas({
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
     const range = selection.getRangeAt(0);
+    if (range.collapsed) return;
+
     const span = document.createElement('span');
 
     if (styleType === 'MAIN_HEADLINE') {
@@ -182,7 +195,7 @@ export default function PageCanvas({
           boxSizing: 'border-box',
           position: 'relative',
           cursor: activeTool === 'TEXT' ? 'text' : 'default',
-          userSelect: editingId && activeTool === 'TEXT' ? 'text' : 'none'
+          userSelect: activeTool === 'TEXT' || editingId !== null ? 'text' : 'none'
         }}
       >
         {!isMasterDesignMode && (
@@ -197,6 +210,7 @@ export default function PageCanvas({
 
         {selectionToolbar.show && activeTool === 'TEXT' && (
           <div 
+            onMouseDown={(e) => e.preventDefault()}
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'absolute',
@@ -229,20 +243,25 @@ export default function PageCanvas({
 
         {canvasElements.map((el) => {
           const isSelected = selectedElementId === el.id;
+          const isTextEditableBox = el.type === 'RECTANGLE' || el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE';
           const isEditing = (activeTool === 'TEXT' && isSelected) || editingId === el.id;
           const overlappingImages = el.type === 'RECTANGLE' ? getOverlappingImages(el) : [];
           const isPageOne = pageNumber === 1;
 
           const flowResult = (el.type === 'RECTANGLE' && isPageOne && el.text)
-            ? handleTextFlow(el.text, el.height, fontSize, 1)
+            ? handleTextFlow(el.text, el.height, el.fontSize || fontSize, 1)
             : { page1Content: el.text, hasOverflow: false };
 
           return (
             <div
               key={el.id}
               onMouseDown={(e) => {
-                if (activeTool === 'TEXT') return;
-                // కొత్త గ్రిడ్/హెడ్‌లైన్ వేయడానికి క్లిక్ చేస్తుంటే, ఎలిమెంట్ డ్రాగ్/సెలెక్ట్ ఆపి కాన్వాస్ క్లిక్‌కి అనుమతి ఇవ్వాలి
+                if (activeTool === 'TEXT') {
+                  e.stopPropagation();
+                  if (onSelectElement) onSelectElement(el.id);
+                  if (isTextEditableBox) setEditingId(el.id);
+                  return;
+                }
                 if (activeTool !== 'POINTER') return;
 
                 e.stopPropagation();
@@ -253,14 +272,14 @@ export default function PageCanvas({
                 setDraggingId(el.id);
               }}
               onClick={(e) => {
-                // కొత్త షేప్/హెడ్‌లైన్ వేసే మోడ్‌లో ఉన్నప్పుడు e.stopPropagation() చేయకూడదు, అప్పుడే కాన్వాస్ మీద క్లిక్ పనిచేస్తుంది
                 if (activeTool !== 'POINTER' && activeTool !== 'TEXT') {
                   return;
                 }
                 e.stopPropagation();
                 if (onSelectElement) onSelectElement(el.id);
-                if (activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE')) {
+                if (activeTool === 'TEXT' && isTextEditableBox) {
                   setEditingId(el.id);
+                  setTimeout(() => editableRefs.current[el.id]?.focus(), 0);
                 }
               }}
               style={{
@@ -276,9 +295,10 @@ export default function PageCanvas({
                 borderRadius: el.type === 'CIRCLE' || el.type === 'CIRCLE_PHOTO' ? '50%' : el.type === 'OVAL' ? '50% / 30%' : '0px',
                 padding: '6px',
                 boxSizing: 'border-box',
-                cursor: activeTool === 'TEXT' && (el.type === 'RECTANGLE' || el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE') ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
+                cursor: activeTool === 'TEXT' && isTextEditableBox ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
                 zIndex: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 10 : 5,
-                overflow: 'hidden'
+                overflow: 'hidden',
+                userSelect: isTextEditableBox ? 'text' : 'none'
               }}
             >
               {isSelected && activeTool === 'POINTER' && (
@@ -336,7 +356,7 @@ export default function PageCanvas({
 
               {el.type === 'DIVIDER' && <div style={{ width: '100%', height: '2px', background: el.color || '#000' }} />}
               
-              {(el.type === 'RECTANGLE' || el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE') && (
+              {isTextEditableBox && (
                 <div style={{ width: '100%', height: '100%', position: 'relative', textAlign: 'justify', lineHeight: '1.35', overflowY: 'auto' }}>
                   {overlappingImages.map(imgEl => {
                     const relLeft = imgEl.x - el.x;
@@ -348,8 +368,21 @@ export default function PageCanvas({
                   })}
 
                   <div
-                    contentEditable={isEditing && activeTool === 'TEXT'}
+                    ref={(node) => { editableRefs.current[el.id] = node; }}
+                    contentEditable={isEditing || activeTool === 'TEXT'}
                     suppressContentEditableWarning={true}
+                    onMouseDown={(e) => {
+                      if (activeTool === 'TEXT' || editingId === el.id) {
+                        e.stopPropagation();
+                        if (onSelectElement) onSelectElement(el.id);
+                      }
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onSelectElement) onSelectElement(el.id);
+                      setEditingId(el.id);
+                      e.currentTarget.focus();
+                    }}
                     onMouseUp={handleTextSelection}
                     onKeyUp={handleTextSelection}
                     onBlur={(e) => {
@@ -359,14 +392,18 @@ export default function PageCanvas({
                     }}
                     style={{
                       width: '100%',
-                      height: '100%',
+                      minHeight: '100%',
                       outline: 'none',
                       fontFamily: selectedFont,
                       fontSize: `${el.fontSize || fontSize}pt`,
                       color: el.color || '#000',
                       fontWeight: el.type === 'HEADLINE' ? '900' : (el.type === 'SUB_HEADLINE' ? '600' : 'normal'),
                       wordBreak: 'break-word',
-                      cursor: activeTool === 'TEXT' ? 'text' : 'default'
+                      cursor: 'text',
+                      userSelect: 'text',
+                      whiteSpace: el.singleLine ? 'nowrap' : 'normal',
+                      overflow: el.singleLine ? 'hidden' : 'visible',
+                      textOverflow: el.singleLine ? 'ellipsis' : 'clip'
                     }}
                   >
                     {flowResult.page1Content || (el.type === 'HEADLINE' ? "ఇక్కడ హెడ్‌లైన్ టైప్ చేయండి..." : (el.type === 'SUB_HEADLINE' ? "ఇక్కడ సబ్-హెడ్‌లైన్ టైప్ చేయండి..." : "T టూల్ సెలెక్ట్ చేసి ఇక్కడ వార్త టైప్ చేయండి..."))}
@@ -390,5 +427,5 @@ export default function PageCanvas({
       </div>
     </div>
   );
-              }
-                    
+    }
+                  
