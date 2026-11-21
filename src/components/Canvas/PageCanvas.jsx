@@ -19,11 +19,14 @@ export default function PageCanvas({
   isMasterDesignMode = false,
   volume = 1,
   issue = 12,
-  activeTool = 'POINTER' 
+  activeTool = 'POINTER',
+  selectedShape = null,
+  onClearShape
 }) {
   const { dateString } = getNewspaperDate();
   const canvasRef = useRef(null);
   const editableRefs = useRef({});
+  const savedRangeRef = useRef(null);
 
   const [draggingId, setDraggingId] = useState(null);
   const [resizingId, setResizingId] = useState(null);
@@ -32,13 +35,12 @@ export default function PageCanvas({
   const [selectionToolbar, setSelectionToolbar] = useState({ show: false, x: 0, y: 0 });
 
   useEffect(() => {
-    if (activeTool === 'POINTER') {
+    if (activeTool === 'POINTER' && !selectedShape) {
       setEditingId(null);
       setSelectionToolbar({ show: false, x: 0, y: 0 });
     }
-  }, [activeTool]);
+  }, [activeTool, selectedShape]);
 
-  // ఎడిటింగ్ మోడ్‌లోకి వెళ్ళినప్పుడు కర్సర్ వెంటనే బ్లింక్ అయ్యేలా ఫోకస్ చేయడం
   useEffect(() => {
     const activeEditTarget = editingId || (activeTool === 'TEXT' ? selectedElementId : null);
     if (activeEditTarget && editableRefs.current[activeEditTarget]) {
@@ -48,8 +50,92 @@ export default function PageCanvas({
     }
   }, [editingId, selectedElementId, activeTool]);
 
+  const saveCurrentSelection = () => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      if (!range.collapsed && selection.toString().trim().length > 0) {
+        savedRangeRef.current = range.cloneRange();
+        return range;
+      }
+    }
+    return null;
+  };
+
+  const applyStyleToSelectedWords = (styleFn) => {
+    const selection = window.getSelection();
+    let targetRange = null;
+
+    if (selection && selection.rangeCount > 0 && !selection.getRangeAt(0).collapsed) {
+      targetRange = selection.getRangeAt(0);
+    } else if (savedRangeRef.current) {
+      targetRange = savedRangeRef.current.cloneRange();
+    }
+
+    if (!targetRange || targetRange.collapsed) return;
+
+    const span = document.createElement('span');
+    styleFn(span);
+
+    try {
+      targetRange.surroundContents(span);
+    } catch (err) {
+      const fragment = targetRange.extractContents();
+      span.appendChild(fragment);
+      targetRange.insertNode(span);
+    }
+
+    if (selection) {
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      selection.removeAllRanges();
+      selection.addRange(newRange);
+      savedRangeRef.current = newRange.cloneRange();
+    }
+  };
+
+  useEffect(() => {
+    const handleExternalFormat = (e) => {
+      const { kind, value } = e.detail || {};
+      if (!savedRangeRef.current) return;
+
+      if (kind === 'COLOR') {
+        applyStyleToSelectedWords((span) => {
+          span.style.color = value;
+        });
+      } else if (kind === 'BOLD') {
+        applyStyleToSelectedWords((span) => {
+          if (value === 'EXTRA_BOLD') {
+            span.style.fontWeight = '900';
+            span.style.textShadow = '0.5px 0.5px 0px rgba(0,0,0,0.4)';
+          } else if (value === 'MEDIUM_BOLD') {
+            span.style.fontWeight = '600';
+            span.style.textShadow = 'none';
+          } else if (value === 'NORMAL_BOLD') {
+            span.style.fontWeight = 'bold';
+            span.style.textShadow = 'none';
+          } else {
+            span.style.fontWeight = 'normal';
+            span.style.textShadow = 'none';
+          }
+        });
+      } else if (kind === 'FONT_SIZE') {
+        applyStyleToSelectedWords((span) => {
+          span.style.fontSize = `${value}pt`;
+        });
+      } else if (kind === 'FONT_FAMILY') {
+        applyStyleToSelectedWords((span) => {
+          span.style.fontFamily = value;
+        });
+      }
+    };
+
+    window.addEventListener('SATHVIKA_APPLY_FORMAT', handleExternalFormat);
+    return () => window.removeEventListener('SATHVIKA_APPLY_FORMAT', handleExternalFormat);
+  }, []);
+
   const handleMouseMove = (e) => {
-    if (!canvasRef.current || activeTool === 'TEXT') return;
+    if (!canvasRef.current || activeTool === 'TEXT' || selectedShape) return;
     const rect = canvasRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -79,9 +165,8 @@ export default function PageCanvas({
   };
 
   const handleTextSelection = () => {
-    const selection = window.getSelection();
-    if (selection && selection.toString().trim().length > 0 && canvasRef.current) {
-      const range = selection.getRangeAt(0);
+    const range = saveCurrentSelection();
+    if (range && canvasRef.current) {
       const rect = range.getBoundingClientRect();
       const canvasRect = canvasRef.current.getBoundingClientRect();
       setSelectionToolbar({
@@ -95,32 +180,16 @@ export default function PageCanvas({
   };
 
   const applyInlineStyle = (styleType, value) => {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;
-    const range = selection.getRangeAt(0);
-    if (range.collapsed) return;
-
-    const span = document.createElement('span');
-
     if (styleType === 'MAIN_HEADLINE') {
-      const hStyle = getHeadlineStyle('MAIN_HEADLINE');
-      Object.assign(span.style, hStyle);
+      applyStyleToSelectedWords((span) => Object.assign(span.style, getHeadlineStyle('MAIN_HEADLINE')));
     } else if (styleType === 'SUB_HEADLINE') {
-      const subStyle = getHeadlineStyle('SUB_HEADLINE');
-      Object.assign(span.style, subStyle);
+      applyStyleToSelectedWords((span) => Object.assign(span.style, getHeadlineStyle('SUB_HEADLINE')));
     } else if (styleType === 'DATELINE') {
-      const dateStyle = getHeadlineStyle('DATELINE');
-      Object.assign(span.style, dateStyle);
+      applyStyleToSelectedWords((span) => Object.assign(span.style, getHeadlineStyle('DATELINE')));
     } else if (styleType === 'COLOR') {
-      span.style.color = value;
+      applyStyleToSelectedWords((span) => { span.style.color = value; });
     } else if (styleType === 'FONT_SIZE') {
-      span.style.fontSize = `${value}pt`;
-    }
-
-    try {
-      range.surroundContents(span);
-    } catch (err) {
-      if (styleType === 'COLOR') document.execCommand('foreColor', false, value);
+      applyStyleToSelectedWords((span) => { span.style.fontSize = `${value}pt`; });
     }
     setSelectionToolbar({ show: false, x: 0, y: 0 });
   };
@@ -178,6 +247,12 @@ export default function PageCanvas({
       <div 
         ref={canvasRef}
         onClick={(e) => {
+          if (selectedShape) {
+            if (onCanvasClick) onCanvasClick(e);
+            if (onClearShape) onClearShape();
+            return;
+          }
+
           if (activeTool === 'TEXT' || editingId !== null) return;
           if (activeTool === 'POINTER') {
             setEditingId(null);
@@ -194,7 +269,7 @@ export default function PageCanvas({
           fontFamily: selectedFont,
           boxSizing: 'border-box',
           position: 'relative',
-          cursor: activeTool === 'TEXT' ? 'text' : 'default',
+          cursor: selectedShape ? 'crosshair' : (activeTool === 'TEXT' ? 'text' : 'default'),
           userSelect: activeTool === 'TEXT' || editingId !== null ? 'text' : 'none'
         }}
       >
@@ -235,7 +310,7 @@ export default function PageCanvas({
             <input 
               type="color" 
               onChange={(e) => applyInlineStyle('COLOR', e.target.value)} 
-              title="అక్షరాల రంగు"
+              title="సెలెక్ట్ చేసిన పదాల రంగు"
               style={{ width: '20px', height: '20px', border: 'none', background: 'transparent', cursor: 'pointer' }} 
             />
           </div>
@@ -256,6 +331,8 @@ export default function PageCanvas({
             <div
               key={el.id}
               onMouseDown={(e) => {
+                if (selectedShape) return;
+
                 if (activeTool === 'TEXT') {
                   e.stopPropagation();
                   if (onSelectElement) onSelectElement(el.id);
@@ -272,6 +349,10 @@ export default function PageCanvas({
                 setDraggingId(el.id);
               }}
               onClick={(e) => {
+                if (selectedShape) {
+                  return;
+                }
+
                 if (activeTool !== 'POINTER' && activeTool !== 'TEXT') {
                   return;
                 }
@@ -295,13 +376,13 @@ export default function PageCanvas({
                 borderRadius: el.type === 'CIRCLE' || el.type === 'CIRCLE_PHOTO' ? '50%' : el.type === 'OVAL' ? '50% / 30%' : '0px',
                 padding: '6px',
                 boxSizing: 'border-box',
-                cursor: activeTool === 'TEXT' && isTextEditableBox ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default'),
+                cursor: selectedShape ? 'crosshair' : (activeTool === 'TEXT' && isTextEditableBox ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default')),
                 zIndex: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 10 : 5,
                 overflow: 'hidden',
                 userSelect: isTextEditableBox ? 'text' : 'none'
               }}
             >
-              {isSelected && activeTool === 'POINTER' && (
+              {isSelected && activeTool === 'POINTER' && !selectedShape && (
                 <div 
                   onMouseDown={(e) => e.stopPropagation()}
                   style={{
@@ -369,23 +450,27 @@ export default function PageCanvas({
 
                   <div
                     ref={(node) => { editableRefs.current[el.id] = node; }}
-                    contentEditable={isEditing || activeTool === 'TEXT'}
+                    contentEditable={!selectedShape && (isEditing || activeTool === 'TEXT')}
                     suppressContentEditableWarning={true}
                     onMouseDown={(e) => {
+                      if (selectedShape) return;
                       if (activeTool === 'TEXT' || editingId === el.id) {
                         e.stopPropagation();
                         if (onSelectElement) onSelectElement(el.id);
                       }
                     }}
                     onClick={(e) => {
+                      if (selectedShape) return;
                       e.stopPropagation();
                       if (onSelectElement) onSelectElement(el.id);
                       setEditingId(el.id);
+                      saveCurrentSelection();
                       e.currentTarget.focus();
                     }}
                     onMouseUp={handleTextSelection}
                     onKeyUp={handleTextSelection}
                     onBlur={(e) => {
+                      saveCurrentSelection();
                       if (onUpdateElement) {
                         onUpdateElement(el.id, { text: e.currentTarget.innerText, htmlContent: e.currentTarget.innerHTML });
                       }
@@ -399,7 +484,7 @@ export default function PageCanvas({
                       color: el.color || '#000',
                       fontWeight: el.type === 'HEADLINE' ? '900' : (el.type === 'SUB_HEADLINE' ? '600' : 'normal'),
                       wordBreak: 'break-word',
-                      cursor: 'text',
+                      cursor: selectedShape ? 'crosshair' : 'text',
                       userSelect: 'text',
                       whiteSpace: el.singleLine ? 'nowrap' : 'normal',
                       overflow: el.singleLine ? 'hidden' : 'visible',
@@ -411,7 +496,7 @@ export default function PageCanvas({
                 </div>
               )}
 
-              {isSelected && activeTool === 'POINTER' && (
+              {isSelected && activeTool === 'POINTER' && !selectedShape && (
                 <div
                   onMouseDown={(e) => {
                     e.stopPropagation();
@@ -427,5 +512,4 @@ export default function PageCanvas({
       </div>
     </div>
   );
-    }
-                  
+            }
