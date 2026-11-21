@@ -9,7 +9,11 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect }) => {
       </h4>
 
       <label style={{ fontSize: '12px', fontWeight: 'bold' }}>తెలుగు ఫాంట్ స్టైల్:</label>
-      <select onChange={(e) => onFontSelect(e.target.value)} style={{ width: '100%', marginBottom: '15px', padding: '5px' }}>
+      <select 
+        onMouseDown={(e) => e.stopPropagation()}
+        onChange={(e) => onFontSelect(e.target.value)} 
+        style={{ width: '100%', marginBottom: '15px', padding: '5px' }}
+      >
         {ESSENTIAL_FONTS.map((font, idx) => (
           <option key={idx} value={font}>{font}</option>
         ))}
@@ -20,8 +24,10 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect }) => {
         {DARK_COLORS.map((color, idx) => (
           <div 
             key={idx} 
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => onColorSelect('DARK', color)} 
             style={{ width: '30px', height: '30px', background: color, cursor: 'pointer', border: '1px solid #000' }} 
+            title="సెలెక్ట్ చేసిన పదాలకు రంగు మారుతుంది"
           />
         ))}
       </div>
@@ -31,6 +37,7 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect }) => {
         {LIGHT_COLORS.map((color, idx) => (
           <div 
             key={idx} 
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => onColorSelect('LIGHT', color)} 
             style={{ width: '30px', height: '30px', background: color, cursor: 'pointer', border: '1px solid #000' }} 
             title="సెలెక్ట్ చేసిన గ్రిడ్ బాక్స్‌కి మాత్రమే బ్యాక్‌గ్రౌండ్ మారుతుంది"
