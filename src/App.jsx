@@ -16,7 +16,6 @@ const calculateSingleLineFontSize = (text, boxWidth, isSubHeadline = false) => {
   const maxAllowed = isSubHeadline ? 24 : 32;
   const minAllowed = isSubHeadline ? 11 : 13;
 
-  // తెలుగు అక్షరాల సగటు వెడల్పు ఆధారంగా సింగిల్-లైన్ సైజ్ అంచనా
   const estimatedPt = Math.floor((usableWidth / cleanLength) * 1.15);
   return Math.max(minAllowed, Math.min(maxAllowed, estimatedPt));
 };
@@ -59,7 +58,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedElementId, currentPage]);
 
-  // ఫాంట్ సైజ్ మారితే సెలెక్ట్ అయిన గ్రిడ్‌కి కూడా అప్‌డేట్ అవుతుంది (ఆటో-సైజ్‌ని ఓవర్‌రైడ్ చేసి మాన్యువల్ సైజ్ సెట్ చేస్తుంది)
+  // ఫాంట్ సైజ్ మారితే సెలెక్ట్ అయిన గ్రిడ్‌కి కూడా అప్‌డేట్ అవుతుంది
   const handleFontSizeChange = (newSize) => {
     setFontSize(newSize);
     if (selectedElementId !== null) {
@@ -74,7 +73,15 @@ export default function App() {
     }
   };
 
-  // లైట్ కలర్ -> సెలెక్ట్ చేసిన బాక్స్ బ్యాక్‌గ్రౌండ్; డార్క్ కలర్ -> సెలెక్ట్ చేసిన బాక్స్/టెక్స్ట్ కలర్
+  // సెలెక్ట్ చేసిన పదాలకు మాత్రమే ఫాంట్ స్టైల్ మార్చడానికి (లేదా సెలెక్షన్ లేకపోతే డిఫాల్ట్ ఫాంట్ మార్చడానికి)
+  const handleFontSelect = (font) => {
+    setSelectedFont(font);
+    window.dispatchEvent(
+      new CustomEvent('SATHVIKA_APPLY_FORMAT', { detail: { kind: 'FONT_FAMILY', value: font } })
+    );
+  };
+
+  // లైట్ కలర్ -> సెలెక్ట్ చేసిన బాక్స్ బ్యాక్‌గ్రౌండ్; డార్క్ కలర్ -> సెలెక్ట్ చేసిన పదాలకు రంగు
   const handleColorSelect = (type, color) => {
     if (type === 'LIGHT') {
       if (selectedElementId !== null) {
@@ -87,16 +94,12 @@ export default function App() {
       }
     } else {
       setTextColor(color);
-      if (selectedElementId !== null) {
-        setPagesElements(prev => ({
-          ...prev,
-          [currentPage]: (prev[currentPage] || []).map(el => el.id === selectedElementId ? { ...el, color: color } : el)
-        }));
-      }
+      window.dispatchEvent(
+        new CustomEvent('SATHVIKA_APPLY_FORMAT', { detail: { kind: 'COLOR', value: color } })
+      );
     }
   };
 
-  // క్లిక్ చేసిన చోట ఉన్న లేదా దగ్గరగా ఉన్న వార్త గ్రిడ్ (RECTANGLE) ను కనుగొనడం
   const findTargetNewsGrid = (elements, clickX, clickY) => {
     const rectGrids = elements.filter(el => el.type === 'RECTANGLE');
     if (rectGrids.length === 0) return null;
@@ -110,7 +113,7 @@ export default function App() {
   };
 
   const handleCanvasClick = (e) => {
-    if (!selectedShape || activeTool === 'POINTER' || activeTool === 'TEXT') return;
+    if (!selectedShape) return;
 
     const canvasRect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - canvasRect.left;
@@ -159,9 +162,6 @@ export default function App() {
     setActiveTool('POINTER');
   };
 
-  // ఎలిమెంట్ అప్‌డేట్:
-  // 1. వార్త గ్రిడ్ వెడల్పు మారితే దాని హెడ్‌లైన్/సబ్-హెడ్‌లైన్ గ్రిడ్‌ల వెడల్పు & ఆటో-సైజ్ మారుతుంది
-  // 2. హెడ్‌లైన్/సబ్-హెడ్‌లైన్ టెక్స్ట్ మారితే ఒకే లైన్‌లో సరిపోయేలా ఫాంట్ సైజ్ ఆటోమేటిక్‌గా సర్దుబాటు అవుతుంది
   const handleUpdateElement = (id, updates) => {
     setPagesElements(prev => {
       const pageEls = prev[currentPage] || [];
@@ -299,11 +299,13 @@ export default function App() {
               fontSize={fontSize}
               isMasterDesignMode={activeMode === 'MASTER'}
               activeTool={activeTool}
+              selectedShape={selectedShape}
+              onClearShape={() => setSelectedShape(null)}
             />
 
             <RightStylePanel 
               onColorSelect={handleColorSelect} 
-              onFontSelect={(font) => setSelectedFont(font)} 
+              onFontSelect={handleFontSelect} 
             />
           </div>
 
