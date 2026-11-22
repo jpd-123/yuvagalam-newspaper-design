@@ -77,120 +77,227 @@ export function LeftToolPanel({ onSelectTool, onSelectShape, onPageSizeChange, o
           style={{ background: activeTool === 'TEXT' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center', fontWeight: 'bold' }}
         >
           T
-        </button>
+import React, { useState } from 'react';
+import { BULLET_STYLES, DARK_COLORS, LIGHT_COLORS } from '../../constants/themeConstants';
 
-        <button 
-          onClick={() => handleToolClick('RECTANGLE', 'RECTANGLE')}
-          title="వార్త గ్రిడ్ బాక్స్ (Rectangle)"
-          style={{ background: activeTool === 'RECTANGLE' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
-        >
-          ◻️
-        </button>
+export const LeftToolPanel = ({
+  onSelectTool,
+  onSelectShape,
+  onPageSizeChange,
+  onPageCountChange,
+  onAutoPageSetup,
+  onColorSelect
+}) => {
+  const [selectedBullet, setSelectedBullet] = useState(BULLET_STYLES?.[0] || '•');
 
-        {/* హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H1) */}
-        <button 
-          onClick={() => handleToolClick('HEADLINE_BOX', 'HEADLINE')}
-          title="హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H1)"
-          style={{ background: activeTool === 'HEADLINE_BOX' ? '#d32f2f' : '#3a3a3a', color: '#ffcc00', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px', textAlign: 'center', fontWeight: 'bold' }}
-        >
-          H1
-        </button>
+  const darkPalette = ['#000000', ...(DARK_COLORS || [])];
+  const lightPalette = ['#ffffff', ...(LIGHT_COLORS || [])];
 
-        {/* సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H2) */}
-        <button 
-          onClick={() => handleToolClick('SUB_HEADLINE_BOX', 'SUB_HEADLINE')}
-          title="సబ్-హెడ్‌లైన్ ప్రత్యేక గ్రిడ్ (H2)"
-          style={{ background: activeTool === 'SUB_HEADLINE_BOX' ? '#d32f2f' : '#3a3a3a', color: '#90caf9', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px', textAlign: 'center', fontWeight: 'bold' }}
-        >
-          H2
-        </button>
+  const handleBulletChange = (e) => {
+    const bulletChar = e.target.value;
+    setSelectedBullet(bulletChar);
+    window.dispatchEvent(
+      new CustomEvent('SATHVIKA_INSERT_BULLET', { detail: { bullet: bulletChar } })
+    );
+  };
 
-        <button 
-          onClick={() => handleToolClick('PICTURE_BOX', 'PICTURE')}
-          title="పిక్చర్ బాక్స్ (ఫోటో / లోగో అప్‌లోడ్)"
-          style={{ background: activeTool === 'PICTURE_BOX' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
-        >
-          📷
-        </button>
-
-        <button 
-          onClick={() => handleToolClick('CROSS_CIRCLE', 'CIRCLE_PHOTO')}
-          title="గుండ్రని బంతి ఆకారపు ఫోటో గ్రిడ్"
-          style={{ background: activeTool === 'CROSS_CIRCLE' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
-        >
-          ⊗
-        </button>
-
-        <button 
-          onClick={() => handleToolClick('STRAIGHT_LINE', 'DIVIDER')}
-          title="అండర్‌లైన్ / డివైడర్ గీత"
-          style={{ background: activeTool === 'STRAIGHT_LINE' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
-        >
-          │
-        </button>
-
-        <button 
-          onClick={() => handleToolClick('BORDER_BOX', 'BORDER')}
-          title="హైలైట్ వార్త బోర్డర్ బాక్స్"
-          style={{ background: activeTool === 'BORDER_BOX' ? '#d32f2f' : '#3a3a3a', color: '#fff', border: '1px solid #555', padding: '6px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', textAlign: 'center' }}
-        >
-          🔲
-        </button>
-
-      </div>
-
-      {/* 6 రకాల బుల్లెట్లు సెలెక్షన్ */}
-      <div style={{ background: '#3a3a3a', padding: '6px', borderRadius: '4px' }}>
-        <span style={{ fontWeight: 'bold', fontSize: '10px', display: 'block', marginBottom: '3px', color: '#ffcc00' }}>బుల్లెట్ గుర్తులు (6 రకాలు):</span>
-        <select 
-          value={selectedBullet} 
-          onChange={(e) => {
-            setSelectedBullet(e.target.value);
-            const selection = window.getSelection();
-            if (selection.rangeCount > 0) {
-              const bulletSymbols = {
-                bullet1: '■ ',
-                bullet2: '● ',
-                bullet3: '◆ ',
-                bullet4: '▶ ',
-                bullet5: '★ ',
-                bullet6: '✔ '
-              };
-              const symbol = bulletSymbols[e.target.value];
-              if (symbol) {
-                document.execCommand('insertText', false, symbol);
-              }
-            }
-          }}
-          style={{ width: '100%', background: '#222', color: '#fff', border: '1px solid #555', padding: '3px', fontSize: '11px', borderRadius: '3px' }}
-        >
-          <option value="none">బుల్లెట్లు ఎంచుకోండి</option>
-          <option value="bullet1">1. చతురస్రం (■)</option>
-          <option value="bullet2">2. సర్కిల్ (●)</option>
-          <option value="bullet3">3. డైమండ్ (◆)</option>
-          <option value="bullet4">4. ఆరో (▶)</option>
-          <option value="bullet5">5. స్టార్ (★)</option>
-          <option value="bullet6">6. టిక్ (✔)</option>
-        </select>
-      </div>
-
-      {/* ఆటో పేజీ సెటప్ బటన్ */}
-      <div style={{ marginTop: 'auto', borderTop: '1px solid #444', paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <button 
+  return (
+    <div
+      onMouseDown={(e) => {
+        if (e.target.tagName !== 'SELECT' && e.target.tagName !== 'OPTION') {
+          e.preventDefault();
+        }
+      }}
+      style={{
+        width: '230px',
+        background: '#2c2c2c',
+        color: '#fff',
+        padding: '12px',
+        borderRight: '1px solid #444',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        fontSize: '12px',
+        boxSizing: 'border-box'
+      }}
+    >
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+        <button
           onClick={() => {
-            if (onAutoPageSetup) onAutoPageSetup();
-            alert('ఆటో పేజీ సెటప్ విజయవంతం! పేజీ అడుగుభాగంలో ఖాళీ లేకుండా హెడ్‌లైన్ మరియు ఫోటో సైజ్‌లు నిష్పత్తి ప్రకారం సర్దుబాటు చేయబడ్డాయి.');
+            if (onSelectTool) onSelectTool('TEXT');
           }}
-          style={{ background: '#388e3c', color: '#fff', border: 'none', padding: '8px', borderRadius: '3px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer', textAlign: 'center' }}
-          title="పేజీలో గ్యాప్ లేకుండా హెడ్‌లైన్ & ఫోటో సైజులను ఆటోమేటిక్‌గా సర్దుబాటు చేస్తుంది"
+          style={{ background: '#d32f2f', color: '#fff', border: 'none', padding: '8px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
         >
-          ⚙️ ఆటో పేజీ సెటప్ (Auto Fit)
+          T (టెక్స్ట్)
         </button>
-        <div style={{ fontSize: '9px', color: '#aaa', textAlign: 'center' }}>
-          సాత్విక పబ్లిషర్ v1.0
+        <button
+          onClick={() => {
+            if (onSelectTool) onSelectTool('POINTER');
+            if (onSelectShape) onSelectShape(null);
+          }}
+          style={{ background: '#444', color: '#fff', border: 'none', padding: '8px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          ↖ పాయింటర్
+        </button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+        <button
+          onClick={() => {
+            if (onSelectShape) onSelectShape('HEADLINE');
+            if (onSelectTool) onSelectTool('HEADLINE_BOX');
+          }}
+          style={{ background: '#3d3d3d', color: '#fff', border: '1px solid #555', padding: '7px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          H1 హెడ్‌లైన్
+        </button>
+        <button
+          onClick={() => {
+            if (onSelectShape) onSelectShape('SUB_HEADLINE');
+            if (onSelectTool) onSelectTool('SUB_HEADLINE_BOX');
+          }}
+          style={{ background: '#3d3d3d', color: '#fff', border: '1px solid #555', padding: '7px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          H2 సబ్‌హెడ్‌లైన్
+        </button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+        <button
+          onClick={() => {
+            if (onSelectShape) onSelectShape('RECTANGLE');
+            if (onSelectTool) onSelectTool('SHAPE');
+          }}
+          style={{ background: '#3d3d3d', color: '#fff', border: '1px solid #555', padding: '7px', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          ▭ వార్త గ్రిడ్
+        </button>
+        <button
+          onClick={() => {
+            if (onSelectShape) onSelectShape('PICTURE');
+            if (onSelectTool) onSelectTool('SHAPE');
+          }}
+          style={{ background: '#3d3d3d', color: '#fff', border: '1px solid #555', padding: '7px', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          🖼 ఫోటో బాక్స్
+        </button>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+        <button
+          onClick={() => {
+            if (onSelectShape) onSelectShape('CIRCLE_PHOTO');
+            if (onSelectTool) onSelectTool('SHAPE');
+          }}
+          style={{ background: '#3d3d3d', color: '#fff', border: '1px solid #555', padding: '7px', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          ⊗ రౌండ్ ఫోటో
+        </button>
+        <button
+          onClick={() => {
+            if (onSelectShape) onSelectShape('DIVIDER');
+            if (onSelectTool) onSelectTool('SHAPE');
+          }}
+          style={{ background: '#3d3d3d', color: '#fff', border: '1px solid #555', padding: '7px', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          — డివైడర్
+        </button>
+      </div>
+
+      {/* బుల్లెట్ గుర్తులు (6 రకాలు) */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
+          బుల్లెట్ గుర్తులు (సబ్-హెడ్‌లైన్):
+        </label>
+        <div style={{ display: 'flex', gap: '4px' }}>
+          <select
+            value={selectedBullet}
+            onChange={handleBulletChange}
+            style={{ flex: 1, padding: '5px', background: '#1e1e1e', color: '#fff', border: '1px solid #555', borderRadius: '4px' }}
+          >
+            {(BULLET_STYLES || ['•', '▪', '▸', '❖', '✦', '➤']).map((b, i) => (
+              <option key={i} value={b}>
+                {b} బుల్లెట్ ({i + 1})
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() =>
+              window.dispatchEvent(
+                new CustomEvent('SATHVIKA_INSERT_BULLET', { detail: { bullet: selectedBullet } })
+              )
+            }
+            title="సెలెక్ట్ చేసిన సబ్-హెడ్‌లైన్ ముందు బుల్లెట్ వేయండి"
+            style={{ background: '#1976d2', color: '#fff', border: 'none', padding: '5px 8px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            +
+          </button>
         </div>
       </div>
 
+      {/* పేపర్ సైజ్ & పేజీల సంఖ్య */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '3px', fontWeight: 'bold' }}>పేపర్ సైజ్:</label>
+        <select
+          onChange={(e) => onPageSizeChange && onPageSizeChange(e.target.value)}
+          style={{ width: '100%', padding: '5px', background: '#1e1e1e', color: '#fff', border: '1px solid #555', borderRadius: '4px' }}
+        >
+          <option value="BROADSHEET">బ్రాడ్ షీట్</option>
+          <option value="A3 సైజ్">A3 సైజ్</option>
+          <option value="మీడియం సైజ్">మీడియం సైజ్</option>
+          <option value="జిల్లా టాబ్లెట్">జిల్లా టాబ్లెట్</option>
+        </select>
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: '3px', fontWeight: 'bold' }}>పేజీలు (1-16):</label>
+        <select
+          onChange={(e) => onPageCountChange && onPageCountChange(Number(e.target.value))}
+          style={{ width: '100%', padding: '5px', background: '#1e1e1e', color: '#fff', border: '1px solid #555', borderRadius: '4px' }}
+        >
+          {[...Array(16)].map((_, idx) => (
+            <option key={idx + 1} value={idx + 1}>{idx + 1} పేజీ</option>
+          ))}
+        </select>
+      </div>
+
+      {/* ముదురు రంగులు (బ్లాక్ కలర్‌తో సహా) */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>ముదురు రంగులు (బ్లాక్ సహా):</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
+          {darkPalette.map((color, i) => (
+            <div
+              key={i}
+              onClick={() => onColorSelect && onColorSelect('DARK', color)}
+              title={color === '#000000' ? 'బ్లాక్ కలర్' : color}
+              style={{ width: '100%', height: '22px', background: color, border: '1px solid #777', cursor: 'pointer', borderRadius: '2px' }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* లేత రంగులు (వైట్ కలర్‌తో సహా) */}
+      <div>
+        <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>లేత రంగులు (వైట్ సహా):</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
+          {lightPalette.map((color, i) => (
+            <div
+              key={i}
+              onClick={() => onColorSelect && onColorSelect('LIGHT', color)}
+              title={color === '#ffffff' ? 'వైట్ కలర్' : color}
+              style={{ width: '100%', height: '22px', background: color, border: '1px solid #777', cursor: 'pointer', borderRadius: '2px' }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={() => onAutoPageSetup && onAutoPageSetup()}
+        style={{ background: '#2e7d32', color: '#fff', border: 'none', padding: '8px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', marginTop: '4px' }}
+      >
+        ఆటో పేజీ సెటప్ (Auto Fit)
+      </button>
     </div>
   );
-}
+};
