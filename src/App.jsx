@@ -91,6 +91,14 @@ export default function App() {
     window.dispatchEvent(
       new CustomEvent('SATHVIKA_APPLY_FORMAT', { detail: { kind: 'FONT_FAMILY', value: font } })
     );
+    if (selectedElementId !== null) {
+      setPagesElements(prev => ({
+        ...prev,
+        [currentPage]: (prev[currentPage] || []).map(el =>
+          el.id === selectedElementId ? { ...el, fontFamily: font } : el
+        )
+      }));
+    }
   };
 
   // లైట్ లేదా ముదురు రంగులు ఎంచుకున్నప్పుడు బ్యాక్‌గ్రౌండ్ / అక్షరాల రంగు అప్‌డేట్
