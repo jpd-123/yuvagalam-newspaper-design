@@ -9,36 +9,21 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect, selectedFont = 'G
       </h4>
 
       <label style={{ fontSize: '12px', fontWeight: 'bold' }}>తెలుగు ఫాంట్ స్టైల్:</label>
-      <select 
+      <select
         value={selectedFont}
         onMouseDown={(e) => e.stopPropagation()}
-        onChange={(e) => onFontSelect(e.target.value)} 
-        style={{ width: '100%', marginBottom: '12px', padding: '5px' }}
+        onChange={(e) => {
+          const chosenFont = e.target.value;
+          if (onFontSelect) onFontSelect(chosenFont);
+        }}
+        style={{ width: '100%', marginBottom: '15px', padding: '5px' }}
       >
         {ESSENTIAL_FONTS.map((font, idx) => (
           <option key={idx} value={font}>{font}</option>
         ))}
       </select>
 
-      {/* బ్లాక్ & వైట్ అక్షరాల రంగు బటన్లు */}
-      <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
-        <button
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => onColorSelect('DARK', '#000000', 'TEXT_ONLY')}
-          style={{ flex: 1, background: '#000000', color: '#ffffff', border: '1px solid #333', padding: '5px', borderRadius: '3px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
-        >
-          బ్లాక్ టెక్స్ట్
-        </button>
-        <button
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => onColorSelect('LIGHT', '#ffffff', 'TEXT_ONLY')}
-          style={{ flex: 1, background: '#ffffff', color: '#000000', border: '1px solid #666', padding: '5px', borderRadius: '3px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}
-        >
-          వైట్ టెక్స్ట్
-        </button>
-      </div>
-
-      <label style={{ fontSize: '12px', fontWeight: 'bold' }}>ముదురు రంగులు (బాక్స్ BG / అక్షరాలు):</label>
+      <label style={{ fontSize: '12px', fontWeight: 'bold' }}>ముదురు రంగులు (అక్షరాలు/హెడ్‌లైన్స్):</label>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '5px', marginBottom: '15px' }}>
         {DARK_COLORS.map((color, idx) => (
           <div 
@@ -46,7 +31,6 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect, selectedFont = 'G
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => onColorSelect('DARK', color)} 
             style={{ width: '30px', height: '30px', background: color, cursor: 'pointer', border: '1px solid #000' }} 
-            title="ముదురు రంగు: బాక్స్ BG లేదా టెక్స్ట్ కలర్ మారుతుంది (డార్క్ BG అయితే టెక్స్ట్ వైట్ అవుతుంది)"
           />
         ))}
       </div>
@@ -59,7 +43,7 @@ export const RightStylePanel = ({ onColorSelect, onFontSelect, selectedFont = 'G
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => onColorSelect('LIGHT', color)} 
             style={{ width: '30px', height: '30px', background: color, cursor: 'pointer', border: '1px solid #000' }} 
-            title="సెలెక్ట్ చేసిన గ్రిడ్ బాక్స్‌కి బ్యాక్‌గ్రౌండ్ మారుతుంది"
+            title="సెలెక్ట్ చేసిన గ్రిడ్ బాక్స్‌కి మాత్రమే బ్యాక్‌గ్రౌండ్ మారుతుంది"
           />
         ))}
       </div>
