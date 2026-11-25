@@ -53,6 +53,25 @@ export default function App() {
   const [selectedElementId, setSelectedElementId] = useState(null);
   const pageRef = useRef(null);
 
+  // ఫోన్‌లో కూడా మాస్టర్ లేఅవుట్ టెస్ట్ చేయడానికి జూమ్ & ట్యాబ్ స్టేట్‌లు
+  const [isMobileView, setIsMobileView] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+  const [mobileZoom, setMobileZoom] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 0.45 : 1
+  );
+  const [mobilePanel, setMobilePanel] = useState('CANVAS'); // 'CANVAS' | 'LEFT' | 'RIGHT'
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobileView(mobile);
+      setMobileZoom(prev => (mobile ? (prev > 0.85 ? 0.45 : prev) : 1));
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const currentCanvasElements = pagesElements[currentPage] || [];
 
   useEffect(() => {
@@ -103,7 +122,6 @@ export default function App() {
 
   // లైట్ లేదా ముదురు రంగులు ఎంచుకున్నప్పుడు బ్యాక్‌గ్రౌండ్ / అక్షరాల రంగు అప్‌డేట్
   const handleColorSelect = (type, color, targetMode = 'AUTO') => {
-    // నిర్దిష్టంగా టెక్స్ట్ కలర్ (బ్లాక్ / వైట్ లేదా డార్క్ టెక్స్ట్) మార్చమని అడిగితే
     if (targetMode === 'TEXT_ONLY') {
       setTextColor(color);
       window.dispatchEvent(
@@ -132,9 +150,6 @@ export default function App() {
         setBgColor(color);
       }
     } else {
-      // ముదురు రంగులు (DARK) ఎంచుకున్నప్పుడు:
-      // బాక్స్ సెలెక్ట్ చేసి ఉంటే (మరియు టెక్స్ట్ సెలెక్షన్ లేకపోతే) బాక్స్ బ్యాక్‌గ్రౌండ్ మారుతుంది,
-      // ముదురు రంగు అయితే అక్షరాల కలర్ ఆటోమేటిక్‌గా వైట్ (#ffffff) అవుతుంది.
       const selection = window.getSelection();
       const hasTextSelected = selection && selection.rangeCount > 0 && !selection.getRangeAt(0).collapsed;
 
@@ -182,8 +197,9 @@ export default function App() {
     if (!selectedShape) return;
 
     const canvasRect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - canvasRect.left;
-    const y = e.clientY - canvasRect.top;
+    const scale = isMobileView ? mobileZoom : 1;
+    const x = (e.clientX - canvasRect.left) / scale;
+    const y = (e.clientY - canvasRect.top) / scale;
 
     const isHeadline = selectedShape === 'HEADLINE';
     const isSubHeadline = selectedShape === 'SUB_HEADLINE';
@@ -243,6 +259,7 @@ export default function App() {
     setSelectedElementId(newElement.id);
     setSelectedShape(null);
     setActiveTool('POINTER');
+    if (isMobileView) setMobilePanel('CANVAS');
   };
 
   const handleUpdateElement = (id, updates) => {
@@ -255,7 +272,6 @@ export default function App() {
         if (el.id === id) {
           const nextEl = { ...el, ...updates };
           if ((nextEl.type === 'HEADLINE' || nextEl.type === 'SUB_HEADLINE') && nextEl.singleLine) {
-            // టెక్స్ట్ కొత్తగా మారితే లేదా కాపీ/పేస్ట్ చేస్తే గ్రిడ్ వెడల్పుకు తగ్గట్టు ఆటో-సైజ్ అప్‌డేట్ అవుతుంది
             if (typeof updates.text === 'string' && updates.text !== el.text) {
               nextEl.fontSize = calculateSingleLineFontSize(
                 nextEl.text,
@@ -320,7 +336,6 @@ export default function App() {
     }
   };
   const dimensions = getPaperDimensions();
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif' }}>
       
@@ -347,8 +362,27 @@ export default function App() {
             <DailyToolbar onExportPdfClick={() => setShowPdfModal(true)} />
           )}
 
-          <div style={{ background: '#eee', padding: '5px 15px', fontSize: '12px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{ background: '#eee', padding: '5px 15px', fontSize: '12px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             <span style={{ fontWeight: 'bold' }}>వర్క్‌స్పేస్: {paperSize}</span>
+
+            {isMobileView && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button
+                  onClick={() => setMobileZoom(z => Math.max(0.3, +(z - 0.1).toFixed(2)))}
+                  style={{ padding: '2px 7px', background: '#444', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                >
+                  -
+                </button>
+                <span style={{ fontWeight: 'bold' }}>{Math.round(mobileZoom * 100)}%</span>
+                <button
+                  onClick={() => setMobileZoom(z => Math.min(1.3, +(z + 0.1).toFixed(2)))}
+                  style={{ padding: '2px 7px', background: '#444', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                >
+                  +
+                </button>
+              </div>
+            )}
+
             <span style={{ marginLeft: 'auto' }}>
               ప్రస్తుత పేజీ: 
               {[...Array(Number(pageCount))].map((_, i) => (
@@ -366,39 +400,87 @@ export default function App() {
             </span>
           </div>
 
-          <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-            <LeftToolPanel 
-              onSelectTool={(tool) => setActiveTool(tool)}
-              onSelectShape={(shape) => setSelectedShape(shape)}
-              onPageSizeChange={(size) => setPaperSize(size)}
-              onPageCountChange={(count) => setPageCount(count)}
-              onAutoPageSetup={() => alert('ఆటో పేజీ సెటప్ రన్ అయింది!')}
-            />
+          {isMobileView && (
+            <div style={{ display: 'flex', background: '#333', borderBottom: '1px solid #555' }}>
+              <button
+                onClick={() => setMobilePanel('CANVAS')}
+                style={{ flex: 1, padding: '7px', background: mobilePanel === 'CANVAS' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                📄 పేజీ కాన్వాస్
+              </button>
+              <button
+                onClick={() => setMobilePanel('LEFT')}
+                style={{ flex: 1, padding: '7px', background: mobilePanel === 'LEFT' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                🛠 గ్రిడ్స్ & టూల్స్
+              </button>
+              <button
+                onClick={() => setMobilePanel('RIGHT')}
+                style={{ flex: 1, padding: '7px', background: mobilePanel === 'RIGHT' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                🎨 ఫాంట్ & కలర్స్
+              </button>
+            </div>
+          )}
 
-            <PageCanvas 
-              pageTitle={`మాస్టర్ లేఅవుట్ - పేజీ ${currentPage}`}
-              pageNumber={currentPage}
-              bgColor={bgColor}
-              selectedFont={selectedFont}
-              dimensions={dimensions}
-              onCanvasClick={handleCanvasClick}
-              canvasElements={currentCanvasElements}
-              onUpdateElement={handleUpdateElement}
-              onDeleteElement={handleDeleteElement}
-              selectedElementId={selectedElementId}
-              onSelectElement={(id) => setSelectedElementId(id)}
-              fontSize={fontSize}
-              isMasterDesignMode={activeMode === 'MASTER'}
-              activeTool={activeTool}
-              selectedShape={selectedShape}
-              onClearShape={() => setSelectedShape(null)}
-            />
+          <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+            {(!isMobileView || mobilePanel === 'LEFT') && (
+              <LeftToolPanel 
+                onSelectTool={(tool) => {
+                  setActiveTool(tool);
+                  if (isMobileView && tool === 'TEXT') setMobilePanel('CANVAS');
+                }}
+                onSelectShape={(shape) => {
+                  setSelectedShape(shape);
+                  if (isMobileView && shape) setMobilePanel('CANVAS');
+                }}
+                onPageSizeChange={(size) => setPaperSize(size)}
+                onPageCountChange={(count) => setPageCount(count)}
+                onAutoPageSetup={() => alert('ఆటో పేజీ సెటప్ రన్ అయింది!')}
+                onColorSelect={handleColorSelect}
+              />
+            )}
 
-            <RightStylePanel 
-              selectedFont={selectedFont}
-              onColorSelect={handleColorSelect} 
-              onFontSelect={handleFontSelect} 
-            />
+            {(!isMobileView || mobilePanel === 'CANVAS') && (
+              <div style={{ flex: 1, display: 'flex', overflow: 'auto' }}>
+                <div
+                  style={{
+                    transform: isMobileView ? `scale(${mobileZoom})` : 'none',
+                    transformOrigin: 'top center',
+                    width: isMobileView ? dimensions.width : '100%',
+                    minHeight: isMobileView ? dimensions.minHeight : '100%',
+                    flexShrink: 0
+                  }}
+                >
+                  <PageCanvas 
+                    pageTitle={`మాస్టర్ లేఅవుట్ - పేజీ ${currentPage}`}
+                    pageNumber={currentPage}
+                    bgColor={bgColor}
+                    selectedFont={selectedFont}
+                    dimensions={dimensions}
+                    onCanvasClick={handleCanvasClick}
+                    canvasElements={currentCanvasElements}
+                    onUpdateElement={handleUpdateElement}
+                    onDeleteElement={handleDeleteElement}
+                    selectedElementId={selectedElementId}
+                    onSelectElement={(id) => setSelectedElementId(id)}
+                    fontSize={fontSize}
+                    isMasterDesignMode={activeMode === 'MASTER'}
+                    activeTool={activeTool}
+                    selectedShape={selectedShape}
+                    onClearShape={() => setSelectedShape(null)}
+                  />
+                </div>
+              </div>
+            )}
+
+            {(!isMobileView || mobilePanel === 'RIGHT') && (
+              <RightStylePanel 
+                selectedFont={selectedFont}
+                onColorSelect={handleColorSelect} 
+                onFontSelect={handleFontSelect} 
+              />
+            )}
           </div>
 
           <BottomStyleBar 
@@ -411,4 +493,4 @@ export default function App() {
       {showPdfModal && <ExportPdfModal pageRef={pageRef} onClose={() => setShowPdfModal(false)} />}
     </div>
   );
-}
+              }
