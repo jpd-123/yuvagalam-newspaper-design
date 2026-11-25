@@ -9,7 +9,6 @@ import { BottomStyleBar } from './components/Panels/BottomStyleBar';
 import PageCanvas from './components/Canvas/PageCanvas';
 import { ExportPdfModal } from './components/Modals/ExportPdfModal';
 
-// హెక్స్ కలర్ ముదురుగా (Dark) ఉందా లేదా అని తనిఖీ చేసే ఫంక్షన్
 export const isDarkHexColor = (hex) => {
   if (!hex || typeof hex !== 'string') return false;
   const clean = hex.replace('#', '');
@@ -21,7 +20,6 @@ export const isDarkHexColor = (hex) => {
   return luminance < 0.48;
 };
 
-// హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ టెక్స్ట్ మొత్తం మొదటి నుండి చివరి వరకు ఒకే లైన్‌లో కనిపించేలా సైజ్ లెక్కించడం
 export const calculateSingleLineFontSize = (text, boxWidth, isSubHeadline = false) => {
   const usableWidth = Math.max(70, (boxWidth || 300) - 20);
   const cleanText = (text || '').trim();
@@ -29,7 +27,6 @@ export const calculateSingleLineFontSize = (text, boxWidth, isSubHeadline = fals
   const maxAllowed = isSubHeadline ? 22 : 30;
   const minAllowed = isSubHeadline ? 9 : 11;
 
-  // తెలుగు అక్షరాల వెడల్పుకు తగ్గట్టు ఖచ్చితమైన pt సైజ్
   const estimatedPt = Math.floor((usableWidth / cleanLength) * 1.05);
   return Math.max(minAllowed, Math.min(maxAllowed, estimatedPt));
 };
@@ -37,11 +34,11 @@ export const calculateSingleLineFontSize = (text, boxWidth, isSubHeadline = fals
 export default function App() {
   const { activeMode, openDailyLayout, setActiveMode } = useMasterStore();
   const [showPdfModal, setShowPdfModal] = useState(false);
-  
+
   const [paperSize, setPaperSize] = useState('BROADSHEET');
   const [pageCount, setPageCount] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   const [activeTool, setActiveTool] = useState('POINTER');
   const [selectedShape, setSelectedShape] = useState(null);
   const [bgColor, setBgColor] = useState('#ffffff');
@@ -53,24 +50,38 @@ export default function App() {
   const [selectedElementId, setSelectedElementId] = useState(null);
   const pageRef = useRef(null);
 
-  // ఫోన్‌లో కూడా మాస్టర్ లేఅవుట్ టెస్ట్ చేయడానికి జూమ్ & ట్యాబ్ స్టేట్‌లు
-  const [isMobileView, setIsMobileView] = useState(
-    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  const [screenWidth, setScreenWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1200
   );
-  const [mobileZoom, setMobileZoom] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 768 ? 0.45 : 1
-  );
+  const isMobileView = screenWidth < 768;
   const [mobilePanel, setMobilePanel] = useState('CANVAS'); // 'CANVAS' | 'LEFT' | 'RIGHT'
+  const [zoomBoost, setZoomBoost] = useState(0); // -0.2 నుండి +0.5 వరకు
 
   useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobileView(mobile);
-      setMobileZoom(prev => (mobile ? (prev > 0.85 ? 0.45 : prev) : 1));
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const onResize = () => setScreenWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  const getPaperDimensions = () => {
+    switch (paperSize) {
+      case 'A3 సైజ్': return { width: '700px', minHeight: '990px' };
+      case 'మీడియం సైజ్': return { width: '750px', minHeight: '1050px' };
+      case 'జిల్లా టాబ్లెట్': return { width: '650px', minHeight: '900px' };
+      default: return { width: '820px', minHeight: '1160px' };
+    }
+  };
+  const dimensions = getPaperDimensions();
+  const rawPaperWidth = parseInt(dimensions.width, 10) || 820;
+  const rawPaperHeight = parseInt(dimensions.minHeight, 10) || 1160;
+
+  // మొబైల్ స్క్రీన్‌లో వైట్ పేపర్ మొత్తం వెడల్పు పట్టేలా ఆటో స్కేల్
+  const fitScale = isMobileView
+    ? Math.max(0.25, Math.min(1, (screenWidth - 24) / rawPaperWidth))
+    : 1;
+  const effectiveScale = isMobileView
+    ? Math.max(0.25, Math.min(1.5, +(fitScale + zoomBoost).toFixed(2)))
+    : 1;
 
   const currentCanvasElements = pagesElements[currentPage] || [];
 
@@ -120,7 +131,6 @@ export default function App() {
     }
   };
 
-  // లైట్ లేదా ముదురు రంగులు ఎంచుకున్నప్పుడు బ్యాక్‌గ్రౌండ్ / అక్షరాల రంగు అప్‌డేట్
   const handleColorSelect = (type, color, targetMode = 'AUTO') => {
     if (targetMode === 'TEXT_ONLY') {
       setTextColor(color);
@@ -197,9 +207,8 @@ export default function App() {
     if (!selectedShape) return;
 
     const canvasRect = e.currentTarget.getBoundingClientRect();
-    const scale = isMobileView ? mobileZoom : 1;
-    const x = (e.clientX - canvasRect.left) / scale;
-    const y = (e.clientY - canvasRect.top) / scale;
+    const x = (e.clientX - canvasRect.left) / effectiveScale;
+    const y = (e.clientY - canvasRect.top) / effectiveScale;
 
     const isHeadline = selectedShape === 'HEADLINE';
     const isSubHeadline = selectedShape === 'SUB_HEADLINE';
@@ -209,7 +218,6 @@ export default function App() {
     const linkedWidth = targetGrid ? targetGrid.width : (isHeadline || isSubHeadline ? 320 : 240);
     const linkedX = targetGrid ? targetGrid.x : Math.max(10, x - 120);
 
-    // ఒకే వార్త గ్రిడ్ కింద ఎన్ని సబ్-హెడ్‌లైన్స్ / హెడ్‌లైన్స్ పెట్టినా వరుస క్రమంలో కిందకి వచ్చేలా y లెక్కించడం
     let nextY = Math.max(10, y - 25);
     if ((isHeadline || isSubHeadline) && targetGrid) {
       const existingHeaders = currentCanvasElements.filter(
@@ -326,16 +334,6 @@ export default function App() {
     }));
     if (selectedElementId === id) setSelectedElementId(null);
   };
-
-  const getPaperDimensions = () => {
-    switch (paperSize) {
-      case 'A3 సైజ్': return { width: '700px', minHeight: '990px' };
-      case 'మీడియం సైజ్': return { width: '750px', minHeight: '1050px' };
-      case 'జిల్లా టాబ్లెట్': return { width: '650px', minHeight: '900px' };
-      default: return { width: '820px', minHeight: '1160px' };
-    }
-  };
-  const dimensions = getPaperDimensions();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', fontFamily: 'sans-serif' }}>
       
@@ -362,23 +360,29 @@ export default function App() {
             <DailyToolbar onExportPdfClick={() => setShowPdfModal(true)} />
           )}
 
-          <div style={{ background: '#eee', padding: '5px 15px', fontSize: '12px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ background: '#eee', padding: '5px 12px', fontSize: '12px', display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             <span style={{ fontWeight: 'bold' }}>వర్క్‌స్పేస్: {paperSize}</span>
 
-            {isMobileView && (
+            {isMobileView && mobilePanel === 'CANVAS' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <button
-                  onClick={() => setMobileZoom(z => Math.max(0.3, +(z - 0.1).toFixed(2)))}
+                  onClick={() => setZoomBoost(b => Math.max(-0.2, +(b - 0.1).toFixed(2)))}
                   style={{ padding: '2px 7px', background: '#444', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
                 >
                   -
                 </button>
-                <span style={{ fontWeight: 'bold' }}>{Math.round(mobileZoom * 100)}%</span>
+                <span style={{ fontWeight: 'bold' }}>{Math.round(effectiveScale * 100)}%</span>
                 <button
-                  onClick={() => setMobileZoom(z => Math.min(1.3, +(z + 0.1).toFixed(2)))}
+                  onClick={() => setZoomBoost(b => Math.min(0.6, +(b + 0.1).toFixed(2)))}
                   style={{ padding: '2px 7px', background: '#444', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
                 >
                   +
+                </button>
+                <button
+                  onClick={() => setZoomBoost(0)}
+                  style={{ padding: '2px 6px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: '3px', cursor: 'pointer', fontSize: '11px' }}
+                >
+                  Fit
                 </button>
               </div>
             )}
@@ -404,19 +408,19 @@ export default function App() {
             <div style={{ display: 'flex', background: '#333', borderBottom: '1px solid #555' }}>
               <button
                 onClick={() => setMobilePanel('CANVAS')}
-                style={{ flex: 1, padding: '7px', background: mobilePanel === 'CANVAS' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '8px', background: mobilePanel === 'CANVAS' ? '#2e7d32' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
               >
-                📄 పేజీ కాన్వాస్
+                📄 వైట్ పేపర్ వ్యూ
               </button>
               <button
                 onClick={() => setMobilePanel('LEFT')}
-                style={{ flex: 1, padding: '7px', background: mobilePanel === 'LEFT' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '8px', background: mobilePanel === 'LEFT' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
               >
-                🛠 గ్రిడ్స్ & టూల్స్
+                🛠 టూల్స్ & గ్రిడ్స్
               </button>
               <button
                 onClick={() => setMobilePanel('RIGHT')}
-                style={{ flex: 1, padding: '7px', background: mobilePanel === 'RIGHT' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '8px', background: mobilePanel === 'RIGHT' ? '#1976d2' : '#333', color: '#fff', border: 'none', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}
               >
                 🎨 ఫాంట్ & కలర్స్
               </button>
@@ -442,35 +446,92 @@ export default function App() {
             )}
 
             {(!isMobileView || mobilePanel === 'CANVAS') && (
-              <div style={{ flex: 1, display: 'flex', overflow: 'auto' }}>
+              <div
+                style={{
+                  flex: 1,
+                  background: '#444',
+                  overflow: 'auto',
+                  display: 'flex',
+                  justifyContent: isMobileView && effectiveScale <= fitScale ? 'center' : 'flex-start',
+                  alignItems: 'flex-start',
+                  padding: isMobileView ? '12px' : '0px',
+                  position: 'relative'
+                }}
+              >
                 <div
                   style={{
-                    transform: isMobileView ? `scale(${mobileZoom})` : 'none',
-                    transformOrigin: 'top center',
-                    width: isMobileView ? dimensions.width : '100%',
-                    minHeight: isMobileView ? dimensions.minHeight : '100%',
+                    width: isMobileView ? `${Math.round(rawPaperWidth * effectiveScale)}px` : '100%',
+                    height: isMobileView ? `${Math.round(rawPaperHeight * effectiveScale)}px` : '100%',
+                    position: 'relative',
                     flexShrink: 0
                   }}
                 >
-                  <PageCanvas 
-                    pageTitle={`మాస్టర్ లేఅవుట్ - పేజీ ${currentPage}`}
-                    pageNumber={currentPage}
-                    bgColor={bgColor}
-                    selectedFont={selectedFont}
-                    dimensions={dimensions}
-                    onCanvasClick={handleCanvasClick}
-                    canvasElements={currentCanvasElements}
-                    onUpdateElement={handleUpdateElement}
-                    onDeleteElement={handleDeleteElement}
-                    selectedElementId={selectedElementId}
-                    onSelectElement={(id) => setSelectedElementId(id)}
-                    fontSize={fontSize}
-                    isMasterDesignMode={activeMode === 'MASTER'}
-                    activeTool={activeTool}
-                    selectedShape={selectedShape}
-                    onClearShape={() => setSelectedShape(null)}
-                  />
+                  <div
+                    style={{
+                      transform: isMobileView ? `scale(${effectiveScale})` : 'none',
+                      transformOrigin: 'top left',
+                      width: dimensions.width,
+                      minHeight: dimensions.minHeight,
+                      display: 'flex'
+                    }}
+                  >
+                    <PageCanvas 
+                      pageTitle={`మాస్టర్ లేఅవుట్ - పేజీ ${currentPage}`}
+                      pageNumber={currentPage}
+                      bgColor={bgColor}
+                      selectedFont={selectedFont}
+                      dimensions={dimensions}
+                      onCanvasClick={handleCanvasClick}
+                      canvasElements={currentCanvasElements}
+                      onUpdateElement={handleUpdateElement}
+                      onDeleteElement={handleDeleteElement}
+                      selectedElementId={selectedElementId}
+                      onSelectElement={(id) => setSelectedElementId(id)}
+                      fontSize={fontSize}
+                      isMasterDesignMode={activeMode === 'MASTER'}
+                      activeTool={activeTool}
+                      selectedShape={selectedShape}
+                      onClearShape={() => setSelectedShape(null)}
+                    />
+                  </div>
                 </div>
+
+                {isMobileView && (
+                  <div
+                    style={{
+                      position: 'sticky',
+                      bottom: '10px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      background: 'rgba(34,34,34,0.95)',
+                      padding: '6px 10px',
+                      borderRadius: '20px',
+                      display: 'flex',
+                      gap: '6px',
+                      zIndex: 80,
+                      boxShadow: '0 3px 10px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    <button
+                      onClick={() => { setSelectedShape('HEADLINE'); setActiveTool('HEADLINE_BOX'); }}
+                      style={{ background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '12px', padding: '5px 9px', fontSize: '11px', fontWeight: 'bold' }}
+                    >
+                      + H1
+                    </button>
+                    <button
+                      onClick={() => { setSelectedShape('SUB_HEADLINE'); setActiveTool('SUB_HEADLINE_BOX'); }}
+                      style={{ background: '#1976d2', color: '#fff', border: 'none', borderRadius: '12px', padding: '5px 9px', fontSize: '11px', fontWeight: 'bold' }}
+                    >
+                      + H2
+                    </button>
+                    <button
+                      onClick={() => { setSelectedShape('RECTANGLE'); setActiveTool('SHAPE'); }}
+                      style={{ background: '#2e7d32', color: '#fff', border: 'none', borderRadius: '12px', padding: '5px 9px', fontSize: '11px', fontWeight: 'bold' }}
+                    >
+                      + గ్రిడ్
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -493,4 +554,4 @@ export default function App() {
       {showPdfModal && <ExportPdfModal pageRef={pageRef} onClose={() => setShowPdfModal(false)} />}
     </div>
   );
-              }
+                }
