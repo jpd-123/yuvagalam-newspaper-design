@@ -41,7 +41,6 @@ export default function PageCanvas({
     }
   }, [activeTool, selectedShape]);
 
-  // ఎడిట్ చేసే బాక్స్‌లోకి కర్సర్ వెంటనే బ్లింక్ అయ్యేలా ఫోకస్
   useEffect(() => {
     const targetId = editingId || (activeTool === 'TEXT' ? selectedElementId : null);
     if (targetId && editableRefs.current[targetId]) {
@@ -50,7 +49,7 @@ export default function PageCanvas({
         if (elNode) {
           elNode.focus();
         }
-      }, 10);
+      }, 15);
       return () => clearTimeout(timer);
     }
   }, [editingId, selectedElementId, activeTool]);
@@ -67,7 +66,6 @@ export default function PageCanvas({
     return null;
   };
 
-  // సెలెక్ట్ చేసిన పదాలకు మాత్రమే స్టైల్ లేదా అండర్‌లైన్ వర్తింపజేసే ఫంక్షన్
   const applyStyleToSelectedWords = (styleFn) => {
     const selection = window.getSelection();
     let targetRange = null;
@@ -115,7 +113,6 @@ export default function PageCanvas({
     }
   };
 
-  // సబ్-హెడ్‌లైన్ లేదా సెలెక్ట్ చేసిన లైన్ ముందు బుల్లెట్ గుర్తు చేర్చడం
   useEffect(() => {
     const handleInsertBullet = (e) => {
       const bulletChar = e.detail?.bullet || '•';
@@ -139,7 +136,6 @@ export default function PageCanvas({
     return () => window.removeEventListener('SATHVIKA_INSERT_BULLET', handleInsertBullet);
   }, [selectedElementId, editingId, onUpdateElement]);
 
-  // బయటి నుండి (BottomStyleBar / RightStylePanel) వచ్చే ఫార్మాటింగ్ ఈవెంట్లు
   useEffect(() => {
     const handleExternalFormat = (e) => {
       const { kind, value } = e.detail || {};
@@ -224,8 +220,20 @@ export default function PageCanvas({
     } else if (resizingId) {
       const targetEl = canvasElements.find(el => el.id === resizingId);
       if (targetEl) {
-        const newWidth = Math.max(60, mouseX - targetEl.x);
-        const newHeight = Math.max(40, mouseY - targetEl.y);
+        const parentGrid =
+          (targetEl.type === 'HEADLINE' || targetEl.type === 'SUB_HEADLINE')
+            ? canvasElements.find(g => g.type === 'RECTANGLE' && (g.id === targetEl.parentRectId || Math.abs(g.x - targetEl.x) < 25))
+            : null;
+
+        // హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ వెడల్పు వార్త గ్రిడ్ వెడల్పు కంటే పెరగకూడదు; తగ్గించవచ్చు
+        const maxAllowedWidth = parentGrid ? parentGrid.width : targetEl.width;
+        const rawWidth = Math.max(60, mouseX - targetEl.x);
+        const newWidth =
+          (targetEl.type === 'HEADLINE' || targetEl.type === 'SUB_HEADLINE') && parentGrid
+            ? Math.min(maxAllowedWidth, rawWidth)
+            : rawWidth;
+
+        const newHeight = Math.max(30, mouseY - targetEl.y);
         if (targetEl.type === 'CIRCLE_PHOTO' || targetEl.type === 'CIRCLE') {
           const size = Math.max(newWidth, newHeight);
           if (onUpdateElement) onUpdateElement(resizingId, { width: size, height: size });
@@ -324,7 +332,7 @@ export default function PageCanvas({
           boxSizing: 'border-box',
           position: 'relative',
           cursor: selectedShape ? 'crosshair' : (activeTool === 'TEXT' ? 'text' : 'default'),
-          userSelect: activeTool === 'TEXT' || editingId !== null ? 'text' : 'none'
+          userSelect: 'text'
         }}
       >
         {!isMasterDesignMode && (
@@ -344,18 +352,47 @@ export default function PageCanvas({
           const overlappingImages = el.type === 'RECTANGLE' ? getOverlappingImages(el) : [];
           const isPageOne = pageNumber === 1;
 
+          // ఈ వార్త గ్రిడ్‌కు సంబంధించిన హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ ఉన్నాయా అని తనిఖీ చేయడం
+          const linkedHeaders = el.type === 'RECTANGLE'
+            ? canvasElements.filter(
+                h =>
+                  (h.type === 'HEADLINE' || h.type === 'SUB_HEADLINE') &&
+                  (h.parentRectId === el.id || Math.abs(h.x - el.x) < 25)
+              )
+            : [];
+
+          const hasLinkedHeaders = linkedHeaders.length > 0;
+          const headersBottom = hasLinkedHeaders
+            ? Math.max(...linkedHeaders.map(h => h.y + h.height))
+            : el.y;
+
+          // హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ పెట్టిన తర్వాత వార్త టెక్స్ట్ వాటి వెనక/కిందకి వెళ్లకుండా ఖచ్చితమైన top & height
+          const effectiveY = el.type === 'RECTANGLE' && hasLinkedHeaders
+            ? Math.max(el.y, headersBottom)
+            : el.y;
+
+          const effectiveHeight = el.type === 'RECTANGLE' && hasLinkedHeaders
+            ? Math.max(90, (el.y + el.height) - effectiveY)
+            : el.height;
+
           const flowResult = (el.type === 'RECTANGLE' && isPageOne && el.text)
-            ? handleTextFlow(el.text, el.height, el.fontSize || fontSize, 1)
+            ? handleTextFlow(el.text, effectiveHeight, el.fontSize || fontSize, 1)
             : { page1Content: el.text, hasOverflow: false };
 
           const currentZoom = el.photoZoom || 1;
           const currentOffsetY = el.photoOffsetY || 0;
 
-          // సబ్-హెడ్‌లైన్ పెట్టినప్పుడు/టైప్ చేసినప్పుడు గ్రిడ్ కిందకి పెరిగేలా ఎత్తు లెక్కింపు
           const computedHeight =
             el.type === 'SUB_HEADLINE'
-              ? Math.max(el.height || 34, ((el.text || '').split('\n').length) * ((el.fontSize || 16) * 1.35) + 12)
-              : el.height;
+              ? Math.max(el.height || 34, ((el.text || '').split('\n').length) * ((el.fontSize || 16) * 1.25) + 8)
+              : effectiveHeight;
+
+          // హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ పెట్టిన తర్వాత లేదా సెలెక్ట్ చేయనప్పుడు గ్రిడ్ గీతలు కనిపించకుండా 'none'
+          const borderStyle = isSelected
+            ? '1.5px solid #1976d2'
+            : (isTextEditableBox && !hasLinkedHeaders && el.type === 'RECTANGLE'
+                ? '1px dashed #bbb'
+                : 'none');
 
           return (
             <div
@@ -395,20 +432,20 @@ export default function PageCanvas({
               style={{
                 position: 'absolute',
                 left: `${el.x}px`,
-                top: `${el.y}px`,
+                top: `${effectiveY}px`,
                 width: `${el.width}px`,
                 height: (el.type === 'RECTANGLE' && !isPageOne) ? 'auto' : `${computedHeight}px`,
-                minHeight: `${el.height}px`,
-                border: isSelected ? '2px solid #1976d2' : '1px solid #888',
+                minHeight: `${effectiveHeight}px`,
+                border: borderStyle,
                 background: el.bgColor || (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO' ? '#f0f0f0' : 'transparent'),
                 color: el.color || '#000',
                 borderRadius: el.type === 'CIRCLE' || el.type === 'CIRCLE_PHOTO' ? '50%' : el.type === 'OVAL' ? '50% / 30%' : '0px',
                 padding: el.type === 'CIRCLE_PHOTO' ? '0px' : '4px 6px',
                 boxSizing: 'border-box',
                 cursor: selectedShape ? 'crosshair' : (activeTool === 'TEXT' && isTextEditableBox ? 'text' : (activeTool === 'POINTER' ? 'move' : 'default')),
-                zIndex: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 10 : 5,
+                zIndex: (el.type === 'PICTURE' || el.type === 'CIRCLE_PHOTO') ? 10 : (el.type === 'HEADLINE' || el.type === 'SUB_HEADLINE' ? 7 : 5),
                 overflow: 'hidden',
-                userSelect: isTextEditableBox ? 'text' : 'none'
+                userSelect: 'text'
               }}
             >
               {isSelected && activeTool === 'POINTER' && !selectedShape && (
@@ -577,7 +614,7 @@ export default function PageCanvas({
 
                   <div
                     ref={(node) => { editableRefs.current[el.id] = node; }}
-                    contentEditable={!selectedShape && (isEditing || activeTool === 'TEXT' || el.type === 'RECTANGLE')}
+                    contentEditable={!selectedShape}
                     suppressContentEditableWarning={true}
                     onMouseDown={(e) => {
                       if (selectedShape) return;
@@ -639,6 +676,7 @@ export default function PageCanvas({
                       margin: 0,
                       padding: 0,
                       outline: 'none',
+                      caretColor: '#000000',
                       fontFamily: el.fontFamily || selectedFont,
                       fontSize: `${el.fontSize || fontSize}pt`,
                       color: el.color || '#000',
@@ -673,5 +711,5 @@ export default function PageCanvas({
       </div>
     </div>
   );
-            }
-                  
+               }
+                      
