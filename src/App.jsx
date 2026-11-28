@@ -218,7 +218,8 @@ export default function App() {
     const linkedWidth = targetGrid ? targetGrid.width : (isHeadline || isSubHeadline ? 320 : 240);
     const linkedX = targetGrid ? targetGrid.x : Math.max(10, x - 120);
 
-    let nextY = Math.max(10, y - 25);
+    // హెడ్‌లైన్ / సబ్-హెడ్‌లైన్ మధ్య 0px గ్యాప్ ఉండేలా మరియు వార్త గ్రిడ్ పైభాగం నుండి వరుసగా వచ్చేలా nextY లెక్కింపు
+    let nextY = targetGrid ? targetGrid.y : Math.max(10, y - 25);
     if ((isHeadline || isSubHeadline) && targetGrid) {
       const existingHeaders = currentCanvasElements.filter(
         el =>
@@ -226,8 +227,7 @@ export default function App() {
           (el.parentRectId === targetGrid.id || Math.abs(el.x - targetGrid.x) < 25)
       );
       if (existingHeaders.length > 0) {
-        const lowestBottom = Math.max(...existingHeaders.map(h => h.y + h.height));
-        nextY = lowestBottom + 4;
+        nextY = Math.max(...existingHeaders.map(h => h.y + h.height));
       }
     }
 
@@ -554,4 +554,4 @@ export default function App() {
       {showPdfModal && <ExportPdfModal pageRef={pageRef} onClose={() => setShowPdfModal(false)} />}
     </div>
   );
-                }
+              }
